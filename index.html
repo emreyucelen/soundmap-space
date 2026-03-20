@@ -401,7 +401,7 @@ const activeIcon = L.icon({
   visiblePins.forEach(pin => {
     if (pin.lat == null || pin.lng == null) return;
 
-    const marker = L.marker([pin.lat, pin.lng], {
+    const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
       icon: pin.id === activePinId ? activeIcon : defaultIcon
     }).addTo(map);
 
