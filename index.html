@@ -1,227 +1,358 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Soundmap Space</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<style>
-body {margin:0;font-family:sans-serif;background:#020617;color:white;}
-.page {display:grid;grid-template-columns:380px 1fr;height:100vh;}
-
-.sidebar {
-padding:24px;
-background:#07111f;
-border-right:1px solid rgba(255,255,255,0.08);
-}
-
-.brand {
-background:#10b98122;
-padding:10px 14px;
-border-radius:999px;
-display:inline-block;
-margin-bottom:10px;
-}
-
-h1 {font-size:30px;margin:10px 0;}
-.lead {color:#cbd5e1;font-size:14px;margin-bottom:15px;}
-
-.search {
-width:100%;
-padding:12px;
-border-radius:12px;
-border:none;
-background:#ffffff11;
-color:white;
-margin-bottom:12px;
-}
-
-.categories {display:flex;gap:8px;margin-bottom:15px;}
-.cat-btn {
-padding:8px 12px;
-border-radius:999px;
-background:#ffffff11;
-border:none;
-color:white;
-cursor:pointer;
-}
-.cat-btn.active {background:#10b981;}
-
-.card {
-background:#ffffff10;
-padding:16px;
-border-radius:18px;
-}
-
-.title {font-size:20px;font-weight:bold;}
-.location {color:#94a3b8;margin-bottom:10px;}
-
-.price {
-background:#10b981;
-color:black;
-padding:6px 10px;
-border-radius:8px;
-display:inline-block;
-font-weight:bold;
-margin-bottom:10px;
-}
-
-iframe {width:100%;border-radius:12px;border:none;margin-top:10px;}
-
-.buy {
-display:block;
-margin-top:10px;
-background:#10b981;
-padding:10px;
-border-radius:10px;
-text-align:center;
-color:black;
-font-weight:bold;
-text-decoration:none;
-}
-
-#map {height:100%;}
-
-.popup {
-font-size:14px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundmap Space</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#020617; color:white; }
+    .page { display:grid; grid-template-columns:380px 1fr; min-height:100vh; }
+    .sidebar {
+      padding:24px;
+      background:
+        radial-gradient(circle at top left, rgba(16,185,129,.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(59,130,246,.16), transparent 35%),
+        #07111f;
+      border-right:1px solid rgba(255,255,255,.08);
+    }
+    .brand {
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#10b98122;
+      border:1px solid rgba(16,185,129,.28);
+      color:#d1fae5;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1 { font-size:30px; line-height:1.05; margin:8px 0 12px; }
+    .lead { color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:16px; }
+    .search {
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:white;
+      outline:none;
+      margin-bottom:14px;
+    }
+    .search::placeholder { color:#94a3b8; }
+    .categories { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .cat-btn {
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:white;
+      cursor:pointer;
+    }
+    .cat-btn.active {
+      background:#10b981;
+      color:#052e2b;
+      border-color:#10b981;
+      font-weight:700;
+    }
+    .card {
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:18px;
+    }
+    .title { font-size:20px; font-weight:800; margin-bottom:6px; }
+    .location { color:#94a3b8; margin-bottom:12px; }
+    .price {
+      display:inline-block;
+      margin-bottom:12px;
+      padding:7px 10px;
+      border-radius:10px;
+      background:#10b981;
+      color:#052e2b;
+      font-weight:800;
+    }
+    .desc { color:#e2e8f0; line-height:1.6; margin-bottom:14px; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .pill {
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      color:#cbd5e1;
+      font-size:12px;
+    }
+    iframe, audio {
+      width:100%;
+      border:0;
+      border-radius:12px;
+      margin-top:10px;
+    }
+    .buy {
+      display:block;
+      margin-top:14px;
+      text-align:center;
+      text-decoration:none;
+      background:#10b981;
+      color:#052e2b;
+      padding:12px 14px;
+      border-radius:12px;
+      font-weight:800;
+    }
+    .msg {
+      color:#cbd5e1;
+      padding:14px 0;
+    }
+    .err {
+      margin-top:12px;
+      padding:12px;
+      border-radius:14px;
+      background:rgba(127,29,29,.3);
+      border:1px solid rgba(248,113,113,.25);
+      color:#fecaca;
+      white-space:pre-wrap;
+      font-size:13px;
+    }
+    #map { width:100%; min-height:100vh; background:#07111f; }
+    @media (max-width: 900px) {
+      .page { grid-template-columns:1fr; }
+      .sidebar { border-right:0; border-bottom:1px solid rgba(255,255,255,.08); }
+      #map { min-height:65vh; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">🌍 Soundmap Space</div>
+      <h1>Dünyayı sesle keşfet</h1>
+      <div class="lead">Haritadaki pinlere tıkla, kayıtları dinle ve albümlere geç.</div>
 
-<div class="page">
+      <input id="search" class="search" placeholder="Şehir, ülke veya kayıt ara" />
+      <div id="cats" class="categories"></div>
 
-<div class="sidebar">
-<div class="brand">🌍 Soundmap</div>
+      <div id="card" class="card">
+        <div class="msg">Kayıtlar yükleniyor...</div>
+      </div>
 
-<h1>Dünyayı sesle keşfet</h1>
-<p class="lead">Pinlere tıkla, sesleri dinle.</p>
+      <div id="err" class="err" style="display:none;"></div>
+    </aside>
 
-<input id="search" class="search" placeholder="Ara..." />
+    <main>
+      <div id="map"></div>
+    </main>
+  </div>
 
-<div id="cats" class="categories"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
 
-<div id="card" class="card">Yükleniyor...</div>
-</div>
+    const DEMO = [
+      {
+        id: 1,
+        title: "Yoros Kalesi",
+        city: "Istanbul",
+        country: "Turkey",
+        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
+        lat: 41.18,
+        lng: 29.09,
+        category: "Kültür",
+        vibe: "Tarihî",
+        duration: "3:23",
+        source_type: "soundcloud",
+        embed_url: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A149632885&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true",
+        preview_audio_url: "",
+        shopify_url: "#",
+        price_label: "149 TL"
+      }
+    ];
 
-<div id="map"></div>
+    const card = document.getElementById("card");
+    const cats = document.getElementById("cats");
+    const search = document.getElementById("search");
+    const errBox = document.getElementById("err");
 
-</div>
+    let map;
+    let supabase;
+    let pins = [];
+    let markers = [];
+    let activeCategory = "Tümü";
+    let activeId = null;
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    function showError(msg) {
+      errBox.style.display = "block";
+      errBox.textContent = msg;
+      console.error(msg);
+    }
 
-<script>
+    function normalize(v) {
+      return (v || "").toString().toLowerCase();
+    }
 
-const supabase = window.supabase.createClient(
-"https://bfwugfrerjprlbbxgacj.supabase.co",
-"sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe"
-);
+    function safePins(list) {
+      return (list || []).filter(p => p && p.title);
+    }
 
-let map = L.map("map").setView([39,35],5);
+    function getCategories(list) {
+      return ["Tümü", ...new Set(safePins(list).map(p => p.category).filter(Boolean))];
+    }
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    function renderCategories() {
+      const all = getCategories(pins);
+      cats.innerHTML = "";
+      all.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = "cat-btn" + (c === activeCategory ? " active" : "");
+        btn.textContent = c;
+        btn.onclick = () => {
+          activeCategory = c;
+          renderCategories();
+          draw();
+        };
+        cats.appendChild(btn);
+      });
+    }
 
-let pins = [];
-let activeCat = "Tümü";
+    function currentPins() {
+      const q = normalize(search.value);
+      return safePins(pins).filter(p => {
+        const catOk = activeCategory === "Tümü" ? true : p.category === activeCategory;
+        const text = [p.title, p.city, p.country, p.category, p.description].map(normalize).join(" ");
+        return catOk && (!q || text.includes(q));
+      });
+    }
 
-const card = document.getElementById("card");
-const cats = document.getElementById("cats");
-const search = document.getElementById("search");
+    function renderCard(p) {
+      if (!p) {
+        card.innerHTML = '<div class="msg">Kayıt bulunamadı.</div>';
+        return;
+      }
 
-function renderCard(p){
+      const sourceType = normalize(p.source_type);
+      let media = "";
 
-card.innerHTML = `
-<div class="title">${p.title}</div>
-<div class="location">${p.city}, ${p.country}</div>
-${p.price_label ? `<div class="price">${p.price_label}</div>` : ""}
-<div>${p.description || "Açıklama yok"}</div>
+      if ((sourceType === "soundcloud" || sourceType === "youtube") && p.embed_url) {
+        media = `<iframe src="${p.embed_url}" height="166" allow="autoplay; encrypted-media"></iframe>`;
+      } else if (p.preview_audio_url) {
+        media = `<audio controls src="${p.preview_audio_url}"></audio>`;
+      }
 
-${p.embed_url ? `<iframe src="${p.embed_url}"></iframe>` : ""}
+      card.innerHTML = `
+        <div class="title">${p.title || ""}</div>
+        <div class="location">${p.city || ""}${p.country ? ", " + p.country : ""}</div>
+        ${p.price_label ? `<div class="price">${p.price_label}</div>` : ""}
+        <div class="desc">${p.description || "Açıklama yok"}</div>
 
-${p.shopify_url ? `<a class="buy" href="${p.shopify_url}" target="_blank">Satın al</a>` : ""}
-`;
+        <div class="meta">
+          ${p.category ? `<div class="pill">${p.category}</div>` : ""}
+          ${p.vibe ? `<div class="pill">${p.vibe}</div>` : ""}
+          ${p.duration ? `<div class="pill">${p.duration}</div>` : ""}
+          ${p.source_type ? `<div class="pill">${p.source_type}</div>` : ""}
+        </div>
 
-}
+        ${media}
 
-function renderCats(){
+        ${p.shopify_url && p.shopify_url !== "#" ? `
+          <a class="buy" href="${p.shopify_url}" target="_blank" rel="noreferrer">Albümü satın al</a>
+        ` : ""}
+      `;
+    }
 
-const all = ["Tümü", ...new Set(pins.map(p=>p.category).filter(Boolean))];
+    function clearMarkers() {
+      markers.forEach(m => {
+        try { map.removeLayer(m); } catch (_) {}
+      });
+      markers = [];
+    }
 
-cats.innerHTML="";
+    function draw() {
+      const visible = currentPins();
+      clearMarkers();
 
-all.forEach(c=>{
-const btn=document.createElement("button");
-btn.className="cat-btn"+(c===activeCat?" active":"");
-btn.innerText=c;
+      visible.forEach(p => {
+        if (p.lat == null || p.lng == null || isNaN(Number(p.lat)) || isNaN(Number(p.lng))) return;
 
-btn.onclick=()=>{
-activeCat=c;
-renderCats();
-draw();
-};
+        const marker = L.marker([Number(p.lat), Number(p.lng)]).addTo(map);
+        marker.bindTooltip(p.title || "Kayıt", { direction: "top", offset: [0, -8] });
+        marker.on("click", () => {
+          activeId = p.id;
+          renderCard(p);
+        });
+        markers.push(marker);
+      });
 
-cats.appendChild(btn);
-});
+      if (visible.length) {
+        const chosen = visible.find(p => p.id === activeId) || visible[0];
+        activeId = chosen.id;
+        renderCard(chosen);
 
-}
+        const coords = visible
+          .filter(p => p.lat != null && p.lng != null && !isNaN(Number(p.lat)) && !isNaN(Number(p.lng)))
+          .map(p => [Number(p.lat), Number(p.lng)]);
 
-function draw(){
+        if (coords.length) {
+          const bounds = L.latLngBounds(coords);
+          if (bounds.isValid()) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+          }
+        }
+      } else {
+        renderCard(null);
+      }
 
-map.eachLayer(l=>{
-if(l instanceof L.Marker) map.removeLayer(l);
-});
+      setTimeout(() => map.invalidateSize(), 300);
+    }
 
-let filtered = pins.filter(p=>{
-if(activeCat!=="Tümü" && p.category!==activeCat) return false;
+    function initMap() {
+      map = L.map("map", { zoomControl: true }).setView([39, 35], 5);
 
-if(search.value){
-let t=(p.title+p.city+p.country).toLowerCase();
-return t.includes(search.value.toLowerCase());
-}
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
 
-return true;
-});
+      setTimeout(() => map.invalidateSize(), 700);
+    }
 
-filtered.forEach(p=>{
+    async function loadPins() {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let m = L.marker([p.lat,p.lng]).addTo(map);
+        const { data, error } = await supabase
+          .from("soundmap_pins")
+          .select("*")
+          .order("title", { ascending: true });
 
-m.on("click",()=>renderCard(p));
+        if (error) {
+          showError("Supabase hata: " + error.message + "\\nDemo veri gösteriliyor.");
+          pins = DEMO;
+        } else if (!data || !data.length) {
+          showError("Veri bulunamadı. Demo veri gösteriliyor.");
+          pins = DEMO;
+        } else {
+          pins = data;
+        }
+      } catch (e) {
+        showError("Bağlantı hatası: " + (e?.message || e) + "\\nDemo veri gösteriliyor.");
+        pins = DEMO;
+      }
 
-m.bindPopup(`
-<div class="popup">
-<b>${p.title}</b><br>
-${p.city}<br>
-🎧 dinlemek için tıkla
-</div>
-`);
+      renderCategories();
+      draw();
+    }
 
-});
+    search.addEventListener("input", draw);
 
-if(filtered[0]) renderCard(filtered[0]);
-
-}
-
-search.oninput = draw;
-
-async function load(){
-
-const {data} = await supabase.from("soundmap_pins").select("*");
-
-pins = data || [];
-
-renderCats();
-draw();
-
-}
-
-load();
-
-</script>
-
+    window.addEventListener("load", async () => {
+      try {
+        initMap();
+        await loadPins();
+      } catch (e) {
+        showError("Genel hata: " + (e?.message || e));
+        pins = DEMO;
+        renderCategories();
+        draw();
+      }
+    });
+  </script>
 </body>
 </html>
