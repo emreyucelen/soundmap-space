@@ -178,6 +178,16 @@
       padding: 14px 0;
     }
 
+    .error {
+      color: #fecaca;
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
     @media (max-width: 900px) {
       .page {
         grid-template-columns: 1fr;
@@ -209,6 +219,8 @@
       <div id="cardArea" class="card">
         <div class="loading">Kayıtlar yükleniyor...</div>
       </div>
+
+      <div id="errorBox" class="error" style="display:none;"></div>
     </aside>
 
     <main>
@@ -216,14 +228,12 @@
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const DEMO = [
       {
@@ -245,25 +255,23 @@
       }
     ];
 
-    const map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 5);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap"
-    }).addTo(map);
-
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 500);
-
     const cardArea = document.getElementById("cardArea");
     const categoriesEl = document.getElementById("categories");
     const searchInput = document.getElementById("searchInput");
+    const errorBox = document.getElementById("errorBox");
 
+    let map;
     let allPins = [];
     let visiblePins = [];
     let markers = [];
     let activeCategory = "Tümü";
     let activePinId = null;
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+      console.error(message);
+    }
 
     function normalize(value) {
       return (value || "").toString().toLowerCase();
@@ -311,7 +319,6 @@
           pin.category,
           pin.description
         ].map(normalize).join(" ");
-
         return categoryOk && (!q || text.includes(q));
       });
     }
@@ -417,27 +424,52 @@
     }
 
     async function loadPins() {
-      const { data, error } = await supabase
-        .from("soundmap_pins")
-        .select("*")
-        .order("title", { ascending: true });
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      console.log("DATA:", data);
-      console.log("ERROR:", error);
+        const { data, error } = await supabase
+          .from("soundmap_pins")
+          .select("*")
+          .order("title", { ascending: true });
 
-      if (error || !data || !data.length) {
+        if (error || !data || !data.length) {
+          allPins = DEMO;
+        } else {
+          allPins = data;
+        }
+
+        renderCategories();
+        applyFilters();
+      } catch (err) {
         allPins = DEMO;
-      } else {
-        allPins = data;
+        renderCategories();
+        applyFilters();
+        showError("Supabase fallback devrede. Demo veri gösteriliyor.\n\n" + (err?.message || err));
       }
+    }
 
-      renderCategories();
-      applyFilters();
+    function initMap() {
+      try {
+        map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 5);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap"
+        }).addTo(map);
+
+        setTimeout(() => {
+          map.invalidateSize();
+        }, 700);
+      } catch (err) {
+        showError("Harita başlatılamadı:\n" + (err?.message || err));
+      }
     }
 
     searchInput.addEventListener("input", applyFilters);
 
-    loadPins();
+    window.addEventListener("load", () => {
+      initMap();
+      loadPins();
+    });
   </script>
 </body>
 </html>
