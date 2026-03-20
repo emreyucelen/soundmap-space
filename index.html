@@ -4,118 +4,201 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Soundmap Space</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#020617; color:white; }
-    .page { display:grid; grid-template-columns:380px 1fr; min-height:100vh; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: white;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+    }
+
     .sidebar {
-      padding:24px;
+      padding: 24px;
+      border-right: 1px solid rgba(255,255,255,0.08);
       background:
-        radial-gradient(circle at top left, rgba(16,185,129,.18), transparent 30%),
-        radial-gradient(circle at top right, rgba(59,130,246,.16), transparent 35%),
+        radial-gradient(circle at top left, rgba(16,185,129,0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 35%),
         #07111f;
-      border-right:1px solid rgba(255,255,255,.08);
     }
+
     .brand {
-      display:inline-block;
-      padding:10px 14px;
-      border-radius:999px;
-      background:#10b98122;
-      border:1px solid rgba(16,185,129,.28);
-      color:#d1fae5;
-      font-weight:700;
-      margin-bottom:12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.28);
+      color: #d1fae5;
+      font-size: 14px;
+      font-weight: 600;
     }
-    h1 { font-size:30px; line-height:1.05; margin:8px 0 12px; }
-    .lead { color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:16px; }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: 34px;
+      line-height: 1.05;
+    }
+
+    .lead {
+      margin: 0 0 18px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
     .search {
-      width:100%;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:white;
-      outline:none;
-      margin-bottom:14px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      margin-bottom: 14px;
     }
-    .search::placeholder { color:#94a3b8; }
-    .categories { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+
+    .search::placeholder { color: #94a3b8; }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
     .cat-btn {
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:white;
-      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
     }
+
     .cat-btn.active {
-      background:#10b981;
-      color:#052e2b;
-      border-color:#10b981;
-      font-weight:700;
+      background: rgba(16,185,129,.14);
+      border-color: rgba(16,185,129,.4);
+      color: #d1fae5;
     }
+
     .card {
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:20px;
-      padding:18px;
+      margin-top: 14px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    .title { font-size:20px; font-weight:800; margin-bottom:6px; }
-    .location { color:#94a3b8; margin-bottom:12px; }
-    .price {
-      display:inline-block;
-      margin-bottom:12px;
-      padding:7px 10px;
-      border-radius:10px;
-      background:#10b981;
-      color:#052e2b;
-      font-weight:800;
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
     }
-    .desc { color:#e2e8f0; line-height:1.6; margin-bottom:14px; }
-    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+
+    .badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .location {
+      color: #94a3b8;
+      margin: 8px 0 14px;
+      font-size: 14px;
+    }
+
+    .desc {
+      color: #e2e8f0;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      min-height: 48px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
     .pill {
-      padding:7px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      color:#cbd5e1;
-      font-size:12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.06);
+      color: #cbd5e1;
     }
-    iframe, audio {
-      width:100%;
-      border:0;
-      border-radius:12px;
-      margin-top:10px;
+
+    .media-wrap iframe,
+    .media-wrap audio {
+      width: 100%;
+      border-radius: 14px;
+      border: 0;
+      margin-top: 10px;
     }
-    .buy {
-      display:block;
-      margin-top:14px;
-      text-align:center;
-      text-decoration:none;
-      background:#10b981;
-      color:#052e2b;
-      padding:12px 14px;
-      border-radius:12px;
-      font-weight:800;
+
+    .buy-btn {
+      display: inline-block;
+      margin-top: 16px;
+      background: #10b981;
+      color: #052e2b;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-radius: 14px;
     }
-    .msg {
-      color:#cbd5e1;
-      padding:14px 0;
+
+    #map {
+      height: 100vh;
+      width: 100%;
+      background: #07111f;
     }
-    .err {
-      margin-top:12px;
-      padding:12px;
-      border-radius:14px;
-      background:rgba(127,29,29,.3);
-      border:1px solid rgba(248,113,113,.25);
-      color:#fecaca;
-      white-space:pre-wrap;
-      font-size:13px;
+
+    .loading,
+    .empty {
+      color: #cbd5e1;
+      padding: 14px 0;
     }
-    #map { width:100%; min-height:100vh; background:#07111f; }
+
+    .error {
+      color: #fecaca;
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
     @media (max-width: 900px) {
-      .page { grid-template-columns:1fr; }
-      .sidebar { border-right:0; border-bottom:1px solid rgba(255,255,255,.08); }
-      #map { min-height:65vh; }
+      .page {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      #map {
+        height: 65vh;
+      }
     }
   </style>
 </head>
@@ -123,17 +206,21 @@
   <div class="page">
     <aside class="sidebar">
       <div class="brand">🌍 Soundmap Space</div>
+
       <h1>Dünyayı sesle keşfet</h1>
-      <div class="lead">Haritadaki pinlere tıkla, kayıtları dinle ve albümlere geç.</div>
+      <p class="lead">
+        Haritadaki pinlere tıkla, kayıtları dinle ve albümlere geç.
+      </p>
 
-      <input id="search" class="search" placeholder="Şehir, ülke veya kayıt ara" />
-      <div id="cats" class="categories"></div>
+      <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya kayıt ara" />
 
-      <div id="card" class="card">
-        <div class="msg">Kayıtlar yükleniyor...</div>
+      <div id="categories" class="categories"></div>
+
+      <div id="cardArea" class="card">
+        <div class="loading">Kayıtlar yükleniyor...</div>
       </div>
 
-      <div id="err" class="err" style="display:none;"></div>
+      <div id="errorBox" class="error" style="display:none;"></div>
     </aside>
 
     <main>
@@ -143,6 +230,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
@@ -167,191 +255,220 @@
       }
     ];
 
-    const card = document.getElementById("card");
-    const cats = document.getElementById("cats");
-    const search = document.getElementById("search");
-    const errBox = document.getElementById("err");
+    const cardArea = document.getElementById("cardArea");
+    const categoriesEl = document.getElementById("categories");
+    const searchInput = document.getElementById("searchInput");
+    const errorBox = document.getElementById("errorBox");
 
     let map;
-    let supabase;
-    let pins = [];
+    let allPins = [];
+    let visiblePins = [];
     let markers = [];
     let activeCategory = "Tümü";
-    let activeId = null;
+    let activePinId = null;
 
-    function showError(msg) {
-      errBox.style.display = "block";
-      errBox.textContent = msg;
-      console.error(msg);
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+      console.error(message);
     }
 
-    function normalize(v) {
-      return (v || "").toString().toLowerCase();
+    function normalize(value) {
+      return (value || "").toString().toLowerCase();
     }
 
-    function safePins(list) {
-      return (list || []).filter(p => p && p.title);
+    function getCategories(pins) {
+      const set = new Set(["Tümü"]);
+      pins.forEach(pin => {
+        if (pin.category) set.add(pin.category);
+      });
+      return [...set];
     }
 
-    function getCategories(list) {
-      return ["Tümü", ...new Set(safePins(list).map(p => p.category).filter(Boolean))];
+    function clearMarkers() {
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
     }
 
     function renderCategories() {
-      const all = getCategories(pins);
-      cats.innerHTML = "";
-      all.forEach(c => {
+      const cats = getCategories(allPins);
+      categoriesEl.innerHTML = "";
+
+      cats.forEach(cat => {
         const btn = document.createElement("button");
-        btn.className = "cat-btn" + (c === activeCategory ? " active" : "");
-        btn.textContent = c;
-        btn.onclick = () => {
-          activeCategory = c;
+        btn.className = "cat-btn" + (cat === activeCategory ? " active" : "");
+        btn.textContent = cat;
+        btn.addEventListener("click", () => {
+          activeCategory = cat;
           renderCategories();
-          draw();
-        };
-        cats.appendChild(btn);
+          applyFilters();
+        });
+        categoriesEl.appendChild(btn);
       });
     }
 
-    function currentPins() {
-      const q = normalize(search.value);
-      return safePins(pins).filter(p => {
-        const catOk = activeCategory === "Tümü" ? true : p.category === activeCategory;
-        const text = [p.title, p.city, p.country, p.category, p.description].map(normalize).join(" ");
-        return catOk && (!q || text.includes(q));
+    function filterPins() {
+      const q = normalize(searchInput.value);
+
+      return allPins.filter(pin => {
+        const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+        const text = [
+          pin.title,
+          pin.city,
+          pin.country,
+          pin.category,
+          pin.description
+        ].map(normalize).join(" ");
+        return categoryOk && (!q || text.includes(q));
       });
     }
 
-    function renderCard(p) {
-      if (!p) {
-        card.innerHTML = '<div class="msg">Kayıt bulunamadı.</div>';
+    function renderCard(pin) {
+      if (!pin) {
+        cardArea.innerHTML = '<div class="empty">Kayıt bulunamadı.</div>';
         return;
       }
 
-      const sourceType = normalize(p.source_type);
-      let media = "";
+      const title = pin.title || "İsimsiz kayıt";
+      const city = pin.city || "";
+      const country = pin.country || "";
+      const description = pin.description || "Açıklama yok";
+      const price = pin.price_label || "";
+      const category = pin.category || "";
+      const vibe = pin.vibe || "";
+      const duration = pin.duration || "";
+      const sourceType = (pin.source_type || "").toLowerCase();
+      const embedUrl = pin.embed_url || "";
+      const audioUrl = pin.preview_audio_url || "";
+      const shopifyUrl = pin.shopify_url || "#";
 
-      if ((sourceType === "soundcloud" || sourceType === "youtube") && p.embed_url) {
-        media = `<iframe src="${p.embed_url}" height="166" allow="autoplay; encrypted-media"></iframe>`;
-      } else if (p.preview_audio_url) {
-        media = `<audio controls src="${p.preview_audio_url}"></audio>`;
+      let mediaHtml = "";
+      if ((sourceType === "soundcloud" || sourceType === "youtube") && embedUrl) {
+        mediaHtml = `<iframe src="${embedUrl}" height="166" allow="autoplay; encrypted-media"></iframe>`;
+      } else if (audioUrl) {
+        mediaHtml = `<audio controls src="${audioUrl}"></audio>`;
       }
 
-      card.innerHTML = `
-        <div class="title">${p.title || ""}</div>
-        <div class="location">${p.city || ""}${p.country ? ", " + p.country : ""}</div>
-        ${p.price_label ? `<div class="price">${p.price_label}</div>` : ""}
-        <div class="desc">${p.description || "Açıklama yok"}</div>
-
-        <div class="meta">
-          ${p.category ? `<div class="pill">${p.category}</div>` : ""}
-          ${p.vibe ? `<div class="pill">${p.vibe}</div>` : ""}
-          ${p.duration ? `<div class="pill">${p.duration}</div>` : ""}
-          ${p.source_type ? `<div class="pill">${p.source_type}</div>` : ""}
+      cardArea.innerHTML = `
+        <div class="card-header">
+          <div>
+            <h2 style="margin:0;">${title}</h2>
+            <div class="location">${city}${country ? ", " + country : ""}</div>
+          </div>
+          ${price ? `<div class="badge">${price}</div>` : ""}
         </div>
 
-        ${media}
+        <div class="desc">${description}</div>
 
-        ${p.shopify_url && p.shopify_url !== "#" ? `
-          <a class="buy" href="${p.shopify_url}" target="_blank" rel="noreferrer">Albümü satın al</a>
+        <div class="meta-row">
+          ${category ? `<div class="pill">${category}</div>` : ""}
+          ${vibe ? `<div class="pill">${vibe}</div>` : ""}
+          ${duration ? `<div class="pill">${duration}</div>` : ""}
+          ${sourceType ? `<div class="pill">${sourceType}</div>` : ""}
+        </div>
+
+        <div class="media-wrap">
+          ${mediaHtml}
+        </div>
+
+        ${shopifyUrl && shopifyUrl !== "#" ? `
+          <a class="buy-btn" href="${shopifyUrl}" target="_blank" rel="noreferrer">
+            Albümü satın al
+          </a>
         ` : ""}
       `;
     }
 
-    function clearMarkers() {
-      markers.forEach(m => {
-        try { map.removeLayer(m); } catch (_) {}
-      });
-      markers = [];
-    }
-
-    function draw() {
-      const visible = currentPins();
+    function renderMarkers() {
       clearMarkers();
 
-      visible.forEach(p => {
-        if (p.lat == null || p.lng == null || isNaN(Number(p.lat)) || isNaN(Number(p.lng))) return;
+      visiblePins.forEach(pin => {
+        if (pin.lat == null || pin.lng == null) return;
 
-        const marker = L.marker([Number(p.lat), Number(p.lng)]).addTo(map);
-        marker.bindTooltip(p.title || "Kayıt", { direction: "top", offset: [0, -8] });
+        const marker = L.marker([pin.lat, pin.lng]).addTo(map);
         marker.on("click", () => {
-          activeId = p.id;
-          renderCard(p);
+          activePinId = pin.id;
+          renderCard(pin);
         });
+
+        marker.bindTooltip(pin.title || "Kayıt", {
+          direction: "top",
+          offset: [0, -8]
+        });
+
         markers.push(marker);
       });
 
-      if (visible.length) {
-        const chosen = visible.find(p => p.id === activeId) || visible[0];
-        activeId = chosen.id;
-        renderCard(chosen);
+      if (visiblePins.length > 0) {
+        const first = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
+        activePinId = first.id;
+        renderCard(first);
 
-        const coords = visible
-          .filter(p => p.lat != null && p.lng != null && !isNaN(Number(p.lat)) && !isNaN(Number(p.lng)))
-          .map(p => [Number(p.lat), Number(p.lng)]);
+        const bounds = L.latLngBounds(
+          visiblePins
+            .filter(p => p.lat != null && p.lng != null)
+            .map(p => [p.lat, p.lng])
+        );
 
-        if (coords.length) {
-          const bounds = L.latLngBounds(coords);
-          if (bounds.isValid()) {
-            map.fitBounds(bounds, { padding: [40, 40] });
-          }
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [40, 40] });
         }
       } else {
         renderCard(null);
       }
-
-      setTimeout(() => map.invalidateSize(), 300);
     }
 
-    function initMap() {
-      map = L.map("map", { zoomControl: true }).setView([39, 35], 5);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap"
-      }).addTo(map);
-
-      setTimeout(() => map.invalidateSize(), 700);
+    function applyFilters() {
+      visiblePins = filterPins();
+      renderMarkers();
     }
 
     async function loadPins() {
       try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const { data, error } = await supabase
           .from("soundmap_pins")
           .select("*")
           .order("title", { ascending: true });
 
-        if (error) {
-          showError("Supabase hata: " + error.message + "\\nDemo veri gösteriliyor.");
-          pins = DEMO;
-        } else if (!data || !data.length) {
-          showError("Veri bulunamadı. Demo veri gösteriliyor.");
-          pins = DEMO;
+        if (error || !data || !data.length) {
+          allPins = DEMO;
         } else {
-          pins = data;
+          allPins = data;
         }
-      } catch (e) {
-        showError("Bağlantı hatası: " + (e?.message || e) + "\\nDemo veri gösteriliyor.");
-        pins = DEMO;
-      }
 
-      renderCategories();
-      draw();
+        renderCategories();
+        applyFilters();
+      } catch (err) {
+        allPins = DEMO;
+        renderCategories();
+        applyFilters();
+        showError("Supabase fallback devrede. Demo veri gösteriliyor.\n\n" + (err?.message || err));
+      }
     }
 
-    search.addEventListener("input", draw);
-
-    window.addEventListener("load", async () => {
+    function initMap() {
       try {
-        initMap();
-        await loadPins();
-      } catch (e) {
-        showError("Genel hata: " + (e?.message || e));
-        pins = DEMO;
-        renderCategories();
-        draw();
+        map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 5);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap"
+        }).addTo(map);
+
+        setTimeout(() => {
+          map.invalidateSize();
+        }, 700);
+      } catch (err) {
+        showError("Harita başlatılamadı:\n" + (err?.message || err));
       }
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+
+    window.addEventListener("load", () => {
+      initMap();
+      loadPins();
     });
   </script>
 </body>
