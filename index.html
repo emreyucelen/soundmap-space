@@ -451,9 +451,12 @@ const activeIcon = L.icon({
   });
 
   if (visiblePins.length > 0) {
-    const first = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
-    activePinId = first.id;
-    renderCard(first);
+  if (!activePinId) {
+    activePinId = visiblePins[0].id;
+  }
+
+  const selected = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
+  renderCard(selected);
 
     const bounds = L.latLngBounds(
       visiblePins
