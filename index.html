@@ -1,475 +1,227 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundmap Space</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Soundmap Space</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: white;
-    }
+<style>
+body {margin:0;font-family:sans-serif;background:#020617;color:white;}
+.page {display:grid;grid-template-columns:380px 1fr;height:100vh;}
 
-    .page {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 380px 1fr;
-    }
+.sidebar {
+padding:24px;
+background:#07111f;
+border-right:1px solid rgba(255,255,255,0.08);
+}
 
-    .sidebar {
-      padding: 24px;
-      border-right: 1px solid rgba(255,255,255,0.08);
-      background:
-        radial-gradient(circle at top left, rgba(16,185,129,0.18), transparent 30%),
-        radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 35%),
-        #07111f;
-    }
+.brand {
+background:#10b98122;
+padding:10px 14px;
+border-radius:999px;
+display:inline-block;
+margin-bottom:10px;
+}
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(16,185,129,0.12);
-      border: 1px solid rgba(16,185,129,0.28);
-      color: #d1fae5;
-      font-size: 14px;
-      font-weight: 600;
-    }
+h1 {font-size:30px;margin:10px 0;}
+.lead {color:#cbd5e1;font-size:14px;margin-bottom:15px;}
 
-    h1 {
-      margin: 18px 0 10px;
-      font-size: 34px;
-      line-height: 1.05;
-    }
+.search {
+width:100%;
+padding:12px;
+border-radius:12px;
+border:none;
+background:#ffffff11;
+color:white;
+margin-bottom:12px;
+}
 
-    .lead {
-      margin: 0 0 18px;
-      color: #cbd5e1;
-      line-height: 1.6;
-      font-size: 15px;
-    }
+.categories {display:flex;gap:8px;margin-bottom:15px;}
+.cat-btn {
+padding:8px 12px;
+border-radius:999px;
+background:#ffffff11;
+border:none;
+color:white;
+cursor:pointer;
+}
+.cat-btn.active {background:#10b981;}
 
-    .search {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      outline: none;
-      margin-bottom: 14px;
-    }
+.card {
+background:#ffffff10;
+padding:16px;
+border-radius:18px;
+}
 
-    .search::placeholder { color: #94a3b8; }
+.title {font-size:20px;font-weight:bold;}
+.location {color:#94a3b8;margin-bottom:10px;}
 
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
+.price {
+background:#10b981;
+color:black;
+padding:6px 10px;
+border-radius:8px;
+display:inline-block;
+font-weight:bold;
+margin-bottom:10px;
+}
 
-    .cat-btn {
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: #e2e8f0;
-      border-radius: 999px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 13px;
-    }
+iframe {width:100%;border-radius:12px;border:none;margin-top:10px;}
 
-    .cat-btn.active {
-      background: rgba(16,185,129,.14);
-      border-color: rgba(16,185,129,.4);
-      color: #d1fae5;
-    }
+.buy {
+display:block;
+margin-top:10px;
+background:#10b981;
+padding:10px;
+border-radius:10px;
+text-align:center;
+color:black;
+font-weight:bold;
+text-decoration:none;
+}
 
-    .card {
-      margin-top: 14px;
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
+#map {height:100%;}
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .badge {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .location {
-      color: #94a3b8;
-      margin: 8px 0 14px;
-      font-size: 14px;
-    }
-
-    .desc {
-      color: #e2e8f0;
-      line-height: 1.6;
-      margin-bottom: 16px;
-      min-height: 48px;
-    }
-
-    .meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .pill {
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(255,255,255,0.06);
-      color: #cbd5e1;
-    }
-
-    .media-wrap iframe,
-    .media-wrap audio {
-      width: 100%;
-      border-radius: 14px;
-      border: 0;
-      margin-top: 10px;
-    }
-
-    .buy-btn {
-      display: inline-block;
-      margin-top: 16px;
-      background: #10b981;
-      color: #052e2b;
-      text-decoration: none;
-      font-weight: 700;
-      padding: 12px 16px;
-      border-radius: 14px;
-    }
-
-    #map {
-      height: 100vh;
-      width: 100%;
-      background: #07111f;
-    }
-
-    .loading,
-    .empty {
-      color: #cbd5e1;
-      padding: 14px 0;
-    }
-
-    .error {
-      color: #fecaca;
-      background: rgba(127,29,29,.35);
-      border: 1px solid rgba(248,113,113,.25);
-      padding: 12px;
-      border-radius: 14px;
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
-
-    @media (max-width: 900px) {
-      .page {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
-      #map {
-        height: 65vh;
-      }
-    }
-  </style>
+.popup {
+font-size:14px;
+}
+</style>
 </head>
+
 <body>
-  <div class="page">
-    <aside class="sidebar">
-      <div class="brand">🌍 Soundmap Space</div>
 
-      <h1>Dünyayı sesle keşfet</h1>
-      <p class="lead">
-        Haritadaki pinlere tıkla, kayıtları dinle ve albümlere geç.
-      </p>
+<div class="page">
 
-      <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya kayıt ara" />
+<div class="sidebar">
+<div class="brand">🌍 Soundmap</div>
 
-      <div id="categories" class="categories"></div>
+<h1>Dünyayı sesle keşfet</h1>
+<p class="lead">Pinlere tıkla, sesleri dinle.</p>
 
-      <div id="cardArea" class="card">
-        <div class="loading">Kayıtlar yükleniyor...</div>
-      </div>
+<input id="search" class="search" placeholder="Ara..." />
 
-      <div id="errorBox" class="error" style="display:none;"></div>
-    </aside>
+<div id="cats" class="categories"></div>
 
-    <main>
-      <div id="map"></div>
-    </main>
-  </div>
+<div id="card" class="card">Yükleniyor...</div>
+</div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="map"></div>
 
-  <script>
-    const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
+</div>
 
-    const DEMO = [
-      {
-        id: 1,
-        title: "Yoros Kalesi",
-        city: "Istanbul",
-        country: "Turkey",
-        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
-        lat: 41.18,
-        lng: 29.09,
-        category: "Kültür",
-        vibe: "Tarihî",
-        duration: "3:23",
-        source_type: "soundcloud",
-        embed_url: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A149632885&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true",
-        preview_audio_url: "",
-        shopify_url: "#",
-        price_label: "149 TL"
-      }
-    ];
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    const cardArea = document.getElementById("cardArea");
-    const categoriesEl = document.getElementById("categories");
-    const searchInput = document.getElementById("searchInput");
-    const errorBox = document.getElementById("errorBox");
+<script>
 
-    let map;
-    let allPins = [];
-    let visiblePins = [];
-    let markers = [];
-    let activeCategory = "Tümü";
-    let activePinId = null;
+const supabase = window.supabase.createClient(
+"https://bfwugfrerjprlbbxgacj.supabase.co",
+"sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe"
+);
 
-    function showError(message) {
-      errorBox.style.display = "block";
-      errorBox.textContent = message;
-      console.error(message);
-    }
+let map = L.map("map").setView([39,35],5);
 
-    function normalize(value) {
-      return (value || "").toString().toLowerCase();
-    }
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-    function getCategories(pins) {
-      const set = new Set(["Tümü"]);
-      pins.forEach(pin => {
-        if (pin.category) set.add(pin.category);
-      });
-      return [...set];
-    }
+let pins = [];
+let activeCat = "Tümü";
 
-    function clearMarkers() {
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-    }
+const card = document.getElementById("card");
+const cats = document.getElementById("cats");
+const search = document.getElementById("search");
 
-    function renderCategories() {
-      const cats = getCategories(allPins);
-      categoriesEl.innerHTML = "";
+function renderCard(p){
 
-      cats.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = "cat-btn" + (cat === activeCategory ? " active" : "");
-        btn.textContent = cat;
-        btn.addEventListener("click", () => {
-          activeCategory = cat;
-          renderCategories();
-          applyFilters();
-        });
-        categoriesEl.appendChild(btn);
-      });
-    }
+card.innerHTML = `
+<div class="title">${p.title}</div>
+<div class="location">${p.city}, ${p.country}</div>
+${p.price_label ? `<div class="price">${p.price_label}</div>` : ""}
+<div>${p.description || "Açıklama yok"}</div>
 
-    function filterPins() {
-      const q = normalize(searchInput.value);
+${p.embed_url ? `<iframe src="${p.embed_url}"></iframe>` : ""}
 
-      return allPins.filter(pin => {
-        const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
-        const text = [
-          pin.title,
-          pin.city,
-          pin.country,
-          pin.category,
-          pin.description
-        ].map(normalize).join(" ");
-        return categoryOk && (!q || text.includes(q));
-      });
-    }
+${p.shopify_url ? `<a class="buy" href="${p.shopify_url}" target="_blank">Satın al</a>` : ""}
+`;
 
-    function renderCard(pin) {
-      if (!pin) {
-        cardArea.innerHTML = '<div class="empty">Kayıt bulunamadı.</div>';
-        return;
-      }
+}
 
-      const title = pin.title || "İsimsiz kayıt";
-      const city = pin.city || "";
-      const country = pin.country || "";
-      const description = pin.description || "Açıklama yok";
-      const price = pin.price_label || "";
-      const category = pin.category || "";
-      const vibe = pin.vibe || "";
-      const duration = pin.duration || "";
-      const sourceType = (pin.source_type || "").toLowerCase();
-      const embedUrl = pin.embed_url || "";
-      const audioUrl = pin.preview_audio_url || "";
-      const shopifyUrl = pin.shopify_url || "#";
+function renderCats(){
 
-      let mediaHtml = "";
-      if ((sourceType === "soundcloud" || sourceType === "youtube") && embedUrl) {
-        mediaHtml = `<iframe src="${embedUrl}" height="166" allow="autoplay; encrypted-media"></iframe>`;
-      } else if (audioUrl) {
-        mediaHtml = `<audio controls src="${audioUrl}"></audio>`;
-      }
+const all = ["Tümü", ...new Set(pins.map(p=>p.category).filter(Boolean))];
 
-      cardArea.innerHTML = `
-        <div class="card-header">
-          <div>
-            <h2 style="margin:0;">${title}</h2>
-            <div class="location">${city}${country ? ", " + country : ""}</div>
-          </div>
-          ${price ? `<div class="badge">${price}</div>` : ""}
-        </div>
+cats.innerHTML="";
 
-        <div class="desc">${description}</div>
+all.forEach(c=>{
+const btn=document.createElement("button");
+btn.className="cat-btn"+(c===activeCat?" active":"");
+btn.innerText=c;
 
-        <div class="meta-row">
-          ${category ? `<div class="pill">${category}</div>` : ""}
-          ${vibe ? `<div class="pill">${vibe}</div>` : ""}
-          ${duration ? `<div class="pill">${duration}</div>` : ""}
-          ${sourceType ? `<div class="pill">${sourceType}</div>` : ""}
-        </div>
+btn.onclick=()=>{
+activeCat=c;
+renderCats();
+draw();
+};
 
-        <div class="media-wrap">
-          ${mediaHtml}
-        </div>
+cats.appendChild(btn);
+});
 
-        ${shopifyUrl && shopifyUrl !== "#" ? `
-          <a class="buy-btn" href="${shopifyUrl}" target="_blank" rel="noreferrer">
-            Albümü satın al
-          </a>
-        ` : ""}
-      `;
-    }
+}
 
-    function renderMarkers() {
-      clearMarkers();
+function draw(){
 
-      visiblePins.forEach(pin => {
-        if (pin.lat == null || pin.lng == null) return;
+map.eachLayer(l=>{
+if(l instanceof L.Marker) map.removeLayer(l);
+});
 
-        const marker = L.marker([pin.lat, pin.lng]).addTo(map);
-        marker.on("click", () => {
-          activePinId = pin.id;
-          renderCard(pin);
-        });
+let filtered = pins.filter(p=>{
+if(activeCat!=="Tümü" && p.category!==activeCat) return false;
 
-        marker.bindTooltip(pin.title || "Kayıt", {
-          direction: "top",
-          offset: [0, -8]
-        });
+if(search.value){
+let t=(p.title+p.city+p.country).toLowerCase();
+return t.includes(search.value.toLowerCase());
+}
 
-        markers.push(marker);
-      });
+return true;
+});
 
-      if (visiblePins.length > 0) {
-        const first = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
-        activePinId = first.id;
-        renderCard(first);
+filtered.forEach(p=>{
 
-        const bounds = L.latLngBounds(
-          visiblePins
-            .filter(p => p.lat != null && p.lng != null)
-            .map(p => [p.lat, p.lng])
-        );
+let m = L.marker([p.lat,p.lng]).addTo(map);
 
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [40, 40] });
-        }
-      } else {
-        renderCard(null);
-      }
-    }
+m.on("click",()=>renderCard(p));
 
-    function applyFilters() {
-      visiblePins = filterPins();
-      renderMarkers();
-    }
+m.bindPopup(`
+<div class="popup">
+<b>${p.title}</b><br>
+${p.city}<br>
+🎧 dinlemek için tıkla
+</div>
+`);
 
-    async function loadPins() {
-      try {
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+});
 
-        const { data, error } = await supabase
-          .from("soundmap_pins")
-          .select("*")
-          .order("title", { ascending: true });
+if(filtered[0]) renderCard(filtered[0]);
 
-        if (error || !data || !data.length) {
-          allPins = DEMO;
-        } else {
-          allPins = data;
-        }
+}
 
-        renderCategories();
-        applyFilters();
-      } catch (err) {
-        allPins = DEMO;
-        renderCategories();
-        applyFilters();
-        showError("Supabase fallback devrede. Demo veri gösteriliyor.\n\n" + (err?.message || err));
-      }
-    }
+search.oninput = draw;
 
-    function initMap() {
-      try {
-        map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 5);
+async function load(){
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap"
-        }).addTo(map);
+const {data} = await supabase.from("soundmap_pins").select("*");
 
-        setTimeout(() => {
-          map.invalidateSize();
-        }, 700);
-      } catch (err) {
-        showError("Harita başlatılamadı:\n" + (err?.message || err));
-      }
-    }
+pins = data || [];
 
-    searchInput.addEventListener("input", applyFilters);
+renderCats();
+draw();
 
-    window.addEventListener("load", () => {
-      initMap();
-      loadPins();
-    });
-  </script>
+}
+
+load();
+
+</script>
+
 </body>
 </html>
