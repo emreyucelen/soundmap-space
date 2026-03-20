@@ -14,9 +14,9 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     body {
-      font-family: Inter, Arial, sans-serif;
+      font-family: Arial, sans-serif;
       background: #020617;
-      color: #fff;
+      color: white;
     }
 
     .page {
@@ -81,8 +81,8 @@
     }
 
     .cat-btn {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
       color: #e2e8f0;
       border-radius: 999px;
       padding: 8px 12px;
@@ -91,8 +91,8 @@
     }
 
     .cat-btn.active {
-      background: rgba(16,185,129,0.14);
-      border-color: rgba(16,185,129,0.4);
+      background: rgba(16,185,129,.14);
+      border-color: rgba(16,185,129,.4);
       color: #d1fae5;
     }
 
@@ -102,7 +102,6 @@
       border-radius: 24px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(10px);
     }
 
     .card-header {
@@ -167,11 +166,10 @@
       border-radius: 14px;
     }
 
-    .buy-btn:hover { opacity: 0.92; }
-
     #map {
       height: 100vh;
       width: 100%;
+      background: #07111f;
     }
 
     .loading,
@@ -227,11 +225,35 @@
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const DEMO = [
+      {
+        id: 1,
+        title: "Yoros Kalesi",
+        city: "Istanbul",
+        country: "Turkey",
+        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
+        lat: 41.18,
+        lng: 29.09,
+        category: "Kültür",
+        vibe: "Tarihî",
+        duration: "3:23",
+        source_type: "soundcloud",
+        embed_url: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A149632885&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true",
+        preview_audio_url: "",
+        shopify_url: "#",
+        price_label: "149 TL"
+      }
+    ];
+
     const map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 5);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap"
     }).addTo(map);
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 500);
 
     const cardArea = document.getElementById("cardArea");
     const categoriesEl = document.getElementById("categories");
@@ -314,10 +336,8 @@
       const shopifyUrl = pin.shopify_url || "#";
 
       let mediaHtml = "";
-      if (sourceType === "soundcloud" || sourceType === "youtube") {
-        if (embedUrl) {
-          mediaHtml = `<iframe src="${embedUrl}" height="166" allow="autoplay; encrypted-media"></iframe>`;
-        }
+      if ((sourceType === "soundcloud" || sourceType === "youtube") && embedUrl) {
+        mediaHtml = `<iframe src="${embedUrl}" height="166" allow="autoplay; encrypted-media"></iframe>`;
       } else if (audioUrl) {
         mediaHtml = `<audio controls src="${audioUrl}"></audio>`;
       }
@@ -402,12 +422,15 @@
         .select("*")
         .order("title", { ascending: true });
 
-      if (error) {
-        cardArea.innerHTML = `<div class="empty">Hata: ${error.message}</div>`;
-        return;
+      console.log("DATA:", data);
+      console.log("ERROR:", error);
+
+      if (error || !data || !data.length) {
+        allPins = DEMO;
+      } else {
+        allPins = data;
       }
 
-      allPins = data || [];
       renderCategories();
       applyFilters();
     }
