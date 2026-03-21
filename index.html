@@ -1195,70 +1195,72 @@
     }
 
     function renderMarkers() {
-      clearMarkers();
+  clearMarkers();
 
-      visiblePins.forEach(pin => {
-        if (pin.lat == null || pin.lng == null) return;
+  visiblePins.forEach(pin => {
+    if (pin.lat == null || pin.lng == null) return;
 
-        map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
-  animate: true,
-  duration: 1.6
-});
+    const isActive = String(pin.id) === String(activePinId);
 
-        const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
-          icon: makePinIcon(pin.environment || pin.category, isActive)
-        }).addTo(map);
+    const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
+      icon: makePinIcon(pin.environment || pin.category, isActive)
+    }).addTo(map);
 
-        marker.on("click", () => {
-          activePinId = pin.id;
-          renderMarkers();
-          marker.openPopup();
-          openFloatingPlayer(pin, true);
-        });
+    marker.on("click", () => {
+      activePinId = pin.id;
+      renderMarkers();
+      marker.openPopup();
+      openFloatingPlayer(pin, true);
 
-        const env = getEnvironmentStyle(pin.environment || "");
-
-        marker.bindPopup(`
-          <div style="min-width:190px;font-family:sans-serif;">
-            <div style="font-weight:700;margin-bottom:6px;">${pin.title || "Kayıt"}</div>
-            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-              ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${pin.category}</div>` : ""}
-              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${env.label}</div>` : ""}
-            </div>
-            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
-          </div>
-        `);
-
-        markers.push(marker);
+      map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+        animate: true,
+        duration: 1.6
       });
+    });
 
-      renderStatusLine();
+    const env = getEnvironmentStyle(pin.environment || "");
 
-      if (visiblePins.length === 0) {
-        activePinId = null;
-        return;
-      }
+    marker.bindPopup(`
+      <div style="min-width:190px;font-family:sans-serif;">
+        <div style="font-weight:700;margin-bottom:6px;">${pin.title || "Kayıt"}</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
+          ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${pin.category}</div>` : ""}
+          ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${env.label}</div>` : ""}
+        </div>
+        <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
+      </div>
+    `);
 
-      const currentVisibleActive = visiblePins.find(p => Number(p.id) === Number(activePinId));
-      if (!currentVisibleActive) {
-        activePinId = visiblePins[0].id;
-      }
+    markers.push(marker);
+  });
 
-      const validCoords = visiblePins
-        .filter(p => p.lat != null && p.lng != null)
-        .map(p => [Number(p.lat), Number(p.lng)]);
+  renderStatusLine();
 
-      if (validCoords.length && !hasFittedBounds) {
-        const bounds = L.latLngBounds(validCoords);
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [50, 50] });
-          hasFittedBounds = true;
-        }
-      }
+  if (visiblePins.length === 0) {
+    activePinId = null;
+    return;
+  }
+
+  const currentVisibleActive = visiblePins.find(p => String(p.id) === String(activePinId));
+  if (!currentVisibleActive) {
+    activePinId = visiblePins[0].id;
+  }
+
+  const validCoords = visiblePins
+    .filter(p => p.lat != null && p.lng != null)
+    .map(p => [Number(p.lat), Number(p.lng)]);
+
+  if (validCoords.length && !hasFittedBounds) {
+    const bounds = L.latLngBounds(validCoords);
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [50, 50] });
+      hasFittedBounds = true;
     }
+  }
+}
 
     function applyFilters() {
       visiblePins = filterPins();
