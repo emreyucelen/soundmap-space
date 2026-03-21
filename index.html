@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundmap Space</title>
+  <title>Soundmap Space | Sesin Coğrafyasını Keşfet</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
@@ -113,8 +113,8 @@
     }
 
     .section-title {
-      font-size: 12px;
-      letter-spacing: .10em;
+      font-size: 11px;
+      letter-spacing: .12em;
       text-transform: uppercase;
       color: #94a3b8;
       margin-bottom: 10px;
@@ -679,40 +679,40 @@
       <div class="brand">🌍 Soundmap Space</div>
 
       <div class="hero">
-        <div class="hero-kicker">Sound Discovery</div>
+        <div class="hero-kicker">Ses Keşif Rehberi</div>
         <h1>Dünyayı sesle keşfet</h1>
         <p>
-          Bugün sakin bir kıyı mı, derin bir orman mı, yoksa şehir ritmi mi istiyorsun?
-          Bir pin seç ve yolculuk başlasın.
+          Hangi atmosferi özledin? Sakin bir sahil mi, gizemli bir orman mı yoksa şehrin enerjisi mi? 
+          Bir pin seç ve yeni bir dünyaya kapı arala.
         </p>
 
         <div class="search-wrap">
-          <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya kayıt ara" />
+          <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">AI Sound Discovery</div>
+        <div class="section-title">Moduna Göre Keşfet</div>
         <div id="moods" class="moods"></div>
       </div>
 
       <div class="section">
-        <div class="section-title">Kategori</div>
+        <div class="section-title">Kategoriler</div>
         <div id="categories" class="categories"></div>
       </div>
 
       <div class="section">
-        <div class="section-title">Ortam</div>
+        <div class="section-title">Atmosferler</div>
         <div id="environments" class="environments"></div>
       </div>
 
       <div class="discovery-panel">
         <div class="discovery-head">
-          <div class="discovery-title">Bugünün keşifleri</div>
+          <div class="discovery-title">Günün Ses Durakları</div>
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
         <div id="discoverySub" class="discovery-sub">
-          Hissine göre önerilen ses durakları burada görünecek.
+          Seçtiğin moda göre sana özel öneriler burada listelenecek.
         </div>
         <div id="discoveryList" class="discovery-list"></div>
       </div>
@@ -720,7 +720,7 @@
       <div id="resultCount" class="status-line"></div>
 
       <div id="cardArea" class="card">
-        <div class="loading">Kayıtlar yükleniyor...</div>
+        <div class="loading">Ses kayıtları yükleniyor...</div>
       </div>
 
       <div id="errorBox" class="error" style="display:none;"></div>
@@ -734,20 +734,20 @@
   <div id="floatingPlayer" class="floating-player">
     <div class="player-head">
       <div>
-        <div class="player-kicker">Şimdi keşfediliyor</div>
-        <div id="playerTitle" class="player-title">Bir ses durağı seç</div>
-        <div id="playerSub" class="player-sub">Haritadaki pinlere tıklayarak dinlemeye başla.</div>
+        <div class="player-kicker">Dinleniyor</div>
+        <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
+        <div id="playerSub" class="player-sub">Haritadaki noktalara tıklayarak ses yolculuğuna başlayın.</div>
       </div>
 
       <div class="player-actions">
-        <button id="playerMinBtn" class="player-icon-btn" title="Kapat">—</button>
+        <button id="playerMinBtn" class="player-icon-btn" title="Küçült">—</button>
         <button id="playerCloseBtn" class="player-icon-btn" title="Kapat">✕</button>
       </div>
     </div>
 
     <div class="player-body">
       <div id="playerEmbedArea" class="player-placeholder">
-        YouTube veya SoundCloud bağlantısı olan bir kayıt seçtiğinde oynatıcı burada açılacak.
+        Oynatıcıyı başlatmak için haritadan bir kayıt seçin.
       </div>
       <div id="playerMetaRow" class="player-meta-row"></div>
     </div>
@@ -761,12 +761,12 @@
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
 
     const MOODS = [
-      { key: "tum", label: "✨ Her Şey", matcher: () => true },
+      { key: "tum", label: "✨ Hepsi", matcher: () => true },
       { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin", "huzurlu"].includes(normalize(pin.vibe)) || ["deniz", "sahil", "gol"].includes(canonicalEnvironment(pin.environment)) },
       { key: "derin", label: "🌲 Derin", matcher: pin => ["derin", "mistik"].includes(normalize(pin.vibe)) || ["orman", "muze", "tapinak"].includes(canonicalEnvironment(pin.environment)) },
-      { key: "sehir", label: "🏙️ Şehir Kaçamağı", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "şehir" },
-      { key: "manevi", label: "🕌 Manevî", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
-      { key: "yolculuk", label: "🚂 Yolculuk", matcher: pin => {
+      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "şehir" },
+      { key: "manevi", label: "🕌 Ruhsal", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
+      { key: "yolculuk", label: "🚂 Dinamik", matcher: pin => {
         const text = `${pin.title || ""} ${pin.description || ""}`.toLowerCase();
         return text.includes("tren") || text.includes("road") || text.includes("journey") || text.includes("yol");
       }}
@@ -777,10 +777,10 @@
         id: 1,
         title: "Yoros Kalesi",
         city: "İstanbul",
-        country: "Turkey",
+        country: "Türkiye",
         lat: 41.18,
         lng: 29.09,
-        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
+        description: "Boğaz'ın serin rüzgarıyla buluşan tarihi bir atmosfer ve sessizlik.",
         category: "Kültür",
         environment: "muze",
         vibe: "Mistik",
@@ -1080,12 +1080,12 @@
     }
 
     function renderStatusLine() {
-      const parts = [`${visiblePins.length} kayıt`];
+      const parts = [`${visiblePins.length} lokasyon`];
       if (activeCategory !== "Tümü") parts.push(`kategori: ${activeCategory}`);
       if (activeEnvironment !== "Tümü") parts.push(`ortam: ${getEnvironmentStyle(activeEnvironment).label}`);
       if (activeMood !== "tum") {
         const mood = MOODS.find(m => m.key === activeMood);
-        if (mood) parts.push(`keşif modu: ${mood.label}`);
+        if (mood) parts.push(`mod: ${mood.label}`);
       }
       resultCountEl.textContent = parts.join(" • ");
     }
@@ -1129,7 +1129,7 @@
       const embed = buildPlayableEmbed(pin, autoplay);
       const env = getEnvironmentStyle(pin.environment || "");
 
-      playerTitleEl.textContent = pin.title || "İsimsiz kayıt";
+      playerTitleEl.textContent = pin.title || "İsimsiz mekan";
       playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
 
       playerMetaRowEl.innerHTML = `
@@ -1152,8 +1152,8 @@
       } else {
         playerEmbedAreaEl.className = "player-placeholder";
         playerEmbedAreaEl.innerHTML = `
-          Bu kayıtta YouTube veya SoundCloud bağlantısı görünmüyor.
-          Yine de haritada keşfe devam edebilirsin.
+          Bu lokasyon için henüz aktif bir ses kaydı bulunmuyor.
+          Diğer durakları keşfetmeye ne dersin?
         `;
       }
 
@@ -1165,24 +1165,24 @@
       setTimeout(() => {
         if (!floatingPlayerEl.classList.contains("show")) {
           playerEmbedAreaEl.className = "player-placeholder";
-          playerEmbedAreaEl.innerHTML = "YouTube veya SoundCloud bağlantısı olan bir kayıt seçtiğinde oynatıcı burada açılacak.";
+          playerEmbedAreaEl.innerHTML = "Haritadan bir kayıt seçtiğinde ses burada yankılanacak.";
           playerMetaRowEl.innerHTML = "";
-          playerTitleEl.textContent = "Bir ses durağı seç";
-          playerSubEl.textContent = "Haritadaki pinlere tıklayarak dinlemeye başla.";
+          playerTitleEl.textContent = "Keşfetmeye başlayın";
+          playerSubEl.textContent = "Haritadaki noktalara tıklayarak dünyayı dinlemeye başlayın.";
         }
       }, 300);
     }
 
     function renderCard(pin) {
       if (!pin) {
-        cardArea.innerHTML = '<div class="empty">Kayıt bulunamadı.</div>';
+        cardArea.innerHTML = '<div class="empty">Aradığın atmosfer bulunamadı.</div>';
         return;
       }
 
-      const title = pin.title || "İsimsiz kayıt";
+      const title = pin.title || "İsimsiz Durak";
       const city = pin.city || "";
       const country = pin.country || "";
-      const description = pin.description || "Açıklama yok";
+      const description = pin.description || "Bu mekan henüz hikayesini anlatmamış.";
       const price = pin.price_label || "";
       const category = pin.category || "";
       const vibe = pin.vibe || "";
@@ -1209,8 +1209,8 @@
         </div>
 
         <div>
-          <button id="listenNowBtn" class="listen-btn">🎧 Şimdi dinle</button>
-          ${shopifyUrl ? `<a class="buy-btn" href="${shopifyUrl}" target="_blank" rel="noreferrer">Bağlantıya git</a>` : ""}
+          <button id="listenNowBtn" class="listen-btn">🎧 Hemen Dinle</button>
+          ${shopifyUrl ? `<a class="buy-btn" href="${shopifyUrl}" target="_blank" rel="noreferrer">Detaylara Git</a>` : ""}
         </div>
       `;
 
@@ -1232,11 +1232,11 @@
 
       const mood = MOODS.find(m => m.key === activeMood);
       discoverySubEl.textContent = mood && mood.key !== "tum"
-        ? `${mood.label} hissine göre seçilmiş öneriler. Birine tıkla ve haritada yolculuğa başla.`
-        : "Bugün için seçilmiş ses durakları. Birine tıklayıp haritada keşfe başla.";
+        ? `${mood.label} ruh haline uygun seçkiler burada. Tıkla ve atmosferi değiştir.`
+        : "Bugün için senin için seçtiğimiz ses yolculukları.";
 
       if (!picked.length) {
-        discoveryListEl.innerHTML = `<div class="empty">Bu keşif modu için öneri bulunamadı.</div>`;
+        discoveryListEl.innerHTML = `<div class="empty">Şu an bu kategoride öneri bulunmuyor.</div>`;
         return;
       }
 
@@ -1244,7 +1244,7 @@
         const env = getEnvironmentStyle(pin.environment || "");
         return `
           <div class="discover-card" data-discover-id="${pin.id}">
-            <div class="discover-title">${pin.title || "İsimsiz kayıt"}</div>
+            <div class="discover-title">${pin.title || "Gizemli Durak"}</div>
             <div class="discover-meta">${pin.city || ""}${pin.country ? ", " + pin.country : ""}</div>
             <div class="discover-pills">
               ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
@@ -1302,7 +1302,7 @@
               ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${pin.category}</div>` : ""}
               ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${env.label}</div>` : ""}
             </div>
-            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için pine tıkla</div>
+            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
           </div>
         `);
 
@@ -1375,7 +1375,7 @@
         renderEnvironments();
         renderDiscovery();
         applyFilters();
-        showError("Supabase fallback devrede. Demo veri gösteriliyor.\n\n" + (err?.message || err));
+        showError("Bağlantı sorunu yaşandı. Demo veriler yükleniyor.\n\n" + (err?.message || err));
       }
     }
 
@@ -1384,12 +1384,12 @@
         map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 6);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap"
+          attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
         }).addTo(map);
 
         setTimeout(() => map.invalidateSize(), 600);
       } catch (err) {
-        showError("Harita başlatılamadı:\n" + (err?.message || err));
+        showError("Harita servisi başlatılamadı:\n" + (err?.message || err));
       }
     }
 
