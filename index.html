@@ -1195,7 +1195,7 @@
       visiblePins.forEach(pin => {
         if (pin.lat == null || pin.lng == null) return;
 
-        const isActive = String(pin.id) === String(activePinId);
+        const currentVisibleActive = visiblePins.find(p => String(p.id) === String(activePinId));
 
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
           icon: makePinIcon(pin.environment || pin.category, isActive)
