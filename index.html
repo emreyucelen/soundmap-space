@@ -1937,18 +1937,7 @@
           icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isSpotlight, isHovered)
         }).addTo(map);
 
-        marker.on("mouseover", () => {
-          hoverPinId = pin.id;
-          renderMarkers();
-          syncDiscoveryHighlight(pin.id);
-        });
-
-        marker.on("mouseout", () => {
-          hoverPinId = null;
-          renderMarkers();
-          syncDiscoveryHighlight(null);
-        });
-
+       marker.on
         marker.on("click", () => {
           activePinId = pin.id;
           renderMarkers();
