@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundmap Admin Panel</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Soundmap Admin</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -22,7 +20,7 @@
     .page {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 380px 1fr;
     }
 
     .sidebar {
@@ -33,6 +31,12 @@
         radial-gradient(circle at bottom left, rgba(168,85,247,0.08), transparent 35%),
         linear-gradient(180deg, rgba(8,17,31,0.92), rgba(9,19,35,0.88));
       backdrop-filter: blur(18px);
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .content {
+      padding: 18px;
       overflow-y: auto;
       max-height: 100vh;
     }
@@ -51,30 +55,21 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.18);
     }
 
-    .hero {
+    .hero, .panel, .card {
       margin-top: 14px;
       padding: 16px;
       border-radius: 22px;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
-        radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 30%);
+        radial-gradient(circle at top right, rgba(56,189,248,0.10), transparent 30%);
       border: 1px solid rgba(255,255,255,0.10);
       box-shadow: 0 18px 50px rgba(0,0,0,0.18);
-    }
-
-    .hero-kicker {
-      color: #7dd3fc;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: 8px;
-      font-weight: 700;
     }
 
     .hero h1 {
       margin: 0;
       font-size: 24px;
-      line-height: 1.02;
+      line-height: 1.05;
       letter-spacing: -0.03em;
     }
 
@@ -83,14 +78,6 @@
       color: #cbd5e1;
       font-size: 13px;
       line-height: 1.55;
-    }
-
-    .auth-box, .panel-box {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
     }
 
     .section-title {
@@ -104,17 +91,18 @@
 
     .input, .select, .textarea {
       width: 100%;
-      padding: 12px 13px;
+      padding: 12px 14px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.05);
       color: white;
       outline: none;
       font-size: 14px;
+      margin-top: 10px;
     }
 
     .textarea {
-      min-height: 100px;
+      min-height: 110px;
       resize: vertical;
       font-family: inherit;
     }
@@ -124,17 +112,8 @@
       box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
     }
 
-    .row {
-      display: grid;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .row-2 {
-      grid-template-columns: 1fr 1fr;
-    }
-
     .btn {
+      width: 100%;
       border: 0;
       cursor: pointer;
       font-weight: 800;
@@ -142,15 +121,15 @@
       padding: 12px 14px;
       border-radius: 14px;
       transition: .2s ease;
+      margin-top: 10px;
     }
 
     .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
 
     .btn-primary {
       background: linear-gradient(135deg, #22d3ee, #3b82f6);
       color: #03131c;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+      box-shadow: 0 12px 30px rgba(14,165,233,0.22);
     }
 
     .btn-secondary {
@@ -159,37 +138,15 @@
       border: 1px solid rgba(255,255,255,0.12);
     }
 
-    .btn-success {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: white;
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-    }
-
-    .btn-warning {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: white;
-    }
-
-    .btn-small {
-      padding: 9px 11px;
-      font-size: 12px;
-      border-radius: 12px;
-    }
-
     .stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 12px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
     }
 
-    .stat-card {
-      padding: 12px;
-      border-radius: 16px;
+    .stat-box {
+      padding: 16px;
+      border-radius: 18px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
     }
@@ -198,109 +155,74 @@
       font-size: 11px;
       color: #94a3b8;
       text-transform: uppercase;
-      letter-spacing: .08em;
+      letter-spacing: .1em;
     }
 
     .stat-value {
-      margin-top: 6px;
-      font-size: 26px;
+      margin-top: 8px;
+      font-size: 28px;
       font-weight: 800;
-      letter-spacing: -0.03em;
     }
 
     .toolbar {
       display: grid;
+      grid-template-columns: 1fr 180px 180px;
       gap: 10px;
-      margin-top: 12px;
-    }
-
-    .status-filter {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .chip {
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: #e2e8f0;
-      border-radius: 999px;
-      padding: 9px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: .2s ease;
-    }
-
-    .chip.active {
-      background: rgba(34,211,238,0.14);
-      border-color: rgba(34,211,238,0.35);
-      color: #ecfeff;
+      margin-top: 10px;
     }
 
     .list {
-      margin-top: 14px;
       display: grid;
       gap: 12px;
-    }
-
-    .card {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      margin-top: 16px;
     }
 
     .card-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: flex-start;
+      gap: 12px;
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 800;
       line-height: 1.25;
     }
 
     .card-sub {
-      margin-top: 4px;
+      margin-top: 6px;
       color: #94a3b8;
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 13px;
     }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
       padding: 7px 10px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
+      letter-spacing: .08em;
       border: 1px solid rgba(255,255,255,0.10);
       white-space: nowrap;
     }
 
     .badge.pending {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(234,179,8,0.15);
       color: #fde68a;
-      border-color: rgba(245, 158, 11, 0.25);
+      border-color: rgba(234,179,8,0.28);
     }
 
     .badge.approved {
-      background: rgba(34, 197, 94, 0.14);
+      background: rgba(34,197,94,0.15);
       color: #bbf7d0;
-      border-color: rgba(34, 197, 94, 0.22);
+      border-color: rgba(34,197,94,0.28);
     }
 
     .badge.rejected {
-      background: rgba(239, 68, 68, 0.14);
+      background: rgba(239,68,68,0.15);
       color: #fecaca;
-      border-color: rgba(239, 68, 68, 0.22);
+      border-color: rgba(239,68,68,0.28);
     }
 
     .pills {
@@ -326,43 +248,39 @@
       white-space: pre-wrap;
     }
 
-    .link-row {
-      margin-top: 10px;
-      font-size: 12px;
-      word-break: break-all;
-      color: #7dd3fc;
-    }
-
-    .card-actions {
-      margin-top: 12px;
+    .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      margin-top: 14px;
     }
 
-    .embed-preview {
-      margin-top: 12px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-    }
-
-    .embed-preview iframe {
-      width: 100%;
-      min-height: 220px;
+    .action-btn {
       border: 0;
-      display: block;
-      background: #000;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      transition: .2s ease;
     }
 
-    .empty {
-      padding: 18px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px dashed rgba(255,255,255,0.10);
-      color: #cbd5e1;
-      line-height: 1.6;
+    .action-btn:hover { transform: translateY(-1px); }
+
+    .approve {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .reject {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .edit {
+      background: rgba(255,255,255,0.08);
+      color: #e0f2fe;
+      border: 1px solid rgba(255,255,255,0.12);
     }
 
     .status-box {
@@ -375,11 +293,13 @@
     }
 
     .status-box.show { display: block; }
-    .status-box.ok {
+
+    .status-box.success {
       background: rgba(20, 83, 45, 0.45);
       border: 1px solid rgba(74, 222, 128, 0.24);
       color: #dcfce7;
     }
+
     .status-box.error {
       background: rgba(127,29,29,.35);
       border: 1px solid rgba(248,113,113,.25);
@@ -389,19 +309,19 @@
     .editor {
       position: fixed;
       inset: 0;
-      z-index: 10000;
       background: rgba(2,6,23,0.72);
       backdrop-filter: blur(10px);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 18px;
+      z-index: 99999;
     }
 
     .editor.show { display: flex; }
 
     .editor-card {
-      width: min(900px, 100%);
+      width: min(760px, 100%);
       max-height: 92vh;
       overflow-y: auto;
       border-radius: 24px;
@@ -415,16 +335,15 @@
 
     .editor-head {
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
-      gap: 14px;
+      align-items: flex-start;
+      gap: 12px;
       margin-bottom: 14px;
     }
 
     .editor-title {
       font-size: 22px;
       font-weight: 800;
-      letter-spacing: -0.03em;
     }
 
     .close-btn {
@@ -438,47 +357,27 @@
       font-size: 18px;
     }
 
-    #map {
-      height: 100vh;
-      width: 100%;
-      background: #07111f;
-    }
-
-    .map-topbar {
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 5000;
-      display: flex;
+    .edit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      flex-wrap: wrap;
     }
 
-    .map-chip {
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(8,17,31,0.82);
-      border: 1px solid rgba(255,255,255,0.10);
-      color: #e0f2fe;
-      font-size: 12px;
-      font-weight: 700;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.25);
+    .full {
+      grid-column: 1 / -1;
     }
 
-    @media (max-width: 1020px) {
+    @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
         max-height: none;
       }
-      #map { height: 62vh; }
-      .row-2, .stats { grid-template-columns: 1fr; }
-      .map-topbar {
-        position: static;
-        margin: 12px 12px 0;
-      }
+      .content { max-height: none; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr; }
+      .edit-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -488,178 +387,128 @@
       <div class="brand">🛠️ Soundmap Admin</div>
 
       <div class="hero">
-        <div class="hero-kicker">Moderasyon</div>
-        <h1>Kayıtları yönet</h1>
-        <p>Pending kayıtları incele, dinle, düzenle ve onayla. Haritada sadece approved içerikler görünsün.</p>
+        <div class="section-title">Yönetim Paneli</div>
+        <h1>Önerileri yönet</h1>
+        <p>Pending gelen kayıtları incele, düzenle, onayla veya reddet. Onaylananlar public haritada otomatik görünür.</p>
       </div>
 
-      <div class="auth-box">
-        <div class="section-title">Admin Erişimi</div>
-        <input id="adminPassword" class="input" type="password" placeholder="Admin şifresi" />
-        <div class="row row-2">
-          <button id="loginBtn" class="btn btn-primary">Giriş yap</button>
-          <button id="logoutBtn" class="btn btn-secondary">Çıkış</button>
-        </div>
-        <div id="authStatus" class="status-box"></div>
-      </div>
-
-      <div id="panelArea" style="display:none;">
-        <div class="panel-box">
-          <div class="section-title">İstatistikler</div>
-          <div class="stats">
-            <div class="stat-card">
-              <div class="stat-label">Pending</div>
-              <div id="statPending" class="stat-value">0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Approved</div>
-              <div id="statApproved" class="stat-value">0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Rejected</div>
-              <div id="statRejected" class="stat-value">0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Toplam</div>
-              <div id="statTotal" class="stat-value">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel-box">
-          <div class="section-title">Araçlar</div>
-
-          <div class="toolbar">
-            <input id="searchInput" class="input" type="text" placeholder="Başlık, şehir, ülke, vibe ara..." />
-
-            <div class="status-filter">
-              <button class="chip active" data-status="all">Hepsi</button>
-              <button class="chip" data-status="pending">Pending</button>
-              <button class="chip" data-status="approved">Approved</button>
-              <button class="chip" data-status="rejected">Rejected</button>
-            </div>
-
-            <div class="row row-2">
-              <button id="refreshBtn" class="btn btn-secondary">Yenile</button>
-              <button id="showPendingBtn" class="btn btn-warning">Sadece Pending</button>
-            </div>
-          </div>
-
-          <div id="panelStatus" class="status-box"></div>
-        </div>
-
-        <div id="list" class="list"></div>
+      <div class="panel">
+        <div class="section-title">Bağlantı</div>
+        <button id="refreshBtn" class="btn btn-primary">Yenile</button>
+        <button id="pendingBtn" class="btn btn-secondary">Sadece Pending</button>
+        <div id="statusBox" class="status-box"></div>
       </div>
     </aside>
 
-    <main>
-      <div class="map-topbar">
-        <div class="map-chip">🗺️ Admin önizleme haritası</div>
-        <div id="mapStatusChip" class="map-chip">Kayıt seçilmedi</div>
+    <main class="content">
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-label">Toplam</div>
+          <div id="statTotal" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Pending</div>
+          <div id="statPending" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Approved</div>
+          <div id="statApproved" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Rejected</div>
+          <div id="statRejected" class="stat-value">0</div>
+        </div>
       </div>
-      <div id="map"></div>
+
+      <div class="panel">
+        <div class="section-title">Filtreler</div>
+        <div class="toolbar">
+          <input id="searchInput" class="input" type="text" placeholder="Başlık, şehir, ülke, vibe ara..." />
+          <select id="statusFilter" class="select">
+            <option value="all">Tüm durumlar</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <select id="sourceFilter" class="select">
+            <option value="all">Tüm kaynaklar</option>
+            <option value="youtube">YouTube</option>
+            <option value="soundcloud">SoundCloud</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="list" class="list"></div>
     </main>
   </div>
 
   <div id="editor" class="editor">
     <div class="editor-card">
       <div class="editor-head">
-        <div>
-          <div class="editor-title">Kayıt düzenle</div>
-        </div>
+        <div class="editor-title">Kaydı düzenle</div>
         <button id="closeEditorBtn" class="close-btn" type="button">✕</button>
       </div>
 
       <form id="editForm">
         <input id="editId" type="hidden" />
 
-        <div class="row row-2">
+        <div class="edit-grid">
           <input id="editTitle" class="input" type="text" placeholder="Başlık" required />
           <input id="editCategory" class="input" type="text" placeholder="Kategori" />
-        </div>
 
-        <div class="row row-2">
           <input id="editCity" class="input" type="text" placeholder="Şehir" required />
           <input id="editCountry" class="input" type="text" placeholder="Ülke" required />
-        </div>
 
-        <div class="row row-2">
           <input id="editLat" class="input" type="number" step="any" placeholder="Latitude" required />
           <input id="editLng" class="input" type="number" step="any" placeholder="Longitude" required />
-        </div>
 
-        <div class="row row-2">
           <input id="editEnvironment" class="input" type="text" placeholder="Atmosfer" />
           <input id="editVibe" class="input" type="text" placeholder="Vibe" />
-        </div>
 
-        <div class="row row-2">
           <select id="editSourceType" class="select">
             <option value="youtube">YouTube</option>
             <option value="soundcloud">SoundCloud</option>
           </select>
+
           <select id="editStatus" class="select">
             <option value="pending">pending</option>
             <option value="approved">approved</option>
             <option value="rejected">rejected</option>
           </select>
+
+          <input id="editEmbedUrl" class="input full" type="url" placeholder="Embed URL" />
+          <textarea id="editDescription" class="textarea full" placeholder="Açıklama"></textarea>
         </div>
 
-        <div class="row">
-          <input id="editEmbedUrl" class="input" type="url" placeholder="Embed / paylaşım linki" />
-        </div>
-
-        <div class="row">
-          <textarea id="editDescription" class="textarea" placeholder="Açıklama"></textarea>
-        </div>
-
-        <div class="row">
-          <textarea id="editReviewerNote" class="textarea" placeholder="Admin notu"></textarea>
-        </div>
-
-        <div class="row row-2">
-          <button type="submit" class="btn btn-primary">Kaydet</button>
-          <button id="cancelEditBtn" type="button" class="btn btn-secondary">Vazgeç</button>
-        </div>
-
+        <button type="submit" class="btn btn-primary">Kaydet</button>
         <div id="editStatusBox" class="status-box"></div>
       </form>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
 
-    // BUNU DEĞİŞTİR
-    const ADMIN_PASSWORD = "soundmap-admin-2026";
-
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const adminPasswordEl = document.getElementById("adminPassword");
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const authStatus = document.getElementById("authStatus");
-    const panelArea = document.getElementById("panelArea");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const pendingBtn = document.getElementById("pendingBtn");
+    const statusBox = document.getElementById("statusBox");
 
+    const statTotal = document.getElementById("statTotal");
     const statPending = document.getElementById("statPending");
     const statApproved = document.getElementById("statApproved");
     const statRejected = document.getElementById("statRejected");
-    const statTotal = document.getElementById("statTotal");
 
     const searchInput = document.getElementById("searchInput");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const showPendingBtn = document.getElementById("showPendingBtn");
+    const statusFilter = document.getElementById("statusFilter");
+    const sourceFilter = document.getElementById("sourceFilter");
     const listEl = document.getElementById("list");
-    const panelStatus = document.getElementById("panelStatus");
-    const mapStatusChip = document.getElementById("mapStatusChip");
 
     const editor = document.getElementById("editor");
     const closeEditorBtn = document.getElementById("closeEditorBtn");
-    const cancelEditBtn = document.getElementById("cancelEditBtn");
     const editForm = document.getElementById("editForm");
     const editStatusBox = document.getElementById("editStatusBox");
 
@@ -676,13 +525,8 @@
     const editStatus = document.getElementById("editStatus");
     const editEmbedUrl = document.getElementById("editEmbedUrl");
     const editDescription = document.getElementById("editDescription");
-    const editReviewerNote = document.getElementById("editReviewerNote");
 
-    let map;
-    let previewMarker = null;
     let allRows = [];
-    let currentFilterStatus = "all";
-    let isAdmin = false;
 
     function normalize(value) {
       return (value || "")
@@ -700,14 +544,6 @@
         .replace(/ü/g, "u");
     }
 
-    function cleanUrl(value) {
-      const raw = (value || "").toString().trim();
-      if (!raw) return "";
-      if (raw.startsWith("//")) return "https:" + raw;
-      if (raw.startsWith("www.")) return "https://" + raw;
-      return raw;
-    }
-
     function escapeHtml(value) {
       return (value || "").toString()
         .replace(/&/g, "&amp;")
@@ -717,186 +553,100 @@
         .replace(/'/g, "&#039;");
     }
 
-    function showBox(el, message, type = "ok") {
-      el.className = `status-box show ${type}`;
-      el.textContent = message;
+    function showStatus(message, type = "success") {
+      statusBox.className = `status-box show ${type}`;
+      statusBox.textContent = message;
     }
 
-    function clearBox(el) {
-      el.className = "status-box";
-      el.textContent = "";
+    function clearStatus() {
+      statusBox.className = "status-box";
+      statusBox.textContent = "";
     }
 
-    function setAdminMode(value) {
-      isAdmin = value;
-      panelArea.style.display = value ? "block" : "none";
-      if (!value) {
-        listEl.innerHTML = "";
-      }
+    function showEditStatus(message, type = "success") {
+      editStatusBox.className = `status-box show ${type}`;
+      editStatusBox.textContent = message;
     }
 
-    function saveSession() {
-      sessionStorage.setItem("soundmap_admin_ok", isAdmin ? "1" : "0");
+    function clearEditStatus() {
+      editStatusBox.className = "status-box";
+      editStatusBox.textContent = "";
     }
 
-    function restoreSession() {
-      const ok = sessionStorage.getItem("soundmap_admin_ok") === "1";
-      if (ok) {
-        isAdmin = true;
-        setAdminMode(true);
-        loadRows();
-      }
-    }
-
-    function getStatusBadge(status) {
+    function badge(status) {
       const s = normalize(status) || "pending";
-      return `<span class="badge ${s}">${escapeHtml(s)}</span>`;
+      return `<span class="badge ${s}">${s}</span>`;
     }
 
-    function buildPlayableEmbed(row) {
-      const sourceType = normalize(row.source_type);
-      const raw = cleanUrl(row.embed_url || "");
-      if (!raw) return "";
-
-      if (sourceType === "youtube") {
-        let videoId = raw;
-
-        if (raw.includes("youtube.com/embed/")) return raw;
-        if (raw.includes("youtu.be/")) {
-          videoId = raw.split("youtu.be/")[1].split("?")[0];
-        } else if (raw.includes("watch?v=")) {
-          videoId = raw.split("watch?v=")[1].split("&")[0];
-        } else if (raw.includes("youtube.com/shorts/")) {
-          videoId = raw.split("youtube.com/shorts/")[1].split("?")[0];
-        }
-
-        return `https://www.youtube.com/embed/${videoId}?rel=0`;
-      }
-
-      if (sourceType === "soundcloud") {
-        return raw.includes("w.soundcloud.com")
-          ? raw
-          : `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
-      }
-
-      return "";
-    }
-
-    function matchesSearch(row, q) {
-      if (!q) return true;
-      const text = [
-        row.title,
-        row.city,
-        row.country,
-        row.category,
-        row.environment,
-        row.vibe,
-        row.description,
-        row.status
-      ].join(" ");
-      return normalize(text).includes(normalize(q));
+    function updateStats(rows) {
+      statTotal.textContent = rows.length;
+      statPending.textContent = rows.filter(r => normalize(r.status) === "pending").length;
+      statApproved.textContent = rows.filter(r => normalize(r.status) === "approved").length;
+      statRejected.textContent = rows.filter(r => normalize(r.status) === "rejected").length;
     }
 
     function filteredRows() {
-      const q = searchInput.value || "";
+      const q = normalize(searchInput.value);
+      const statusVal = statusFilter.value;
+      const sourceVal = sourceFilter.value;
+
       return allRows.filter(row => {
-        const statusOk = currentFilterStatus === "all" ? true : normalize(row.status) === currentFilterStatus;
-        return statusOk && matchesSearch(row, q);
+        const text = normalize([
+          row.title,
+          row.city,
+          row.country,
+          row.category,
+          row.environment,
+          row.vibe,
+          row.description
+        ].join(" "));
+
+        const searchOk = !q || text.includes(q);
+        const statusOk = statusVal === "all" ? true : normalize(row.status) === statusVal;
+        const sourceOk = sourceVal === "all" ? true : normalize(row.source_type) === sourceVal;
+
+        return searchOk && statusOk && sourceOk;
       });
-    }
-
-    function updateStats() {
-      const pending = allRows.filter(r => normalize(r.status) === "pending").length;
-      const approved = allRows.filter(r => normalize(r.status) === "approved").length;
-      const rejected = allRows.filter(r => normalize(r.status) === "rejected").length;
-
-      statPending.textContent = pending;
-      statApproved.textContent = approved;
-      statRejected.textContent = rejected;
-      statTotal.textContent = allRows.length;
-    }
-
-    function showOnMap(row) {
-      const lat = Number(row.lat);
-      const lng = Number(row.lng);
-      if (Number.isNaN(lat) || Number.isNaN(lng)) return;
-
-      if (previewMarker) {
-        map.removeLayer(previewMarker);
-      }
-
-      previewMarker = L.marker([lat, lng]).addTo(map);
-      previewMarker.bindPopup(`
-        <div style="min-width:180px;font-family:sans-serif;">
-          <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(row.title || "Kayıt")}</div>
-          <div style="font-size:12px;color:#64748b;">
-            ${escapeHtml(row.city || "")}${row.country ? ", " + escapeHtml(row.country) : ""}
-          </div>
-        </div>
-      `).openPopup();
-
-      map.flyTo([lat, lng], 13, { animate: true, duration: 1.8 });
-      mapStatusChip.textContent = `📍 ${row.title || "Kayıt"} • ${row.city || ""}`;
     }
 
     function renderList() {
       const rows = filteredRows();
 
       if (!rows.length) {
-        listEl.innerHTML = `<div class="empty">Bu filtrede kayıt bulunamadı.</div>`;
+        listEl.innerHTML = `<div class="card"><div class="desc">Kayıt bulunamadı.</div></div>`;
         return;
       }
 
-      listEl.innerHTML = rows.map(row => {
-        const embed = buildPlayableEmbed(row);
-        return `
-          <div class="card">
-            <div class="card-head">
-              <div>
-                <div class="card-title">${escapeHtml(row.title || "İsimsiz kayıt")}</div>
-                <div class="card-sub">
-                  ${escapeHtml(row.city || "")}${row.country ? ", " + escapeHtml(row.country) : ""}
-                  ${row.submitted_at ? " • " + new Date(row.submitted_at).toLocaleString("tr-TR") : ""}
-                </div>
+      listEl.innerHTML = rows.map(row => `
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">${escapeHtml(row.title || "İsimsiz kayıt")}</div>
+              <div class="card-sub">
+                ${escapeHtml(row.city || "")}${row.country ? ", " + escapeHtml(row.country) : ""}
+                ${row.submitted_at ? " • " + new Date(row.submitted_at).toLocaleString("tr-TR") : ""}
               </div>
-              ${getStatusBadge(row.status)}
             </div>
-
-            <div class="pills">
-              ${row.category ? `<div class="pill">${escapeHtml(row.category)}</div>` : ""}
-              ${row.environment ? `<div class="pill">${escapeHtml(row.environment)}</div>` : ""}
-              ${row.vibe ? `<div class="pill">${escapeHtml(row.vibe)}</div>` : ""}
-              ${row.source_type ? `<div class="pill">${escapeHtml(row.source_type)}</div>` : ""}
-              ${(row.lat != null && row.lng != null) ? `<div class="pill">📍 ${escapeHtml(String(row.lat))}, ${escapeHtml(String(row.lng))}</div>` : ""}
-            </div>
-
-            ${row.description ? `<div class="desc">${escapeHtml(row.description)}</div>` : ""}
-
-            ${row.embed_url ? `<div class="link-row">${escapeHtml(row.embed_url)}</div>` : ""}
-
-            ${row.reviewer_note ? `<div class="desc" style="margin-top:8px;color:#fcd34d;">Admin notu: ${escapeHtml(row.reviewer_note)}</div>` : ""}
-
-            <div class="card-actions">
-              <button class="btn btn-success btn-small" data-action="approve" data-id="${row.id}">Onayla</button>
-              <button class="btn btn-danger btn-small" data-action="reject" data-id="${row.id}">Reddet</button>
-              <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Düzenle</button>
-              <button class="btn btn-secondary btn-small" data-action="map" data-id="${row.id}">Haritada aç</button>
-              <button class="btn btn-secondary btn-small" data-action="delete" data-id="${row.id}">Sil</button>
-            </div>
-
-            ${embed ? `
-              <div class="embed-preview">
-                <iframe
-                  src="${embed}"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  loading="lazy"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
-              </div>
-            ` : ""}
+            ${badge(row.status)}
           </div>
-        `;
-      }).join("");
+
+          <div class="pills">
+            ${row.category ? `<div class="pill">${escapeHtml(row.category)}</div>` : ""}
+            ${row.environment ? `<div class="pill">${escapeHtml(row.environment)}</div>` : ""}
+            ${row.vibe ? `<div class="pill">${escapeHtml(row.vibe)}</div>` : ""}
+            ${row.source_type ? `<div class="pill">${escapeHtml(row.source_type)}</div>` : ""}
+            ${(row.lat != null && row.lng != null) ? `<div class="pill">📍 ${escapeHtml(String(row.lat))}, ${escapeHtml(String(row.lng))}</div>` : ""}
+          </div>
+
+          ${row.description ? `<div class="desc">${escapeHtml(row.description)}</div>` : ""}
+
+          <div class="actions">
+            <button class="action-btn approve" data-action="approve" data-id="${row.id}">Onayla</button>
+            <button class="action-btn reject" data-action="reject" data-id="${row.id}">Reddet</button>
+            <button class="action-btn edit" data-action="edit" data-id="${row.id}">Düzenle</button>
+          </div>
+        </div>
+      `).join("");
 
       listEl.querySelectorAll("[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -905,30 +655,12 @@
           const row = allRows.find(r => String(r.id) === String(id));
           if (!row) return;
 
-          if (action === "map") {
-            showOnMap(row);
-            return;
-          }
-
-          if (action === "edit") {
-            openEditor(row);
-            return;
-          }
-
           if (action === "approve") {
-            await quickStatusUpdate(row.id, "approved");
-            return;
-          }
-
-          if (action === "reject") {
-            await quickStatusUpdate(row.id, "rejected");
-            return;
-          }
-
-          if (action === "delete") {
-            const ok = confirm(`"${row.title || "kayıt"}" silinsin mi?`);
-            if (!ok) return;
-            await deleteRow(row.id);
+            await updateStatus(id, "approved");
+          } else if (action === "reject") {
+            await updateStatus(id, "rejected");
+          } else if (action === "edit") {
+            openEditor(row);
           }
         });
       });
@@ -936,7 +668,7 @@
 
     async function loadRows() {
       try {
-        clearBox(panelStatus);
+        clearStatus();
 
         const { data, error } = await supabaseClient
           .from("soundmap_pins")
@@ -946,51 +678,31 @@
         if (error) throw error;
 
         allRows = data || [];
-        updateStats();
+        updateStats(allRows);
         renderList();
-        showBox(panelStatus, "Kayıtlar yenilendi.", "ok");
+        showStatus("Kayıtlar yenilendi.", "success");
       } catch (err) {
-        showBox(panelStatus, "Kayıtlar yüklenemedi.\n\n" + (err?.message || err), "error");
+        showStatus("Kayıtlar yüklenemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
-    async function quickStatusUpdate(id, status) {
+    async function updateStatus(id, newStatus) {
       try {
-        const payload = {
-          status,
-          reviewed_at: new Date().toISOString()
-        };
-
         const { error } = await supabaseClient
           .from("soundmap_pins")
-          .update(payload)
+          .update({ status: newStatus })
           .eq("id", id);
 
         if (error) throw error;
 
         await loadRows();
       } catch (err) {
-        showBox(panelStatus, "Durum güncellenemedi.\n\n" + (err?.message || err), "error");
-      }
-    }
-
-    async function deleteRow(id) {
-      try {
-        const { error } = await supabaseClient
-          .from("soundmap_pins")
-          .delete()
-          .eq("id", id);
-
-        if (error) throw error;
-
-        await loadRows();
-      } catch (err) {
-        showBox(panelStatus, "Kayıt silinemedi.\n\n" + (err?.message || err), "error");
+        showStatus("Durum güncellenemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
     function openEditor(row) {
-      clearBox(editStatusBox);
+      clearEditStatus();
 
       editId.value = row.id ?? "";
       editTitle.value = row.title ?? "";
@@ -1005,19 +717,18 @@
       editStatus.value = row.status ?? "pending";
       editEmbedUrl.value = row.embed_url ?? "";
       editDescription.value = row.description ?? "";
-      editReviewerNote.value = row.reviewer_note ?? "";
 
       editor.classList.add("show");
     }
 
     function closeEditor() {
       editor.classList.remove("show");
-      clearBox(editStatusBox);
+      clearEditStatus();
     }
 
-    async function saveEdit(event) {
-      event.preventDefault();
-      clearBox(editStatusBox);
+    async function saveEdit(e) {
+      e.preventDefault();
+      clearEditStatus();
 
       const id = editId.value;
       if (!id) return;
@@ -1033,14 +744,12 @@
         vibe: editVibe.value.trim(),
         source_type: editSourceType.value.trim(),
         status: editStatus.value.trim(),
-        embed_url: cleanUrl(editEmbedUrl.value.trim()),
-        description: editDescription.value.trim(),
-        reviewer_note: editReviewerNote.value.trim(),
-        reviewed_at: new Date().toISOString()
+        embed_url: editEmbedUrl.value.trim(),
+        description: editDescription.value.trim()
       };
 
       if (!payload.title || !payload.city || !payload.country || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
-        showBox(editStatusBox, "Başlık, şehir, ülke ve koordinatlar zorunlu.", "error");
+        showEditStatus("Başlık, şehir, ülke ve koordinatlar zorunlu.", "error");
         return;
       }
 
@@ -1052,84 +761,29 @@
 
         if (error) throw error;
 
-        showBox(editStatusBox, "Kayıt güncellendi.", "ok");
+        showEditStatus("Kayıt güncellendi.", "success");
         await loadRows();
-
-        const updatedRow = {
-          id,
-          ...payload
-        };
-        showOnMap(updatedRow);
 
         setTimeout(() => {
           closeEditor();
         }, 500);
       } catch (err) {
-        showBox(editStatusBox, "Kayıt güncellenemedi.\n\n" + (err?.message || err), "error");
+        showEditStatus("Kayıt güncellenemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
-    function initMap() {
-      map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 6);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap"
-      }).addTo(map);
-
-      setTimeout(() => map.invalidateSize(), 500);
-    }
-
-    function login() {
-      clearBox(authStatus);
-      const value = adminPasswordEl.value;
-
-      if (value !== ADMIN_PASSWORD) {
-        showBox(authStatus, "Şifre yanlış.", "error");
-        setAdminMode(false);
-        isAdmin = false;
-        saveSession();
-        return;
-      }
-
-      isAdmin = true;
-      setAdminMode(true);
-      saveSession();
-      showBox(authStatus, "Admin girişi başarılı.", "ok");
-      loadRows();
-    }
-
-    function logout() {
-      isAdmin = false;
-      setAdminMode(false);
-      saveSession();
-      adminPasswordEl.value = "";
-      showBox(authStatus, "Çıkış yapıldı.", "ok");
-    }
-
-    document.querySelectorAll(".chip[data-status]").forEach(chip => {
-      chip.addEventListener("click", () => {
-        document.querySelectorAll(".chip[data-status]").forEach(c => c.classList.remove("active"));
-        chip.classList.add("active");
-        currentFilterStatus = chip.getAttribute("data-status");
-        renderList();
-      });
-    });
-
-    loginBtn.addEventListener("click", login);
-    logoutBtn.addEventListener("click", logout);
     refreshBtn.addEventListener("click", loadRows);
-    showPendingBtn.addEventListener("click", () => {
-      currentFilterStatus = "pending";
-      document.querySelectorAll(".chip[data-status]").forEach(c => {
-        c.classList.toggle("active", c.getAttribute("data-status") === "pending");
-      });
+
+    pendingBtn.addEventListener("click", () => {
+      statusFilter.value = "pending";
       renderList();
     });
 
     searchInput.addEventListener("input", renderList);
+    statusFilter.addEventListener("change", renderList);
+    sourceFilter.addEventListener("change", renderList);
 
     closeEditorBtn.addEventListener("click", closeEditor);
-    cancelEditBtn.addEventListener("click", closeEditor);
     editForm.addEventListener("submit", saveEdit);
 
     editor.addEventListener("click", (e) => {
@@ -1137,18 +791,12 @@
     });
 
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && document.activeElement === adminPasswordEl) {
-        login();
-      }
       if (e.key === "Escape" && editor.classList.contains("show")) {
         closeEditor();
       }
     });
 
-    window.addEventListener("load", () => {
-      initMap();
-      restoreSession();
-    });
+    window.addEventListener("load", loadRows);
   </script>
 </body>
 </html>
