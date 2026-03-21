@@ -25,7 +25,6 @@
       grid-template-columns: 380px 1fr;
     }
 
-    /* --- Sidebar --- */
     .sidebar {
       position: relative;
       padding: 16px;
@@ -64,117 +63,716 @@
       box-shadow: 0 18px 50px rgba(0,0,0,0.18);
     }
 
-    .hero-kicker { color: #7dd3fc; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
-    .hero h1 { margin: 0; font-size: 24px; letter-spacing: -0.03em; }
-    .hero p { margin: 10px 0 0; color: #cbd5e1; font-size: 13px; line-height: 1.55; }
+    .hero-kicker {
+      color: #7dd3fc;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .search-wrap {
+      margin-top: 14px;
+    }
 
     .search {
-      width: 100%; padding: 13px 15px; margin-top: 14px; border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05);
-      color: white; outline: none; transition: .2s;
-    }
-    .search:focus { border-color: rgba(56,189,248,0.35); box-shadow: 0 0 0 4px rgba(56,189,248,0.10); }
-
-    /* --- Buttons & Filters --- */
-    .section-title { font-size: 11px; text-transform: uppercase; color: #94a3b8; margin: 14px 0 10px; font-weight: 700; }
-    .moods, .categories, .environments { display: flex; flex-wrap: wrap; gap: 8px; }
-    .mood-btn, .cat-btn, .env-btn, .mini-btn, .filters-toggle {
-      border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05);
-      color: #e2e8f0; border-radius: 999px; padding: 9px 12px; cursor: pointer; font-size: 12px; transition: .2s;
-    }
-    .mood-btn.active, .cat-btn.active, .env-btn.active { background: rgba(34,211,238,0.14); border-color: rgba(34,211,238,0.35); }
-
-    /* --- Discovery Panel --- */
-    .discovery-panel {
-      margin-top: 14px; padding: 14px; border-radius: 22px;
+      width: 100%;
+      padding: 13px 15px;
+      border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      font-size: 14px;
+      transition: .2s ease;
     }
+
+    .search:focus {
+      border-color: rgba(56,189,248,0.35);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
+    }
+
+    .search::placeholder {
+      color: #94a3b8;
+    }
+
+    .section {
+      margin-top: 14px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .moods,
+    .categories,
+    .environments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mood-btn,
+    .cat-btn,
+    .env-btn,
+    .mini-btn,
+    .filters-toggle {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: .2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .mood-btn:hover,
+    .cat-btn:hover,
+    .env-btn:hover,
+    .mini-btn:hover,
+    .filters-toggle:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .mood-btn.active,
+    .cat-btn.active,
+    .env-btn.active,
+    .mini-btn.active {
+      background: rgba(34,211,238,0.14);
+      border-color: rgba(34,211,238,0.35);
+      color: #ecfeff;
+    }
+
+    .env-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filters-shell {
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      overflow: hidden;
+    }
+
+    .filters-toggle {
+      width: 100%;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .filters-body {
+      display: none;
+      padding: 0 14px 14px;
+    }
+
+    .filters-body.show {
+      display: block;
+    }
+
+    .discovery-panel {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
+        radial-gradient(circle at top left, rgba(168,85,247,0.10), transparent 28%);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.16);
+    }
+
+    .discovery-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .discovery-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .discovery-sub {
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
     .discovery-list {
-      display: grid; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 6px;
-      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) transparent;
+      display: grid;
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.18) transparent;
     }
+
+    .discovery-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .discovery-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .discovery-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.18);
+      border-radius: 999px;
+    }
+
     .discover-card {
-      padding: 12px 14px; border-radius: 18px; background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08); cursor: pointer; transition: .2s;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: .2s ease;
     }
-    .discover-card:hover { transform: translateY(-1px); background: rgba(255,255,255,0.08); }
+
+    .discover-card:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .discover-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .discover-meta {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .discover-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.06);
+      color: #cbd5e1;
+    }
+
     .more-btn {
-      margin-top: 10px; width: 100%; padding: 11px; border-radius: 14px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
-      color: #e2e8f0; font-size: 13px; font-weight: 700; cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
     }
 
-    /* --- Travel Notice --- */
-    .travel-notice {
-      position: fixed; top: 22px; left: 50%; transform: translateX(-50%) translateY(-14px);
-      z-index: 10000; padding: 12px 18px; border-radius: 999px; background: rgba(8,17,31,0.82);
-      color: #e0f2fe; font-weight: 700; backdrop-filter: blur(14px); opacity: 0; transition: .35s;
+    .more-btn:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
     }
-    .travel-notice.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* --- Floating Player --- */
+    .status-line {
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+      padding-bottom: 8px;
+    }
+
+    .error {
+      color: #fecaca;
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100%;
+      background: #07111f;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: #020617;
+      color: white;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .leaflet-popup-tip {
+      background: #020617;
+    }
+
+    .ey-pin {
+      position: relative;
+      transform: rotate(-45deg);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .ey-pin.is-active {
+      filter: saturate(1.10) brightness(1.05);
+    }
+
+    .ey-pin-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.20);
+    }
+
+    .ey-pin-core {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .core-sea::before,
+    .core-sea::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.95);
+      opacity: .9;
+    }
+
+    .core-sea::before {
+      top: 30%;
+      animation: waveMove 2.2s ease-in-out infinite;
+    }
+
+    .core-sea::after {
+      top: 58%;
+      animation: waveMove 2.2s ease-in-out infinite reverse;
+    }
+
+    .core-forest::before,
+    .core-forest::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.92);
+    }
+
+    .core-forest::before {
+      top: 28%;
+      left: 26%;
+      box-shadow:
+        8px 4px 0 rgba(255,255,255,.88),
+        2px 10px 0 rgba(255,255,255,.78);
+      animation: forestPulse 2.8s ease-in-out infinite;
+    }
+
+    .core-forest::after {
+      top: 38%;
+      left: 48%;
+      box-shadow:
+        6px -5px 0 rgba(255,255,255,.72),
+        -5px 8px 0 rgba(255,255,255,.62);
+      animation: forestPulse 2.8s ease-in-out infinite reverse;
+    }
+
+    .core-city::before,
+    .core-city::after {
+      content: "";
+      position: absolute;
+      bottom: 18%;
+      width: 5px;
+      border-radius: 2px 2px 0 0;
+      background: rgba(255,255,255,.95);
+    }
+
+    .core-city::before {
+      left: 28%;
+      height: 11px;
+      box-shadow:
+        8px -2px 0 rgba(255,255,255,.85),
+        16px 2px 0 rgba(255,255,255,.72);
+      animation: cityBlink 2.1s ease-in-out infinite;
+    }
+
+    .core-city::after {
+      left: 42%;
+      height: 14px;
+      opacity: .6;
+    }
+
+    .core-museum::before,
+    .core-museum::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .core-museum::before {
+      inset: 20%;
+      border: 2px solid rgba(255,255,255,.92);
+      animation: museumGlow 2.8s ease-in-out infinite;
+    }
+
+    .core-museum::after {
+      inset: 34%;
+      background: rgba(255,255,255,.95);
+    }
+
+    .core-mountain::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 22%;
+      width: 0;
+      height: 0;
+      transform: translateX(-50%);
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 12px solid rgba(255,255,255,.92);
+      animation: mountainGlow 3.4s ease-in-out infinite;
+    }
+
+    .core-default::before {
+      content: "";
+      position: absolute;
+      inset: 28%;
+      border-radius: 50%;
+      background: rgba(255,255,255,.92);
+      animation: softPulse 2.6s ease-in-out infinite;
+    }
+
+    .ey-pin.is-active .ey-pin-inner {
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.28),
+        0 0 16px rgba(255,255,255,.12);
+    }
+
+    @keyframes waveMove {
+      0%, 100% { transform: translateX(-1px); opacity: .55; }
+      50% { transform: translateX(2px); opacity: 1; }
+    }
+
+    @keyframes forestPulse {
+      0%, 100% { transform: scale(.88); opacity: .42; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    @keyframes cityBlink {
+      0%, 100% { opacity: .42; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-1px); }
+    }
+
+    @keyframes museumGlow {
+      0%, 100% { transform: scale(.88); opacity: .45; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    @keyframes mountainGlow {
+      0%, 100% { opacity: .55; transform: translateX(-50%) scale(.96); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.04); }
+    }
+
+    @keyframes softPulse {
+      0%, 100% { transform: scale(.86); opacity: .45; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
     .floating-player {
-      position: fixed; right: 22px; bottom: 22px; width: min(460px, calc(100vw - 24px));
-      z-index: 9999; border-radius: 26px; border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(8,17,31,0.92); backdrop-filter: blur(18px); transform: translateY(120%); opacity: 0; transition: .35s;
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: min(460px, calc(100vw - 24px));
+      z-index: 9999;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(13,22,38,0.92)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: .35s ease;
     }
-    .floating-player.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 
-    /* --- Pins & Map --- */
-    #map { height: 100vh; width: 100%; background: #07111f; }
-    .ey-pin { position: relative; transform: rotate(-45deg); border-radius: 50% 50% 50% 0; border: 3px solid #fff; }
-    .ey-pin-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); border-radius: 50%; background: rgba(255,255,255,0.2); width: 16px; height: 16px; }
+    .floating-player.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-    /* Pin Animasyonları */
-    @keyframes waveMove { 0%, 100% { transform: translateX(-1px); opacity: .55; } 50% { transform: translateX(2px); opacity: 1; } }
-    .core-sea::before { content: ""; position: absolute; top: 30%; left: 10%; right: 10%; height: 2px; background: #fff; animation: waveMove 2s infinite; }
+    .player-head {
+      padding: 14px 16px 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .player-kicker {
+      font-size: 11px;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .player-title {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .player-sub {
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .player-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .player-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .player-icon-btn:hover {
+      background: rgba(255,255,255,0.10);
+    }
+
+    .player-body {
+      padding: 14px 16px 18px;
+    }
+
+    .player-placeholder {
+      padding: 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(255,255,255,0.10);
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .player-embed-wrap iframe {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      background: #000;
+      min-height: 220px;
+    }
+
+    .player-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .travel-notice {
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-14px);
+      z-index: 10000;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(8,17,31,0.82);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e0f2fe;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+
+    .travel-notice.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        max-height: none;
+      }
+
+      #map {
+        height: 62vh;
+      }
+
+      .floating-player {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <div class="page">
     <aside class="sidebar">
       <div class="brand">🌍 Soundmap Space</div>
-      
+
       <div class="hero">
         <div class="hero-kicker">Ses Keşif Rehberi</div>
         <h1>Dünyayı sesle keşfet</h1>
-        <p>Hangi atmosferi özledin? Haritayı keşfet veya senin için seçtiklerimize göz at.</p>
-        <input id="searchInput" class="search" type="text" placeholder="Şehir veya mekan ara..." />
+        <p>Hangi atmosferi özledin? Bir mod seç, önerilere tıkla ve haritada yeni bir ses durağına bağlan.</p>
+
+        <div class="search-wrap">
+          <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
+        </div>
       </div>
 
       <div class="section">
-        <div class="section-title">Modlar</div>
+        <div class="section-title">Moduna Göre Keşfet</div>
         <div id="moods" class="moods"></div>
       </div>
 
+      <div class="filters-shell">
+        <button id="toggleFiltersBtn" class="filters-toggle">
+          <span>Filtreler</span>
+          <span id="toggleFiltersIcon">+</span>
+        </button>
+
+        <div id="filtersBody" class="filters-body">
+          <div class="section">
+            <div class="section-title">Kategoriler</div>
+            <div id="categories" class="categories"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Atmosferler</div>
+            <div id="environments" class="environments"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="discovery-panel">
-        <div class="discovery-head" style="display:flex; justify-content: space-between; align-items: center; margin-bottom:10px;">
-          <span style="font-weight: 800;">Günün Ses Durakları</span>
+        <div class="discovery-head">
+          <div class="discovery-title">Günün Ses Durakları</div>
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
-        <div id="discoverySub" class="discovery-sub" style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;"></div>
+
+        <div id="discoverySub" class="discovery-sub">
+          Seçtiğin moda göre sana özel öneriler burada.
+        </div>
+
         <div id="discoveryList" class="discovery-list"></div>
         <button id="toggleDiscoveryBtn" class="more-btn" style="display:none;">Daha fazlasını göster</button>
       </div>
 
-      <div id="resultCount" class="status-line" style="margin-top:10px; font-size:12px; color:#94a3b8;"></div>
+      <div id="resultCount" class="status-line"></div>
+      <div id="errorBox" class="error" style="display:none;"></div>
     </aside>
 
-    <main><div id="map"></div></main>
+    <main>
+      <div id="map"></div>
+    </main>
   </div>
 
   <div id="floatingPlayer" class="floating-player">
-    <div style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between;">
+    <div class="player-head">
       <div>
-        <div id="playerTitle" style="font-weight: 800; font-size: 16px;">Mekan İsmi</div>
-        <div id="playerSub" style="font-size: 12px; color: #94a3b8;">Konum bilgisi</div>
+        <div class="player-kicker">Dinleniyor</div>
+        <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
+        <div id="playerSub" class="player-sub">Haritadaki noktalara tıklayarak ses yolculuğuna başlayın.</div>
       </div>
-      <button onclick="document.getElementById('floatingPlayer').classList.remove('show')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
+
+      <div class="player-actions">
+        <button id="playerMinBtn" class="player-icon-btn" title="Küçült">—</button>
+        <button id="playerCloseBtn" class="player-icon-btn" title="Kapat">✕</button>
+      </div>
     </div>
-    <div style="padding: 16px;">
-      <div id="playerEmbedArea"></div>
+
+    <div class="player-body">
+      <div id="playerEmbedArea" class="player-placeholder">
+        Oynatıcıyı başlatmak için haritadan bir kayıt seçin.
+      </div>
+      <div id="playerMetaRow" class="player-meta-row"></div>
     </div>
   </div>
 
@@ -187,21 +785,419 @@
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
 
-    const travelNoticeEl = document.getElementById("travelNotice");
+    const MOODS = [
+      { key: "tum", label: "✨ Hepsi", matcher: () => true },
+      { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin", "huzurlu"].includes(normalize(pin.vibe)) || ["deniz", "sahil", "gol"].includes(canonicalEnvironment(pin.environment)) },
+      { key: "derin", label: "🌲 Derin", matcher: pin => ["derin", "mistik"].includes(normalize(pin.vibe)) || ["orman", "muze", "tapinak"].includes(canonicalEnvironment(pin.environment)) },
+      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "şehir" },
+      { key: "manevi", label: "🕌 Ruhsal", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
+      { key: "yolculuk", label: "🚂 Dinamik", matcher: pin => {
+        const text = `${pin.title || ""} ${pin.description || ""}`.toLowerCase();
+        return text.includes("tren") || text.includes("road") || text.includes("journey") || text.includes("yol");
+      }}
+    ];
+
+    const DEMO = [
+      {
+        id: 1,
+        title: "Yoros Kalesi",
+        city: "İstanbul",
+        country: "Türkiye",
+        lat: 41.18,
+        lng: 29.09,
+        description: "Boğaz'ın serin rüzgarıyla buluşan tarihi bir atmosfer ve sessizlik.",
+        category: "Kültür",
+        environment: "muze",
+        vibe: "Mistik",
+        source_type: "youtube",
+        embed_url: "https://www.youtube.com/embed/gwFg8AlN9zk",
+        shopify_url: "",
+        price_label: ""
+      }
+    ];
+
+    const moodsEl = document.getElementById("moods");
+    const categoriesEl = document.getElementById("categories");
+    const environmentsEl = document.getElementById("environments");
+    const searchInput = document.getElementById("searchInput");
+    const resultCountEl = document.getElementById("resultCount");
+    const errorBox = document.getElementById("errorBox");
+
     const discoveryListEl = document.getElementById("discoveryList");
+    const discoverySubEl = document.getElementById("discoverySub");
     const toggleDiscoveryBtn = document.getElementById("toggleDiscoveryBtn");
     const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
 
-    let map, allPins = [], markers = [], discoveryExpanded = false, activeMood = "tum";
+    const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+    const filtersBody = document.getElementById("filtersBody");
+    const toggleFiltersIcon = document.getElementById("toggleFiltersIcon");
 
-    const MOODS = [
-      { key: "tum", label: "✨ Hepsi", matcher: () => true },
-      { key: "sakin", label: "🌊 Sakin", matcher: p => (p.vibe||"").toLowerCase().includes("sakin") },
-      { key: "sehir", label: "🏙️ Enerjik", matcher: p => (p.category||"").toLowerCase().includes("şehir") }
-    ];
+    const floatingPlayerEl = document.getElementById("floatingPlayer");
+    const playerTitleEl = document.getElementById("playerTitle");
+    const playerSubEl = document.getElementById("playerSub");
+    const playerEmbedAreaEl = document.getElementById("playerEmbedArea");
+    const playerMetaRowEl = document.getElementById("playerMetaRow");
+    const playerMinBtn = document.getElementById("playerMinBtn");
+    const playerCloseBtn = document.getElementById("playerCloseBtn");
 
-    function normalize(v) { return (v || "").toString().toLowerCase().trim(); }
-    function shuffleArray(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+    const travelNoticeEl = document.getElementById("travelNotice");
+
+    let map;
+    let allPins = [];
+    let visiblePins = [];
+    let markers = [];
+    let activeCategory = "Tümü";
+    let activeEnvironment = "Tümü";
+    let activeMood = "tum";
+    let activePinId = null;
+    let hasFittedBounds = false;
+    let discoveryExpanded = false;
+
+    function normalize(value) {
+      return (value || "").toString().toLowerCase().trim();
+    }
+
+    function cleanUrl(value) {
+      const raw = (value || "").toString().trim();
+      if (!raw) return "";
+      if (raw.startsWith("//")) return "https:" + raw;
+      if (raw.startsWith("www.")) return "https://" + raw;
+      return raw;
+    }
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+      console.error(message);
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getMoodMatcher() {
+      const mood = MOODS.find(m => m.key === activeMood);
+      return mood ? mood.matcher : (() => true);
+    }
+
+    function getCategories(pins) {
+      const set = new Set(["Tümü"]);
+      pins.forEach(pin => {
+        if (pin.category) set.add(pin.category);
+      });
+      return [...set];
+    }
+
+    function canonicalEnvironment(environment) {
+      const key = normalize(environment);
+
+      const aliases = {
+        deniz: "deniz",
+        sea: "deniz",
+        ocean: "deniz",
+        gol: "gol",
+        "göl": "gol",
+        lake: "gol",
+        nehir: "nehir",
+        river: "nehir",
+        sahil: "sahil",
+        coast: "sahil",
+        shore: "sahil",
+        orman: "orman",
+        forest: "orman",
+        kirsal: "kirsal",
+        "kırsal": "kirsal",
+        rural: "kirsal",
+        sehir: "sehir",
+        "şehir": "sehir",
+        city: "sehir",
+        urban: "sehir",
+        liman: "liman",
+        port: "liman",
+        harbor: "liman",
+        pazar: "pazar",
+        market: "pazar",
+        muze: "muze",
+        "müze": "muze",
+        museum: "muze",
+        tarih: "tarih",
+        history: "tarih",
+        historic: "tarih",
+        tapinak: "tapinak",
+        "tapınak": "tapinak",
+        temple: "tapinak",
+        dag: "dag",
+        "dağ": "dag",
+        mountain: "dag",
+        magara: "magara",
+        "mağara": "magara",
+        cave: "magara",
+        col: "col",
+        "çöl": "col",
+        desert: "col"
+      };
+
+      return aliases[key] || key;
+    }
+
+    function getEnvironmentStyle(environment) {
+      const key = canonicalEnvironment(environment);
+
+      const map = {
+        deniz:   { color: "#38bdf8", symbol: "🌊", label: "Deniz" },
+        gol:     { color: "#60a5fa", symbol: "💧", label: "Göl" },
+        nehir:   { color: "#22d3ee", symbol: "💦", label: "Nehir" },
+        sahil:   { color: "#5eead4", symbol: "🐚", label: "Sahil" },
+        orman:   { color: "#4ade80", symbol: "🌲", label: "Orman" },
+        kirsal:  { color: "#84cc16", symbol: "🌾", label: "Kırsal" },
+        sehir:   { color: "#3b82f6", symbol: "🏙️", label: "Şehir" },
+        liman:   { color: "#64748b", symbol: "⚓", label: "Liman" },
+        pazar:   { color: "#fb923c", symbol: "🧺", label: "Pazar" },
+        muze:    { color: "#a855f7", symbol: "🏛️", label: "Müze" },
+        tarih:   { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
+        tapinak: { color: "#f97316", symbol: "🕌", label: "Tapınak" },
+        dag:     { color: "#94a3b8", symbol: "⛰️", label: "Dağ" },
+        magara:  { color: "#78716c", symbol: "🪨", label: "Mağara" },
+        col:     { color: "#eab308", symbol: "🏜️", label: "Çöl" }
+      };
+
+      return map[key] || { color: "#38bdf8", symbol: "🎧", label: "Kayıt" };
+    }
+
+    function getEnvironmentButtons(pins) {
+      const seen = new Set();
+      const items = [{ key: "Tümü", label: "Tümü", symbol: "✨" }];
+
+      pins.forEach(pin => {
+        const envKey = canonicalEnvironment(pin.environment);
+        if (!envKey) return;
+        if (seen.has(envKey)) return;
+        seen.add(envKey);
+        const env = getEnvironmentStyle(envKey);
+        items.push({ key: envKey, label: env.label, symbol: env.symbol });
+      });
+
+      return items;
+    }
+
+    function getCoreClass(environment) {
+      const key = canonicalEnvironment(environment);
+      if (["deniz", "gol", "nehir", "sahil"].includes(key)) return "core-sea";
+      if (["orman", "kirsal"].includes(key)) return "core-forest";
+      if (["sehir", "liman", "pazar"].includes(key)) return "core-city";
+      if (["muze", "tarih", "tapinak"].includes(key)) return "core-museum";
+      if (["dag", "magara", "col"].includes(key)) return "core-mountain";
+      return "core-default";
+    }
+
+    function makePinIcon(environment, isActive = false) {
+      const env = getEnvironmentStyle(environment);
+      const color = isActive ? "#ef4444" : env.color;
+      const size = isActive ? 40 : 34;
+      const innerSize = isActive ? 18 : 16;
+      const border = isActive ? 4 : 3;
+      const glow = isActive
+        ? `0 0 0 10px ${color}26, 0 12px 26px rgba(0,0,0,.28)`
+        : `0 8px 18px rgba(0,0,0,.22)`;
+
+      return L.divIcon({
+        className: "",
+        html: `
+          <div
+            class="ey-pin ${isActive ? "is-active" : ""}"
+            style="
+              width:${size}px;
+              height:${size}px;
+              background:${color};
+              border-radius:50% 50% 50% 0;
+              border:${border}px solid #ffffff;
+              box-shadow:${glow};
+            "
+          >
+            <div class="ey-pin-inner" style="width:${innerSize}px;height:${innerSize}px;">
+              <div class="ey-pin-core ${getCoreClass(environment)}"></div>
+            </div>
+          </div>
+        `,
+        iconSize: [size, size],
+        iconAnchor: [size / 2 - 2, size - 2],
+        popupAnchor: [0, -size + 8]
+      });
+    }
+
+    function renderMoods() {
+      moodsEl.innerHTML = "";
+      MOODS.forEach(mood => {
+        const btn = document.createElement("button");
+        btn.className = "mood-btn" + (mood.key === activeMood ? " active" : "");
+        btn.textContent = mood.label;
+        btn.addEventListener("click", () => {
+          activeMood = mood.key;
+          discoveryExpanded = false;
+          renderMoods();
+          renderDiscovery();
+          applyFilters();
+        });
+        moodsEl.appendChild(btn);
+      });
+    }
+
+    function renderCategories() {
+      const cats = getCategories(allPins);
+      categoriesEl.innerHTML = "";
+
+      cats.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "cat-btn" + (cat === activeCategory ? " active" : "");
+        btn.textContent = cat;
+        btn.addEventListener("click", () => {
+          activeCategory = cat;
+          renderCategories();
+          hasFittedBounds = false;
+          applyFilters();
+        });
+        categoriesEl.appendChild(btn);
+      });
+    }
+
+    function renderEnvironments() {
+      const envs = getEnvironmentButtons(allPins);
+      environmentsEl.innerHTML = "";
+
+      envs.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "env-btn" + (item.key === activeEnvironment ? " active" : "");
+        btn.innerHTML = `<span>${item.symbol}</span><span>${item.label}</span>`;
+        btn.addEventListener("click", () => {
+          activeEnvironment = item.key;
+          renderEnvironments();
+          hasFittedBounds = false;
+          applyFilters();
+        });
+        environmentsEl.appendChild(btn);
+      });
+    }
+
+    function filterPins() {
+      const q = normalize(searchInput.value);
+      const moodMatcher = getMoodMatcher();
+
+      return allPins.filter(pin => {
+        const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+        const envKey = canonicalEnvironment(pin.environment);
+        const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
+
+        const text = [
+          pin.title,
+          pin.city,
+          pin.country,
+          pin.category,
+          pin.environment,
+          pin.description,
+          pin.vibe
+        ].map(normalize).join(" ");
+
+        return categoryOk && environmentOk && moodMatcher(pin) && (!q || text.includes(q));
+      });
+    }
+
+    function renderStatusLine() {
+      const parts = [`${visiblePins.length} lokasyon`];
+      if (activeCategory !== "Tümü") parts.push(`kategori: ${activeCategory}`);
+      if (activeEnvironment !== "Tümü") parts.push(`ortam: ${getEnvironmentStyle(activeEnvironment).label}`);
+      if (activeMood !== "tum") {
+        const mood = MOODS.find(m => m.key === activeMood);
+        if (mood) parts.push(`mod: ${mood.label}`);
+      }
+      resultCountEl.textContent = parts.join(" • ");
+    }
+
+    function buildPlayableEmbed(pin, autoplay = false) {
+      const sourceType = normalize(pin.source_type);
+      const raw = cleanUrl(pin.embed_url || "");
+
+      if (!raw) return "";
+
+      if (sourceType === "youtube") {
+        let videoId = raw;
+
+        if (raw.includes("youtube.com/embed/")) {
+          const sep = raw.includes("?") ? "&" : "?";
+          return `${raw}${sep}autoplay=${autoplay ? 1 : 0}&rel=0`;
+        }
+
+        if (raw.includes("youtu.be/")) {
+          videoId = raw.split("youtu.be/")[1].split("?")[0];
+        } else if (raw.includes("watch?v=")) {
+          videoId = raw.split("watch?v=")[1].split("&")[0];
+        } else if (raw.includes("youtube.com/shorts/")) {
+          videoId = raw.split("youtube.com/shorts/")[1].split("?")[0];
+        }
+
+        return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
+      }
+
+      if (sourceType === "soundcloud") {
+        return raw.includes("w.soundcloud.com")
+          ? raw
+          : `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=${autoplay ? "true" : "false"}&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+      }
+
+      return "";
+    }
+
+    function openFloatingPlayer(pin, autoplay = true) {
+      const embed = buildPlayableEmbed(pin, autoplay);
+      const env = getEnvironmentStyle(pin.environment || "");
+
+      playerTitleEl.textContent = pin.title || "İsimsiz mekan";
+      playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
+
+      playerMetaRowEl.innerHTML = `
+        ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
+        ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
+        ${pin.vibe ? `<div class="pill">${pin.vibe}</div>` : ""}
+        ${pin.source_type ? `<div class="pill">${pin.source_type}</div>` : ""}
+      `;
+
+      if (embed) {
+        playerEmbedAreaEl.className = "player-embed-wrap";
+        playerEmbedAreaEl.innerHTML = `
+          <iframe
+            src="${embed}"
+            allow="autoplay; encrypted-media; fullscreen"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        `;
+      } else {
+        playerEmbedAreaEl.className = "player-placeholder";
+        playerEmbedAreaEl.innerHTML = `
+          Bu lokasyon için henüz aktif bir ses kaydı bulunmuyor.
+          Diğer durakları keşfetmeye ne dersin?
+        `;
+      }
+
+      floatingPlayerEl.classList.add("show");
+    }
+
+    function closeFloatingPlayer() {
+      floatingPlayerEl.classList.remove("show");
+      setTimeout(() => {
+        if (!floatingPlayerEl.classList.contains("show")) {
+          playerEmbedAreaEl.className = "player-placeholder";
+          playerEmbedAreaEl.innerHTML = "Haritadan bir kayıt seçtiğinde ses burada yankılanacak.";
+          playerMetaRowEl.innerHTML = "";
+          playerTitleEl.textContent = "Keşfetmeye başlayın";
+          playerSubEl.textContent = "Haritadaki noktalara tıklayarak dünyayı dinlemeye başlayın.";
+        }
+      }, 300);
+    }
 
     function showTravelNotice(text = "Yeni durağa gidiliyor…") {
       travelNoticeEl.textContent = text;
@@ -214,66 +1210,61 @@
 
     function cinematicFlyTo(lat, lng) {
       showTravelNotice("Yeni durağa gidiliyor…");
-      map.flyTo(map.getCenter(), 5.7, { animate: true, duration: 1.8 });
-      setTimeout(() => {
-        map.flyTo([Number(lat), Number(lng)], 14, { animate: true, duration: 2.8 });
-      }, 1400);
-      setTimeout(hideTravelNotice, 3900);
-    }
 
-    function openFloatingPlayer(pin) {
-      document.getElementById("playerTitle").textContent = pin.title;
-      document.getElementById("playerSub").textContent = `${pin.city}, ${pin.country}`;
-      let videoId = pin.embed_url.includes("v=") ? pin.embed_url.split("v=")[1].split("&")[0] : pin.embed_url.split("/").pop();
-      document.getElementById("playerEmbedArea").innerHTML = `<iframe width="100%" height="220" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:14px;"></iframe>`;
-      document.getElementById("floatingPlayer").classList.add("show");
-    }
-
-    function renderMarkers() {
-      markers.forEach(m => map.removeLayer(m)); markers = [];
-      const moodMatcher = MOODS.find(m => m.key === activeMood)?.matcher || (() => true);
-      const filtered = allPins.filter(moodMatcher);
-
-      filtered.forEach(pin => {
-        const marker = L.marker([pin.lat, pin.lng], {
-          icon: L.divIcon({
-            className: "",
-            html: `<div class="ey-pin" style="width:34px; height:34px; background:#38bdf8;">
-                     <div class="ey-pin-inner core-sea"></div>
-                   </div>`,
-            iconAnchor: [17, 34]
-          })
-        }).addTo(map);
-        marker.on("click", () => {
-          openFloatingPlayer(pin);
-          map.flyTo([pin.lat, pin.lng], 14, { duration: 2.0 });
-        });
-        markers.push(marker);
+      map.flyTo(map.getCenter(), 5.7, {
+        animate: true,
+        duration: 1.8
       });
-      document.getElementById("resultCount").textContent = `${filtered.length} lokasyon gösteriliyor`;
+
+      setTimeout(() => {
+        map.flyTo([Number(lat), Number(lng)], 14, {
+          animate: true,
+          duration: 2.8
+        });
+      }, 1400);
+
+      setTimeout(() => {
+        hideTravelNotice();
+      }, 3900);
+    }
+
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
     }
 
     function renderDiscovery() {
-      const moodMatcher = MOODS.find(m => m.key === activeMood)?.matcher || (() => true);
+      const moodMatcher = getMoodMatcher();
       const base = allPins.filter(pin => moodMatcher(pin));
       const pickedAll = shuffleArray(base).filter(pin => pin.lat != null && pin.lng != null).slice(0, 6);
 
-      document.getElementById("discoverySub").textContent = activeMood === "tum" ? "Senin için seçtiğimiz duraklar." : "Moduna uygun seçkiler.";
+      const mood = MOODS.find(m => m.key === activeMood);
+      discoverySubEl.textContent = mood && mood.key !== "tum"
+        ? `${mood.label} ruh haline uygun seçkiler burada.`
+        : "Bugün için senin için seçtiğimiz ses yolculukları.";
 
       if (!pickedAll.length) {
-        discoveryListEl.innerHTML = `<div style="padding:10px; font-size:12px;">Sonuç bulunamadı.</div>`;
+        discoveryListEl.innerHTML = `<div class="empty">Şu an bu modda öneri bulunmuyor.</div>`;
         toggleDiscoveryBtn.style.display = "none";
         return;
       }
 
       const visibleItems = discoveryExpanded ? pickedAll : pickedAll.slice(0, 2);
 
-      discoveryListEl.innerHTML = visibleItems.map(pin => `
-        <div class="discover-card" data-id="${pin.id}">
-          <div style="font-size:13px; font-weight:700;">${pin.title}</div>
-          <div style="font-size:11px; color:#94a3b8;">${pin.city}, ${pin.country}</div>
-        </div>
-      `).join("");
+      discoveryListEl.innerHTML = visibleItems.map(pin => {
+        const env = getEnvironmentStyle(pin.environment || "");
+        return `
+          <div class="discover-card" data-discover-id="${pin.id}">
+            <div class="discover-title">${pin.title || "Gizemli Durak"}</div>
+            <div class="discover-meta">${pin.city || ""}${pin.country ? ", " + pin.country : ""}</div>
+            <div class="discover-pills">
+              ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
+              ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
+              ${pin.vibe ? `<div class="pill">${pin.vibe}</div>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
 
       if (pickedAll.length > 2) {
         toggleDiscoveryBtn.style.display = "block";
@@ -282,58 +1273,171 @@
         toggleDiscoveryBtn.style.display = "none";
       }
 
-      discoveryListEl.querySelectorAll(".discover-card").forEach(el => {
+      discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
         el.addEventListener("click", () => {
-          const pin = allPins.find(p => String(p.id) === el.dataset.id);
-          if (pin) {
-            openFloatingPlayer(pin);
-            cinematicFlyTo(pin.lat, pin.lng);
-          }
+          const id = String(el.getAttribute("data-discover-id"));
+          const pin = allPins.find(p => String(p.id) === id);
+
+          if (!pin || pin.lat == null || pin.lng == null) return;
+
+          activePinId = pin.id;
+          renderMarkers();
+          openFloatingPlayer(pin, true);
+          cinematicFlyTo(pin.lat, pin.lng);
         });
       });
     }
 
-    async function init() {
-      map = L.map("map").setView([39.0, 35.0], 6);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    function renderMarkers() {
+      clearMarkers();
 
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const { data } = await supabase.from("soundmap_pins").select("*");
-      allPins = data || [];
+      visiblePins.forEach(pin => {
+        if (pin.lat == null || pin.lng == null) return;
 
-      // Mood Butonları
-      const moodsDiv = document.getElementById("moods");
-      MOODS.forEach(m => {
-        const btn = document.createElement("button");
-        btn.className = "mood-btn" + (m.key === activeMood ? " active" : "");
-        btn.textContent = m.label;
-        btn.onclick = () => {
-          activeMood = m.key;
-          document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          renderMarkers(); renderDiscovery();
-        };
-        moodsDiv.appendChild(btn);
+        const isActive = String(pin.id) === String(activePinId);
+
+        const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
+          icon: makePinIcon(pin.environment || pin.category, isActive)
+        }).addTo(map);
+
+        marker.on("click", () => {
+          activePinId = pin.id;
+          renderMarkers();
+          marker.openPopup();
+          openFloatingPlayer(pin, true);
+
+          map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+            animate: true,
+            duration: 2.0
+          });
+        });
+
+        const env = getEnvironmentStyle(pin.environment || "");
+
+        marker.bindPopup(`
+          <div style="min-width:190px;font-family:sans-serif;">
+            <div style="font-weight:700;margin-bottom:6px;">${pin.title || "Kayıt"}</div>
+            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
+              ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${pin.category}</div>` : ""}
+              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${env.label}</div>` : ""}
+            </div>
+            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
+          </div>
+        `);
+
+        markers.push(marker);
       });
 
-      renderMarkers(); renderDiscovery();
+      renderStatusLine();
+
+      if (visiblePins.length === 0) {
+        activePinId = null;
+        return;
+      }
+
+      const currentVisibleActive = visiblePins.find(p => String(p.id) === String(activePinId));
+      if (!currentVisibleActive) {
+        activePinId = visiblePins[0].id;
+      }
+
+      const validCoords = visiblePins
+        .filter(p => p.lat != null && p.lng != null)
+        .map(p => [Number(p.lat), Number(p.lng)]);
+
+      if (validCoords.length && !hasFittedBounds) {
+        const bounds = L.latLngBounds(validCoords);
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [50, 50] });
+          hasFittedBounds = true;
+        }
+      }
     }
 
-    toggleDiscoveryBtn.onclick = () => { discoveryExpanded = !discoveryExpanded; renderDiscovery(); };
-    refreshDiscoveryBtn.onclick = () => { discoveryExpanded = false; renderDiscovery(); };
-    document.getElementById("searchInput").oninput = (e) => {
-      const q = normalize(e.target.value);
-      markers.forEach((m, i) => {
-        const pin = allPins[i];
-        if (normalize(pin.title).includes(q) || normalize(pin.city).includes(q)) {
-          m.getElement().style.display = "block";
-        } else {
-          m.getElement().style.display = "none";
-        }
-      });
-    };
+    function applyFilters() {
+      visiblePins = filterPins();
+      renderMarkers();
+    }
 
-    window.onload = init;
+    async function loadPins() {
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const { data, error } = await supabase
+          .from("soundmap_pins")
+          .select("*")
+          .order("title", { ascending: true });
+
+        if (error || !data || !data.length) {
+          allPins = DEMO;
+        } else {
+          allPins = data.map(pin => ({
+            ...pin,
+            photo_url: cleanUrl(pin.photo_url || ""),
+            shopify_url: cleanUrl(pin.shopify_url || ""),
+            embed_url: cleanUrl(pin.embed_url || "")
+          }));
+        }
+
+        renderMoods();
+        renderCategories();
+        renderEnvironments();
+        renderDiscovery();
+        applyFilters();
+      } catch (err) {
+        allPins = DEMO;
+        renderMoods();
+        renderCategories();
+        renderEnvironments();
+        renderDiscovery();
+        applyFilters();
+        showError("Bağlantı sorunu yaşandı. Demo veriler yükleniyor.\n\n" + (err?.message || err));
+      }
+    }
+
+    function initMap() {
+      try {
+        map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 6);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap"
+        }).addTo(map);
+
+        setTimeout(() => map.invalidateSize(), 600);
+      } catch (err) {
+        showError("Harita servisi başlatılamadı:\n" + (err?.message || err));
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      hasFittedBounds = false;
+      applyFilters();
+    });
+
+    refreshDiscoveryBtn.addEventListener("click", () => {
+      discoveryExpanded = false;
+      renderDiscovery();
+    });
+
+    toggleDiscoveryBtn.addEventListener("click", () => {
+      discoveryExpanded = !discoveryExpanded;
+      renderDiscovery();
+    });
+
+    toggleFiltersBtn.addEventListener("click", () => {
+      filtersBody.classList.toggle("show");
+      toggleFiltersIcon.textContent = filtersBody.classList.contains("show") ? "−" : "+";
+    });
+
+    playerMinBtn.addEventListener("click", closeFloatingPlayer);
+    playerCloseBtn.addEventListener("click", closeFloatingPlayer);
+
+    window.addEventListener("load", () => {
+      initMap();
+      loadPins();
+    });
   </script>
 </body>
 </html>
