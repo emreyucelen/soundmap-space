@@ -32,6 +32,7 @@
         radial-gradient(circle at top left, rgba(16,185,129,0.18), transparent 30%),
         radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 35%),
         #07111f;
+      overflow-y: auto;
     }
 
     .brand {
@@ -90,6 +91,12 @@
       padding: 8px 12px;
       cursor: pointer;
       font-size: 13px;
+      transition: .2s ease;
+    }
+
+    .cat-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.09);
     }
 
     .cat-btn.active {
@@ -104,6 +111,7 @@
       border-radius: 24px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
+      min-height: 240px;
     }
 
     .card-header {
@@ -155,6 +163,7 @@
       border-radius: 14px;
       border: 0;
       margin-top: 10px;
+      background: #000;
     }
 
     .buy-btn {
@@ -166,6 +175,12 @@
       font-weight: 700;
       padding: 12px 16px;
       border-radius: 14px;
+      transition: .2s ease;
+    }
+
+    .buy-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
     }
 
     #map {
@@ -188,6 +203,17 @@
       border-radius: 14px;
       margin-top: 10px;
       white-space: pre-wrap;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: #020617;
+      color: white;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .leaflet-popup-tip {
+      background: #020617;
     }
 
     @media (max-width: 900px) {
@@ -262,12 +288,12 @@
         title: "Akçakese Waves",
         city: "Istanbul",
         country: "Turkey",
-        description: "Açıklama yok",
+        description: "Deniz, rüzgar ve kıyı atmosferi.",
         lat: 41.24,
         lng: 29.42,
-        category: "Kültür",
-        vibe: "",
-        duration: "",
+        category: "Doğa",
+        vibe: "Sakin",
+        duration: "2:14",
         source_type: "",
         embed_url: "",
         preview_audio_url: "",
@@ -279,12 +305,12 @@
         title: "Bostancı Sahili",
         city: "Istanbul",
         country: "Turkey",
-        description: "Açıklama yok",
+        description: "Kıyı yürüyüşü, şehir dokusu ve sahil sesleri.",
         lat: 40.953,
         lng: 29.096,
-        category: "Kültür",
-        vibe: "",
-        duration: "",
+        category: "Şehir",
+        vibe: "Canlı",
+        duration: "1:58",
         source_type: "",
         embed_url: "",
         preview_audio_url: "",
@@ -304,6 +330,7 @@
     let markers = [];
     let activeCategory = "Tümü";
     let activePinId = null;
+    let hasFittedBounds = false;
 
     function showError(message) {
       errorBox.style.display = "block";
@@ -312,7 +339,7 @@
     }
 
     function normalize(value) {
-      return (value || "").toString().toLowerCase();
+      return (value || "").toString().toLowerCase().trim();
     }
 
     function getCategories(pins) {
@@ -321,6 +348,64 @@
         if (pin.category) set.add(pin.category);
       });
       return [...set];
+    }
+
+    function getCategoryColor(category) {
+      const key = normalize(category);
+
+      const colorMap = {
+        "kültür": "#8b5cf6",
+        "doğa": "#10b981",
+        "şehir": "#3b82f6",
+        "gece": "#f59e0b",
+        "ritüel": "#ec4899",
+        "tarih": "#ef4444",
+        "tarihî": "#ef4444",
+        "ambient": "#06b6d4",
+        "festival": "#f97316"
+      };
+
+      return colorMap[key] || "#3b82f6";
+    }
+
+    function makePinIcon(color, isActive = false) {
+      if (isActive) {
+        return L.divIcon({
+          className: "",
+          html: `
+            <div style="
+              position: relative;
+              width: 26px;
+              height: 26px;
+              border-radius: 999px;
+              background: ${color};
+              border: 4px solid #ffffff;
+              box-shadow:
+                0 0 0 8px ${color}33,
+                0 8px 20px rgba(0,0,0,.38);
+              transform: scale(1.02);
+            "></div>
+          `,
+          iconSize: [26, 26],
+          iconAnchor: [13, 13]
+        });
+      }
+
+      return L.divIcon({
+        className: "",
+        html: `
+          <div style="
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            background: ${color};
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,.35);
+          "></div>
+        `,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
     }
 
     function clearMarkers() {
@@ -336,11 +421,14 @@
         const btn = document.createElement("button");
         btn.className = "cat-btn" + (cat === activeCategory ? " active" : "");
         btn.textContent = cat;
+
         btn.addEventListener("click", () => {
           activeCategory = cat;
           renderCategories();
+          hasFittedBounds = false;
           applyFilters();
         });
+
         categoriesEl.appendChild(btn);
       });
     }
@@ -350,12 +438,14 @@
 
       return allPins.filter(pin => {
         const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+
         const text = [
           pin.title,
           pin.city,
           pin.country,
           pin.category,
-          pin.description
+          pin.description,
+          pin.vibe
         ].map(normalize).join(" ");
 
         return categoryOk && (!q || text.includes(q));
@@ -418,88 +508,53 @@
       `;
     }
 
-    const defaultIcon = L.divIcon({
-      className: "",
-      html: `
-        <div style="
-          width: 18px;
-          height: 18px;
-          border-radius: 999px;
-          background: #3b82f6;
-          border: 3px solid #ffffff;
-          box-shadow: 0 4px 12px rgba(0,0,0,.35);
-        "></div>
-      `,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
-    });
-
-    const activeIcon = L.divIcon({
-      className: "",
-      html: `
-        <div style="
-          width: 22px;
-          height: 22px;
-          border-radius: 999px;
-          background: #ef4444;
-          border: 4px solid #ffffff;
-          box-shadow:
-            0 0 0 8px rgba(239,68,68,.22),
-            0 6px 18px rgba(0,0,0,.35);
-        "></div>
-      `,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
-    });
-
     function renderMarkers() {
       clearMarkers();
 
       visiblePins.forEach(pin => {
         if (pin.lat == null || pin.lng == null) return;
 
+        const pinColor = getCategoryColor(pin.category);
+        const isActive = pin.id === activePinId;
+
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
-          icon: pin.id === activePinId ? activeIcon : defaultIcon
+          icon: makePinIcon(isActive ? "#ef4444" : pinColor, isActive)
         }).addTo(map);
 
         marker.on("click", () => {
           activePinId = pin.id;
           renderCard(pin);
           renderMarkers();
+          marker.openPopup();
         });
 
         marker.bindPopup(`
-          <div style="
-            background:#020617;
-            color:white;
-            padding:10px;
-            border-radius:12px;
-            min-width:160px;
-            font-family:sans-serif;
-          ">
-            <div style="font-weight:700;margin-bottom:4px;">
+          <div style="min-width:180px;font-family:sans-serif;">
+            <div style="font-weight:700;margin-bottom:6px;">
               ${pin.title || "Kayıt"}
             </div>
 
-            <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">
+            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
               ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
             </div>
 
             ${pin.category ? `
               <div style="
                 font-size:11px;
-                background:#10b98122;
-                padding:4px 6px;
-                border-radius:6px;
+                background:${getCategoryColor(pin.category)}22;
+                color:#e5e7eb;
+                padding:4px 7px;
+                border-radius:999px;
                 display:inline-block;
-                margin-bottom:6px;
+                margin-bottom:8px;
+                border:1px solid ${getCategoryColor(pin.category)}55;
               ">
                 ${pin.category}
               </div>
             ` : ""}
 
             <div style="font-size:12px;color:#cbd5e1;">
-              🎧 dinlemek için tıkla
+              🎧 Dinlemek için pine tıkla
             </div>
           </div>
         `);
@@ -507,25 +562,31 @@
         markers.push(marker);
       });
 
-      if (visiblePins.length > 0) {
-        if (!activePinId) {
-          activePinId = visiblePins[0].id;
-        }
+      if (visiblePins.length === 0) {
+        activePinId = null;
+        renderCard(null);
+        return;
+      }
 
-        const selected = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
-        renderCard(selected);
+      const currentVisibleActive = visiblePins.find(p => p.id === activePinId);
 
-        const bounds = L.latLngBounds(
-          visiblePins
-            .filter(p => p.lat != null && p.lng != null)
-            .map(p => [Number(p.lat), Number(p.lng)])
-        );
+      if (!currentVisibleActive) {
+        activePinId = visiblePins[0].id;
+      }
 
+      const selected = visiblePins.find(p => p.id === activePinId) || visiblePins[0];
+      renderCard(selected);
+
+      const validCoords = visiblePins
+        .filter(p => p.lat != null && p.lng != null)
+        .map(p => [Number(p.lat), Number(p.lng)]);
+
+      if (validCoords.length && !hasFittedBounds) {
+        const bounds = L.latLngBounds(validCoords);
         if (bounds.isValid()) {
           map.fitBounds(bounds, { padding: [40, 40] });
+          hasFittedBounds = true;
         }
-      } else {
-        renderCard(null);
       }
     }
 
@@ -575,7 +636,10 @@
       }
     }
 
-    searchInput.addEventListener("input", applyFilters);
+    searchInput.addEventListener("input", () => {
+      hasFittedBounds = false;
+      applyFilters();
+    });
 
     window.addEventListener("load", () => {
       initMap();
