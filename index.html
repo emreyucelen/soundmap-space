@@ -1175,17 +1175,18 @@
       }).join("");
 
       discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
-        el.addEventListener("click", () => {
-          const id = Number(el.getAttribute("data-discover-id"));
-          const pin = allPins.find(p => Number(p.id) === id);
-          if (!pin || pin.lat == null || pin.lng == null) return;
+  el.addEventListener("click", () => {
+    const id = String(el.getAttribute("data-discover-id"));
+    const pin = allPins.find(p => String(p.id) === id);
 
-          activePinId = pin.id;
-          renderMarkers();
-          map.setView([Number(pin.lat), Number(pin.lng)], 11, { animate: true });
-          openFloatingPlayer(pin, true);
-        });
-      });
+    if (!pin || pin.lat == null || pin.lng == null) return;
+
+    activePinId = pin.id;
+    renderMarkers();
+    map.setView([Number(pin.lat), Number(pin.lng)], 11, { animate: true });
+    openFloatingPlayer(pin, true);
+  });
+});
     }
 
     function renderMarkers() {
