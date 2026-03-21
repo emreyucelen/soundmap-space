@@ -111,6 +111,33 @@
       color: #94a3b8;
     }
 
+    .hero-actions {
+      margin-top: 12px;
+    }
+
+    .random-journey-btn {
+      width: 100%;
+      border: 0;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #03131c;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 13px 16px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+      transition: .2s ease;
+    }
+
+    .random-journey-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .random-journey-btn:active {
+      transform: translateY(0);
+    }
+
     .section {
       margin-top: 14px;
     }
@@ -364,6 +391,21 @@
       filter: saturate(1.10) brightness(1.05);
     }
 
+    .ey-pin.is-featured {
+      animation: featuredPinFloat 3.8s ease-in-out infinite;
+    }
+
+    .ey-pin.is-featured .ey-pin-inner {
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.30),
+        0 0 18px rgba(255,255,255,.10);
+    }
+
+    .ey-pin.is-featured .ey-pin-core::before,
+    .ey-pin.is-featured .ey-pin-core::after {
+      animation-duration: 1.6s !important;
+    }
+
     .ey-pin-inner {
       position: absolute;
       top: 50%;
@@ -536,6 +578,17 @@
       50% { transform: scale(1.04); opacity: 1; }
     }
 
+    @keyframes featuredPinFloat {
+      0%, 100% {
+        transform: rotate(-45deg) translateY(0);
+        filter: brightness(1);
+      }
+      50% {
+        transform: rotate(-45deg) translateY(-3px);
+        filter: brightness(1.08);
+      }
+    }
+
     .floating-player {
       position: fixed;
       right: 22px;
@@ -705,6 +758,10 @@
         <div class="search-wrap">
           <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
         </div>
+
+        <div class="hero-actions">
+          <button id="randomJourneyBtn" class="random-journey-btn">🎲 Bugün ne dinlemeliyim?</button>
+        </div>
       </div>
 
       <div class="section">
@@ -789,7 +846,7 @@
       { key: "tum", label: "✨ Hepsi", matcher: () => true },
       { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin", "huzurlu"].includes(normalize(pin.vibe)) || ["deniz", "sahil", "gol"].includes(canonicalEnvironment(pin.environment)) },
       { key: "derin", label: "🌲 Derin", matcher: pin => ["derin", "mistik"].includes(normalize(pin.vibe)) || ["orman", "muze", "tapinak"].includes(canonicalEnvironment(pin.environment)) },
-      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "şehir" },
+      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "sehir" },
       { key: "manevi", label: "🕌 Ruhsal", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
       { key: "yolculuk", label: "🚂 Dinamik", matcher: pin => {
         const text = `${pin.title || ""} ${pin.description || ""}`.toLowerCase();
@@ -840,6 +897,7 @@
     const playerMinBtn = document.getElementById("playerMinBtn");
     const playerCloseBtn = document.getElementById("playerCloseBtn");
 
+    const randomJourneyBtn = document.getElementById("randomJourneyBtn");
     const travelNoticeEl = document.getElementById("travelNotice");
 
     let map;
@@ -852,23 +910,23 @@
     let activePinId = null;
     let hasFittedBounds = false;
     let discoveryExpanded = false;
+    let featuredPinIds = [];
 
-   function normalize(value) {
-  return (value || "")
-    .toString()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/ı/g, "i")
-    .replace(/İ/g, "i")
-    .replace(/ç/g, "c")
-    .replace(/ğ/g, "g")
-    .replace(/ö/g, "o")
-    .replace(/ş/g, "s")
-    .replace(/ü/g, "u");
-}
-    
+    function normalize(value) {
+      return (value || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/ı/g, "i")
+        .replace(/İ/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u");
+    }
 
     function cleanUrl(value) {
       const raw = (value || "").toString().trim();
@@ -914,7 +972,7 @@
         sea: "deniz",
         ocean: "deniz",
         gol: "gol",
-        "göl": "gol",
+        "gol": "gol",
         lake: "gol",
         nehir: "nehir",
         river: "nehir",
@@ -924,10 +982,8 @@
         orman: "orman",
         forest: "orman",
         kirsal: "kirsal",
-        "kırsal": "kirsal",
         rural: "kirsal",
         sehir: "sehir",
-        "şehir": "sehir",
         city: "sehir",
         urban: "sehir",
         liman: "liman",
@@ -936,22 +992,17 @@
         pazar: "pazar",
         market: "pazar",
         muze: "muze",
-        "müze": "muze",
         museum: "muze",
         tarih: "tarih",
         history: "tarih",
         historic: "tarih",
         tapinak: "tapinak",
-        "tapınak": "tapinak",
         temple: "tapinak",
         dag: "dag",
-        "dağ": "dag",
         mountain: "dag",
         magara: "magara",
-        "mağara": "magara",
         cave: "magara",
         col: "col",
-        "çöl": "col",
         desert: "col"
       };
 
@@ -1008,7 +1059,7 @@
       return "core-default";
     }
 
-    function makePinIcon(environment, isActive = false) {
+    function makePinIcon(environment, isActive = false, isFeatured = false) {
       const env = getEnvironmentStyle(environment);
       const color = isActive ? "#ef4444" : env.color;
       const size = isActive ? 40 : 34;
@@ -1022,7 +1073,7 @@
         className: "",
         html: `
           <div
-            class="ey-pin ${isActive ? "is-active" : ""}"
+            class="ey-pin ${isActive ? "is-active" : ""} ${isFeatured ? "is-featured" : ""}"
             style="
               width:${size}px;
               height:${size}px;
@@ -1053,7 +1104,6 @@
           activeMood = mood.key;
           discoveryExpanded = false;
           renderMoods();
-          renderDiscovery();
           applyFilters();
         });
         moodsEl.appendChild(btn);
@@ -1222,59 +1272,101 @@
     }
 
     function cinematicFlyTo(lat, lng) {
-  showTravelNotice("Yeni durağa gidiliyor…");
+      showTravelNotice("Yeni durağa gidiliyor…");
 
-  const currentCenter = map.getCenter();
-  const currentZoom = map.getZoom();
-  const target = L.latLng(Number(lat), Number(lng));
-  const distanceKm = currentCenter.distanceTo(target) / 1000;
+      const currentCenter = map.getCenter();
+      const currentZoom = map.getZoom();
+      const target = L.latLng(Number(lat), Number(lng));
+      const distanceKm = currentCenter.distanceTo(target) / 1000;
 
-  let zoomOutLevel = Math.max(6.2, currentZoom - 1.2);
-  let firstDuration = 1.2;
-  let secondDuration = 2.6;
-  let delay = 1100;
-  let finalZoom = 14;
+      let zoomOutLevel = Math.max(6.2, currentZoom - 1.2);
+      let firstDuration = 1.2;
+      let secondDuration = 2.6;
+      let delay = 1100;
+      const finalZoom = 14;
 
-  if (distanceKm > 150) {
-    zoomOutLevel = Math.max(5.9, currentZoom - 1.5);
-    firstDuration = 1.5;
-    secondDuration = 3.0;
-    delay = 1300;
-  }
+      if (distanceKm > 150) {
+        zoomOutLevel = Math.max(5.9, currentZoom - 1.5);
+        firstDuration = 1.5;
+        secondDuration = 3.0;
+        delay = 1300;
+      }
 
-  if (distanceKm > 400) {
-    zoomOutLevel = Math.max(5.6, currentZoom - 1.8);
-    firstDuration = 1.8;
-    secondDuration = 3.5;
-    delay = 1500;
-  }
+      if (distanceKm > 400) {
+        zoomOutLevel = Math.max(5.6, currentZoom - 1.8);
+        firstDuration = 1.8;
+        secondDuration = 3.5;
+        delay = 1500;
+      }
 
-  if (distanceKm > 800) {
-    zoomOutLevel = Math.max(5.3, currentZoom - 2.0);
-    firstDuration = 2.0;
-    secondDuration = 4.0;
-    delay = 1700;
-  }
+      if (distanceKm > 800) {
+        zoomOutLevel = Math.max(5.3, currentZoom - 2.0);
+        firstDuration = 2.0;
+        secondDuration = 4.0;
+        delay = 1700;
+      }
 
-  map.flyTo(currentCenter, zoomOutLevel, {
-    animate: true,
-    duration: firstDuration
-  });
+      map.flyTo(currentCenter, zoomOutLevel, {
+        animate: true,
+        duration: firstDuration
+      });
 
-  setTimeout(() => {
-    map.flyTo([Number(lat), Number(lng)], finalZoom, {
-      animate: true,
-      duration: secondDuration
-    });
-  }, delay);
+      setTimeout(() => {
+        map.flyTo([Number(lat), Number(lng)], finalZoom, {
+          animate: true,
+          duration: secondDuration
+        });
+      }, delay);
 
-  setTimeout(() => {
-    hideTravelNotice();
-  }, delay + (secondDuration * 1000) + 300);
-}
+      setTimeout(() => {
+        hideTravelNotice();
+      }, delay + (secondDuration * 1000) + 300);
+    }
+
     function clearMarkers() {
       markers.forEach(marker => map.removeLayer(marker));
       markers = [];
+    }
+
+    function pickFeaturedPins() {
+      const candidates = visiblePins.length ? visiblePins : allPins;
+      const valid = candidates.filter(pin => pin.lat != null && pin.lng != null);
+
+      if (!valid.length) {
+        featuredPinIds = [];
+        return;
+      }
+
+      featuredPinIds = shuffleArray(valid)
+        .slice(0, Math.min(3, valid.length))
+        .map(pin => String(pin.id));
+    }
+
+    function goToPin(pin, cinematic = true) {
+      if (!pin || pin.lat == null || pin.lng == null) return;
+
+      activePinId = pin.id;
+      renderMarkers();
+      openFloatingPlayer(pin, true);
+
+      if (cinematic) {
+        cinematicFlyTo(pin.lat, pin.lng);
+      } else {
+        map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+          animate: true,
+          duration: 2.0
+        });
+      }
+    }
+
+    function randomJourney() {
+      const source = visiblePins.length ? visiblePins : allPins;
+      const valid = source.filter(pin => pin.lat != null && pin.lng != null);
+
+      if (!valid.length) return;
+
+      const pick = valid[Math.floor(Math.random() * valid.length)];
+      goToPin(pick, true);
     }
 
     function renderDiscovery() {
@@ -1321,13 +1413,8 @@
         el.addEventListener("click", () => {
           const id = String(el.getAttribute("data-discover-id"));
           const pin = allPins.find(p => String(p.id) === id);
-
           if (!pin || pin.lat == null || pin.lng == null) return;
-
-          activePinId = pin.id;
-          renderMarkers();
-          openFloatingPlayer(pin, true);
-          cinematicFlyTo(pin.lat, pin.lng);
+          goToPin(pin, true);
         });
       });
     }
@@ -1339,9 +1426,10 @@
         if (pin.lat == null || pin.lng == null) return;
 
         const isActive = String(pin.id) === String(activePinId);
+        const isFeatured = featuredPinIds.includes(String(pin.id));
 
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
-          icon: makePinIcon(pin.environment || pin.category, isActive)
+          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured)
         }).addTo(map);
 
         marker.on("click", () => {
@@ -1401,10 +1489,11 @@
     }
 
     function applyFilters() {
-  visiblePins = filterPins();
-  renderMarkers();
-  renderDiscovery();
-}
+      visiblePins = filterPins();
+      pickFeaturedPins();
+      renderMarkers();
+      renderDiscovery();
+    }
 
     async function loadPins() {
       try {
@@ -1429,14 +1518,12 @@
         renderMoods();
         renderCategories();
         renderEnvironments();
-        renderDiscovery();
         applyFilters();
       } catch (err) {
         allPins = DEMO;
         renderMoods();
         renderCategories();
         renderEnvironments();
-        renderDiscovery();
         applyFilters();
         showError("Bağlantı sorunu yaşandı. Demo veriler yükleniyor.\n\n" + (err?.message || err));
       }
@@ -1457,10 +1544,10 @@
     }
 
     searchInput.addEventListener("input", () => {
-  hasFittedBounds = false;
-  discoveryExpanded = false;
-  applyFilters();
-});
+      hasFittedBounds = false;
+      discoveryExpanded = false;
+      applyFilters();
+    });
 
     refreshDiscoveryBtn.addEventListener("click", () => {
       discoveryExpanded = false;
@@ -1479,6 +1566,7 @@
 
     playerMinBtn.addEventListener("click", closeFloatingPlayer);
     playerCloseBtn.addEventListener("click", closeFloatingPlayer);
+    randomJourneyBtn.addEventListener("click", randomJourney);
 
     window.addEventListener("load", () => {
       initMap();
