@@ -126,6 +126,19 @@
       gap: 6px;
     }
 
+    .status-line {
+      margin-top: 14px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .hover-line {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #a7f3d0;
+      min-height: 18px;
+    }
+
     .card {
       margin-top: 18px;
       padding: 18px;
@@ -202,12 +215,6 @@
     .buy-btn:hover {
       transform: translateY(-1px);
       filter: brightness(1.04);
-    }
-
-    .status-line {
-      margin-top: 14px;
-      color: #94a3b8;
-      font-size: 13px;
     }
 
     #map {
@@ -477,6 +484,7 @@
       </div>
 
       <div id="resultCount" class="status-line"></div>
+      <div id="hoverPreviewStatus" class="hover-line"></div>
 
       <div id="cardArea" class="card">
         <div class="loading">Kayıtlar yükleniyor...</div>
@@ -503,9 +511,9 @@
         title: "Yoros Kalesi",
         city: "Istanbul",
         country: "Turkey",
-        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
         lat: 41.18,
         lng: 29.09,
+        description: "Boğaz girişinde tarihi atmosfer ve açık alan ambiyansı.",
         category: "Kültür",
         environment: "muze",
         vibe: "Tarihî",
@@ -521,9 +529,9 @@
         title: "Akçakese Waves",
         city: "Istanbul",
         country: "Turkey",
-        description: "Deniz, rüzgar ve kıyı atmosferi.",
         lat: 41.24,
         lng: 29.42,
+        description: "Deniz, rüzgar ve kıyı atmosferi.",
         category: "Doğa",
         environment: "deniz",
         vibe: "Sakin",
@@ -539,67 +547,13 @@
         title: "Bostancı Sahili",
         city: "Istanbul",
         country: "Turkey",
-        description: "Kıyı yürüyüşü, şehir dokusu ve sahil sesleri.",
         lat: 40.953,
         lng: 29.096,
+        description: "Kıyı yürüyüşü, şehir dokusu ve sahil sesleri.",
         category: "Şehir",
         environment: "sahil",
         vibe: "Canlı",
         duration: "1:58",
-        source_type: "",
-        embed_url: "",
-        preview_audio_url: "",
-        shopify_url: "#",
-        price_label: ""
-      },
-      {
-        id: 4,
-        title: "Belgrad Forest Echo",
-        city: "Istanbul",
-        country: "Turkey",
-        description: "Ağaçlar, kuşlar ve doğal yankılar.",
-        lat: 41.178,
-        lng: 28.988,
-        category: "Doğa",
-        environment: "orman",
-        vibe: "Derin",
-        duration: "2:41",
-        source_type: "",
-        embed_url: "",
-        preview_audio_url: "",
-        shopify_url: "#",
-        price_label: ""
-      },
-      {
-        id: 5,
-        title: "Mountain Wind",
-        city: "Rize",
-        country: "Turkey",
-        description: "Yüksek rakımda rüzgar ve doğa ambiyansı.",
-        lat: 40.92,
-        lng: 40.82,
-        category: "Doğa",
-        environment: "dag",
-        vibe: "Açık",
-        duration: "2:07",
-        source_type: "",
-        embed_url: "",
-        preview_audio_url: "",
-        shopify_url: "#",
-        price_label: ""
-      },
-      {
-        id: 6,
-        title: "Lakeside Silence",
-        city: "Bolu",
-        country: "Turkey",
-        description: "Göl kıyısında sakin ve dingin ambiyans.",
-        lat: 40.61,
-        lng: 31.62,
-        category: "Doğa",
-        environment: "gol",
-        vibe: "Sessiz",
-        duration: "3:01",
         source_type: "",
         embed_url: "",
         preview_audio_url: "",
@@ -614,6 +568,7 @@
     const searchInput = document.getElementById("searchInput");
     const errorBox = document.getElementById("errorBox");
     const resultCountEl = document.getElementById("resultCount");
+    const hoverPreviewStatusEl = document.getElementById("hoverPreviewStatus");
 
     let map;
     let allPins = [];
@@ -624,6 +579,10 @@
     let activePinId = null;
     let hasFittedBounds = false;
 
+    let hoverAudio = null;
+    let hoverPreviewPinId = null;
+    let interactionUnlocked = false;
+
     function showError(message) {
       errorBox.style.display = "block";
       errorBox.textContent = message;
@@ -632,6 +591,14 @@
 
     function normalize(value) {
       return (value || "").toString().toLowerCase().trim();
+    }
+
+    function cleanUrl(value) {
+      const raw = (value || "").toString().trim();
+      if (!raw) return "";
+      if (raw.startsWith("//")) return "https:" + raw;
+      if (raw.startsWith("www.")) return "https://" + raw;
+      return raw;
     }
 
     function getCategories(pins) {
@@ -908,6 +875,70 @@
       resultCountEl.textContent = parts.join(" • ");
     }
 
+    function isProbablyAudioUrl(url) {
+      if (!url) return false;
+      const clean = cleanUrl(url).toLowerCase();
+
+      if (!clean) return false;
+      if (clean.includes("youtube.com") || clean.includes("youtu.be")) return false;
+      if (clean.includes("soundcloud.com")) return false;
+      if (clean === "emre yücelen") return false;
+
+      return (
+        clean.endsWith(".mp3") ||
+        clean.endsWith(".wav") ||
+        clean.endsWith(".ogg") ||
+        clean.endsWith(".m4a") ||
+        clean.includes(".mp3?") ||
+        clean.includes(".wav?") ||
+        clean.includes(".ogg?") ||
+        clean.includes(".m4a?")
+      );
+    }
+
+    function setHoverPreviewStatus(text = "") {
+      hoverPreviewStatusEl.textContent = text;
+    }
+
+    function unlockAudioInteraction() {
+      interactionUnlocked = true;
+      if (!hoverPreviewStatusEl.textContent) {
+        setHoverPreviewStatus("Pinlerin üzerine gelince önizleme varsa ses denemesi yapılır.");
+      }
+    }
+
+    function stopHoverPreview() {
+      hoverPreviewPinId = null;
+
+      if (hoverAudio) {
+        try {
+          hoverAudio.pause();
+          hoverAudio.currentTime = 0;
+        } catch (e) {}
+      }
+
+      hoverAudio = null;
+      setHoverPreviewStatus("");
+    }
+
+    function startHoverPreview(pin) {
+      stopHoverPreview();
+
+      const url = cleanUrl(pin.preview_audio_url || "");
+      if (!isProbablyAudioUrl(url)) return;
+
+      hoverPreviewPinId = pin.id;
+      hoverAudio = new Audio(url);
+      hoverAudio.volume = 0.18;
+      hoverAudio.loop = true;
+
+      setHoverPreviewStatus(`🎧 Önizleme: ${pin.title}`);
+
+      hoverAudio.play().catch(() => {
+        setHoverPreviewStatus("🎧 Tarayıcı önizleme sesini engelledi. Haritaya bir kez tıklayıp tekrar dene.");
+      });
+    }
+
     function renderCard(pin) {
       if (!pin) {
         cardArea.innerHTML = '<div class="empty">Kayıt bulunamadı.</div>';
@@ -923,15 +954,21 @@
       const vibe = pin.vibe || "";
       const duration = pin.duration || "";
       const sourceType = (pin.source_type || "").toLowerCase();
-      const embedUrl = pin.embed_url || "";
-      const audioUrl = pin.preview_audio_url || "";
-      const shopifyUrl = pin.shopify_url || "#";
+      const embedUrlRaw = pin.embed_url || "";
+      const audioUrl = cleanUrl(pin.preview_audio_url || "");
+      const shopifyUrl = cleanUrl(pin.shopify_url || "#");
       const env = getEnvironmentStyle(pin.environment || "");
 
       let mediaHtml = "";
-      if ((sourceType === "soundcloud" || sourceType === "youtube") && embedUrl) {
-        mediaHtml = `<iframe src="${embedUrl}" height="166" allow="autoplay; encrypted-media"></iframe>`;
-      } else if (audioUrl) {
+      if (sourceType === "youtube" && embedUrlRaw) {
+        const videoId = embedUrlRaw.includes("http") ? embedUrlRaw : embedUrlRaw.trim();
+        const finalYoutubeUrl = videoId.includes("http")
+          ? videoId
+          : `https://www.youtube.com/embed/${videoId}`;
+        mediaHtml = `<iframe src="${finalYoutubeUrl}" height="166" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+      } else if (sourceType === "soundcloud" && embedUrlRaw) {
+        mediaHtml = `<iframe src="${embedUrlRaw}" height="166" allow="autoplay; encrypted-media" loading="lazy"></iframe>`;
+      } else if (isProbablyAudioUrl(audioUrl)) {
         mediaHtml = `<audio controls src="${audioUrl}"></audio>`;
       }
 
@@ -952,6 +989,7 @@
           ${vibe ? `<div class="pill">${vibe}</div>` : ""}
           ${duration ? `<div class="pill">${duration}</div>` : ""}
           ${sourceType ? `<div class="pill">${sourceType}</div>` : ""}
+          ${isProbablyAudioUrl(audioUrl) ? `<div class="pill">hover preview</div>` : ""}
         </div>
 
         <div class="media-wrap">
@@ -979,10 +1017,20 @@
         }).addTo(map);
 
         marker.on("click", () => {
+          unlockAudioInteraction();
           activePinId = pin.id;
           renderCard(pin);
           renderMarkers();
           marker.openPopup();
+        });
+
+        marker.on("mouseover", () => {
+          if (!interactionUnlocked) return;
+          startHoverPreview(pin);
+        });
+
+        marker.on("mouseout", () => {
+          stopHoverPreview();
         });
 
         const env = getEnvironmentStyle(pin.environment || "");
@@ -1030,7 +1078,7 @@
             </div>
 
             <div style="font-size:12px;color:#cbd5e1;">
-              🎧 Dinlemek için pine tıkla
+              ${isProbablyAudioUrl(cleanUrl(pin.preview_audio_url || "")) ? "🎧 Üzerine gelince önizleme" : "🎧 Dinlemek için pine tıkla"}
             </div>
           </div>
         `);
@@ -1043,6 +1091,7 @@
       if (visiblePins.length === 0) {
         activePinId = null;
         renderCard(null);
+        stopHoverPreview();
         return;
       }
 
@@ -1068,6 +1117,7 @@
     }
 
     function applyFilters() {
+      stopHoverPreview();
       visiblePins = filterPins();
       renderMarkers();
     }
@@ -1084,7 +1134,12 @@
         if (error || !data || !data.length) {
           allPins = DEMO;
         } else {
-          allPins = data;
+          allPins = data.map(pin => ({
+            ...pin,
+            photo_url: cleanUrl(pin.photo_url || ""),
+            shopify_url: cleanUrl(pin.shopify_url || ""),
+            preview_audio_url: cleanUrl(pin.preview_audio_url || "")
+          }));
         }
 
         renderCategories();
@@ -1107,6 +1162,8 @@
           attribution: "&copy; OpenStreetMap"
         }).addTo(map);
 
+        map.on("click", unlockAudioInteraction);
+
         setTimeout(() => {
           map.invalidateSize();
         }, 700);
@@ -1119,6 +1176,8 @@
       hasFittedBounds = false;
       applyFilters();
     });
+
+    document.addEventListener("click", unlockAudioInteraction, { once: true });
 
     window.addEventListener("load", () => {
       initMap();
