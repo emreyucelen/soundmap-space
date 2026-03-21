@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundmap Admin</title>
+  <title>Soundmap Admin Pro</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -283,6 +283,12 @@
       border: 1px solid rgba(255,255,255,0.12);
     }
 
+    .delete {
+      background: rgba(127,29,29,.35);
+      color: #fecaca;
+      border: 1px solid rgba(248,113,113,.25);
+    }
+
     .status-box {
       margin-top: 12px;
       padding: 12px 14px;
@@ -367,6 +373,49 @@
       grid-column: 1 / -1;
     }
 
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.10), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.10), transparent 30%),
+        linear-gradient(180deg, #07111f 0%, #0b1528 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: min(420px, 100%);
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.30);
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .auth-sub {
+      margin-top: 8px;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
     @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
       .sidebar {
@@ -382,64 +431,81 @@
   </style>
 </head>
 <body>
-  <div class="page">
-    <aside class="sidebar">
-      <div class="brand">🛠️ Soundmap Admin</div>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="section-title">Güvenli Giriş</div>
+      <h1 class="auth-title">Admin Login</h1>
+      <div class="auth-sub">Supabase hesabınla giriş yap. Sadece admin_users tablosunda kayıtlı hesaplar panele erişebilir.</div>
 
-      <div class="hero">
-        <div class="section-title">Yönetim Paneli</div>
-        <h1>Önerileri yönet</h1>
-        <p>Pending gelen kayıtları incele, düzenle, onayla veya reddet. Onaylananlar public haritada otomatik görünür.</p>
-      </div>
+      <input id="loginEmail" class="input" type="email" placeholder="E-posta" />
+      <input id="loginPassword" class="input" type="password" placeholder="Şifre" />
+      <button id="loginBtn" class="btn btn-primary">Giriş yap</button>
+      <div id="authStatus" class="status-box"></div>
+    </div>
+  </div>
 
-      <div class="panel">
-        <div class="section-title">Bağlantı</div>
-        <button id="refreshBtn" class="btn btn-primary">Yenile</button>
-        <button id="pendingBtn" class="btn btn-secondary">Sadece Pending</button>
-        <div id="statusBox" class="status-box"></div>
-      </div>
-    </aside>
+  <div id="appShell" class="hidden">
+    <div class="page">
+      <aside class="sidebar">
+        <div class="brand">🛠️ Soundmap Admin Pro</div>
 
-    <main class="content">
-      <div class="stats">
-        <div class="stat-box">
-          <div class="stat-label">Toplam</div>
-          <div id="statTotal" class="stat-value">0</div>
+        <div class="hero">
+          <div class="section-title">Yönetim Paneli</div>
+          <h1>Önerileri yönet</h1>
+          <p>Pending gelen kayıtları incele, düzenle, onayla veya reddet. Onaylananlar public haritada otomatik görünür.</p>
         </div>
-        <div class="stat-box">
-          <div class="stat-label">Pending</div>
-          <div id="statPending" class="stat-value">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Approved</div>
-          <div id="statApproved" class="stat-value">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Rejected</div>
-          <div id="statRejected" class="stat-value">0</div>
-        </div>
-      </div>
 
-      <div class="panel">
-        <div class="section-title">Filtreler</div>
-        <div class="toolbar">
-          <input id="searchInput" class="input" type="text" placeholder="Başlık, şehir, ülke, vibe ara..." />
-          <select id="statusFilter" class="select">
-            <option value="all">Tüm durumlar</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <select id="sourceFilter" class="select">
-            <option value="all">Tüm kaynaklar</option>
-            <option value="youtube">YouTube</option>
-            <option value="soundcloud">SoundCloud</option>
-          </select>
+        <div class="panel">
+          <div class="section-title">Oturum</div>
+          <div id="currentUserBox" class="desc" style="margin-top:0;"></div>
+          <button id="refreshBtn" class="btn btn-primary">Yenile</button>
+          <button id="pendingBtn" class="btn btn-secondary">Sadece Pending</button>
+          <button id="logoutBtn" class="btn btn-secondary">Çıkış yap</button>
+          <div id="statusBox" class="status-box"></div>
         </div>
-      </div>
+      </aside>
 
-      <div id="list" class="list"></div>
-    </main>
+      <main class="content">
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-label">Toplam</div>
+            <div id="statTotal" class="stat-value">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Pending</div>
+            <div id="statPending" class="stat-value">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Approved</div>
+            <div id="statApproved" class="stat-value">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Rejected</div>
+            <div id="statRejected" class="stat-value">0</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-title">Filtreler</div>
+          <div class="toolbar">
+            <input id="searchInput" class="input" type="text" placeholder="Başlık, şehir, ülke, vibe ara..." />
+            <select id="statusFilter" class="select">
+              <option value="all">Tüm durumlar</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <select id="sourceFilter" class="select">
+              <option value="all">Tüm kaynaklar</option>
+              <option value="youtube">YouTube</option>
+              <option value="soundcloud">SoundCloud</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="list" class="list"></div>
+      </main>
+    </div>
   </div>
 
   <div id="editor" class="editor">
@@ -493,8 +559,17 @@
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPassword = document.getElementById("loginPassword");
+    const loginBtn = document.getElementById("loginBtn");
+    const authStatus = document.getElementById("authStatus");
+
+    const currentUserBox = document.getElementById("currentUserBox");
     const refreshBtn = document.getElementById("refreshBtn");
     const pendingBtn = document.getElementById("pendingBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
     const statusBox = document.getElementById("statusBox");
 
     const statTotal = document.getElementById("statTotal");
@@ -527,6 +602,7 @@
     const editDescription = document.getElementById("editDescription");
 
     let allRows = [];
+    let currentUser = null;
 
     function normalize(value) {
       return (value || "")
@@ -553,29 +629,102 @@
         .replace(/'/g, "&#039;");
     }
 
-    function showStatus(message, type = "success") {
-      statusBox.className = `status-box show ${type}`;
-      statusBox.textContent = message;
+    function showBox(el, message, type = "success") {
+      el.className = `status-box show ${type}`;
+      el.textContent = message;
     }
 
-    function clearStatus() {
-      statusBox.className = "status-box";
-      statusBox.textContent = "";
-    }
-
-    function showEditStatus(message, type = "success") {
-      editStatusBox.className = `status-box show ${type}`;
-      editStatusBox.textContent = message;
-    }
-
-    function clearEditStatus() {
-      editStatusBox.className = "status-box";
-      editStatusBox.textContent = "";
+    function clearBox(el) {
+      el.className = "status-box";
+      el.textContent = "";
     }
 
     function badge(status) {
       const s = normalize(status) || "pending";
       return `<span class="badge ${s}">${s}</span>`;
+    }
+
+    function showApp() {
+      authScreen.classList.add("hidden");
+      appShell.classList.remove("hidden");
+    }
+
+    function showAuth() {
+      authScreen.classList.remove("hidden");
+      appShell.classList.add("hidden");
+    }
+
+    async function isCurrentUserAdmin(user) {
+      const { data, error } = await supabaseClient
+        .from("admin_users")
+        .select("id, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return !!data;
+    }
+
+    async function bootstrapSession() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+
+        if (!session?.user) {
+          showAuth();
+          return;
+        }
+
+        const user = session.user;
+        const admin = await isCurrentUserAdmin(user);
+
+        if (!admin) {
+          await supabaseClient.auth.signOut();
+          showAuth();
+          showBox(authStatus, "Bu hesap admin olarak yetkilendirilmemiş.", "error");
+          return;
+        }
+
+        currentUser = user;
+        currentUserBox.textContent = `Giriş yapan: ${user.email}`;
+        showApp();
+        await loadRows();
+      } catch (err) {
+        showAuth();
+        showBox(authStatus, "Oturum doğrulanamadı.\n\n" + (err?.message || err), "error");
+      }
+    }
+
+    async function login() {
+      try {
+        clearBox(authStatus);
+
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value;
+
+        if (!email || !password) {
+          showBox(authStatus, "E-posta ve şifre gerekli.", "error");
+          return;
+        }
+
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        await bootstrapSession();
+      } catch (err) {
+        showBox(authStatus, "Giriş başarısız.\n\n" + (err?.message || err), "error");
+      }
+    }
+
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      allRows = [];
+      listEl.innerHTML = "";
+      showAuth();
     }
 
     function updateStats(rows) {
@@ -644,6 +793,7 @@
             <button class="action-btn approve" data-action="approve" data-id="${row.id}">Onayla</button>
             <button class="action-btn reject" data-action="reject" data-id="${row.id}">Reddet</button>
             <button class="action-btn edit" data-action="edit" data-id="${row.id}">Düzenle</button>
+            <button class="action-btn delete" data-action="delete" data-id="${row.id}">Sil</button>
           </div>
         </div>
       `).join("");
@@ -661,6 +811,9 @@
             await updateStatus(id, "rejected");
           } else if (action === "edit") {
             openEditor(row);
+          } else if (action === "delete") {
+            const ok = confirm(`"${row.title || "kayıt"}" silinsin mi?`);
+            if (ok) await deleteRow(id);
           }
         });
       });
@@ -668,7 +821,7 @@
 
     async function loadRows() {
       try {
-        clearStatus();
+        clearBox(statusBox);
 
         const { data, error } = await supabaseClient
           .from("soundmap_pins")
@@ -680,9 +833,9 @@
         allRows = data || [];
         updateStats(allRows);
         renderList();
-        showStatus("Kayıtlar yenilendi.", "success");
+        showBox(statusBox, "Kayıtlar yenilendi.", "success");
       } catch (err) {
-        showStatus("Kayıtlar yüklenemedi.\n\n" + (err?.message || err), "error");
+        showBox(statusBox, "Kayıtlar yüklenemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
@@ -697,12 +850,27 @@
 
         await loadRows();
       } catch (err) {
-        showStatus("Durum güncellenemedi.\n\n" + (err?.message || err), "error");
+        showBox(statusBox, "Durum güncellenemedi.\n\n" + (err?.message || err), "error");
+      }
+    }
+
+    async function deleteRow(id) {
+      try {
+        const { error } = await supabaseClient
+          .from("soundmap_pins")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        await loadRows();
+      } catch (err) {
+        showBox(statusBox, "Kayıt silinemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
     function openEditor(row) {
-      clearEditStatus();
+      clearBox(editStatusBox);
 
       editId.value = row.id ?? "";
       editTitle.value = row.title ?? "";
@@ -723,12 +891,12 @@
 
     function closeEditor() {
       editor.classList.remove("show");
-      clearEditStatus();
+      clearBox(editStatusBox);
     }
 
     async function saveEdit(e) {
       e.preventDefault();
-      clearEditStatus();
+      clearBox(editStatusBox);
 
       const id = editId.value;
       if (!id) return;
@@ -749,7 +917,7 @@
       };
 
       if (!payload.title || !payload.city || !payload.country || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
-        showEditStatus("Başlık, şehir, ülke ve koordinatlar zorunlu.", "error");
+        showBox(editStatusBox, "Başlık, şehir, ülke ve koordinatlar zorunlu.", "error");
         return;
       }
 
@@ -761,17 +929,19 @@
 
         if (error) throw error;
 
-        showEditStatus("Kayıt güncellendi.", "success");
+        showBox(editStatusBox, "Kayıt güncellendi.", "success");
         await loadRows();
 
         setTimeout(() => {
           closeEditor();
         }, 500);
       } catch (err) {
-        showEditStatus("Kayıt güncellenemedi.\n\n" + (err?.message || err), "error");
+        showBox(editStatusBox, "Kayıt güncellenemedi.\n\n" + (err?.message || err), "error");
       }
     }
 
+    loginBtn.addEventListener("click", login);
+    logoutBtn.addEventListener("click", logout);
     refreshBtn.addEventListener("click", loadRows);
 
     pendingBtn.addEventListener("click", () => {
@@ -790,13 +960,30 @@
       if (e.target === editor) closeEditor();
     });
 
+    loginPassword.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && editor.classList.contains("show")) {
         closeEditor();
       }
     });
 
-    window.addEventListener("load", loadRows);
+    window.addEventListener("load", bootstrapSession);
+
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        try {
+          const admin = await isCurrentUserAdmin(session.user);
+          if (admin) {
+            currentUser = session.user;
+            currentUserBox.textContent = `Giriş yapan: ${session.user.email}`;
+            showApp();
+          }
+        } catch (_) {}
+      }
+    });
   </script>
 </body>
 </html>
