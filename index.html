@@ -216,7 +216,10 @@
       background: #020617;
     }
 
-    /* PIN BASE */
+    /* =========================
+       PIN SYSTEM
+    ========================= */
+
     .ey-pin {
       position: relative;
       transform: rotate(-45deg);
@@ -248,11 +251,9 @@
       height: 100%;
     }
 
-    /* SEA / LAKE */
+    /* SEA / LAKE / RIVER / SHORE */
     .core-sea::before,
-    .core-sea::after,
-    .core-lake::before,
-    .core-lake::after {
+    .core-sea::after {
       content: "";
       position: absolute;
       left: 8%;
@@ -263,19 +264,17 @@
       opacity: .9;
     }
 
-    .core-sea::before,
-    .core-lake::before {
+    .core-sea::before {
       top: 30%;
       animation: waveMove 2.2s ease-in-out infinite;
     }
 
-    .core-sea::after,
-    .core-lake::after {
+    .core-sea::after {
       top: 58%;
       animation: waveMove 2.2s ease-in-out infinite reverse;
     }
 
-    /* FOREST */
+    /* FOREST / RURAL */
     .core-forest::before,
     .core-forest::after {
       content: "";
@@ -304,7 +303,7 @@
       animation: forestPulse 2.8s ease-in-out infinite reverse;
     }
 
-    /* CITY */
+    /* CITY / PORT / MARKET */
     .core-city::before,
     .core-city::after {
       content: "";
@@ -330,16 +329,16 @@
       opacity: .6;
     }
 
-    /* MUSEUM */
+    /* MUSEUM / HISTORY / TEMPLE */
     .core-museum::before,
     .core-museum::after {
       content: "";
       position: absolute;
-      inset: 20%;
       border-radius: 50%;
     }
 
     .core-museum::before {
+      inset: 20%;
       border: 2px solid rgba(255,255,255,.92);
       animation: museumGlow 2.8s ease-in-out infinite;
     }
@@ -347,17 +346,17 @@
     .core-museum::after {
       inset: 34%;
       background: rgba(255,255,255,.95);
-      border-radius: 50%;
     }
 
-    /* MOUNTAIN */
+    /* MOUNTAIN / CAVE / DESERT */
     .core-mountain::before {
       content: "";
       position: absolute;
-      left: 24%;
-      right: 24%;
+      left: 50%;
       bottom: 22%;
+      width: 0;
       height: 0;
+      transform: translateX(-50%);
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
       border-bottom: 12px solid rgba(255,255,255,.92);
@@ -374,7 +373,6 @@
       animation: softPulse 2.6s ease-in-out infinite;
     }
 
-    /* ACTIVE */
     .ey-pin.is-active .ey-pin-inner {
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.28),
@@ -386,7 +384,6 @@
       animation-duration: 1.6s !important;
     }
 
-    /* ANIMATIONS */
     @keyframes waveMove {
       0%, 100% { transform: translateX(-1px); opacity: .55; }
       50% { transform: translateX(2px); opacity: 1; }
@@ -408,8 +405,8 @@
     }
 
     @keyframes mountainGlow {
-      0%, 100% { opacity: .55; transform: scale(.96); }
-      50% { opacity: 1; transform: scale(1.04); }
+      0%, 100% { opacity: .55; transform: translateX(-50%) scale(.96); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.04); }
     }
 
     @keyframes softPulse {
@@ -433,8 +430,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .ey-pin.is-active .ey-pin-core::before,
-      .ey-pin.is-active .ey-pin-core::after {
+      .ey-pin-core::before,
+      .ey-pin-core::after {
         animation: none !important;
       }
     }
@@ -619,32 +616,62 @@
       const key = normalize(environment);
 
       const map = {
-        deniz:    { color: "#0ea5e9", symbol: "🌊", label: "Deniz" },
-        gol:      { color: "#38bdf8", symbol: "💧", label: "Göl" },
-        "göl":    { color: "#38bdf8", symbol: "💧", label: "Göl" },
-        orman:    { color: "#16a34a", symbol: "🌲", label: "Orman" },
-        dag:      { color: "#78716c", symbol: "⛰️", label: "Dağ" },
-        "dağ":    { color: "#78716c", symbol: "⛰️", label: "Dağ" },
-        sehir:    { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
-        "şehir":  { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
-        muze:     { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
-        "müze":   { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
-        tarih:    { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
-        tapinak:  { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
-        "tapınak":{ color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
-        col:      { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
-        "çöl":    { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
-        nehir:    { color: "#06b6d4", symbol: "💦", label: "Nehir" },
-        sahil:    { color: "#14b8a6", symbol: "🐚", label: "Sahil" },
-        liman:    { color: "#475569", symbol: "⚓", label: "Liman" },
-        pazar:    { color: "#f97316", symbol: "🧺", label: "Pazar" },
-        magara:   { color: "#57534e", symbol: "🪨", label: "Mağara" },
-        "mağara": { color: "#57534e", symbol: "🪨", label: "Mağara" },
-        kirsal:   { color: "#65a30d", symbol: "🌾", label: "Kırsal" },
-        "kırsal": { color: "#65a30d", symbol: "🌾", label: "Kırsal" }
+        deniz:   { color: "#0ea5e9", symbol: "🌊", label: "Deniz" },
+        gol:     { color: "#38bdf8", symbol: "💧", label: "Göl" },
+        "göl":   { color: "#38bdf8", symbol: "💧", label: "Göl" },
+        nehir:   { color: "#06b6d4", symbol: "💦", label: "Nehir" },
+        sahil:   { color: "#14b8a6", symbol: "🐚", label: "Sahil" },
+
+        orman:   { color: "#16a34a", symbol: "🌲", label: "Orman" },
+        kirsal:  { color: "#65a30d", symbol: "🌾", label: "Kırsal" },
+        "kırsal":{ color: "#65a30d", symbol: "🌾", label: "Kırsal" },
+
+        sehir:   { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
+        "şehir": { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
+        liman:   { color: "#475569", symbol: "⚓", label: "Liman" },
+        pazar:   { color: "#f97316", symbol: "🧺", label: "Pazar" },
+
+        muze:    { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
+        "müze":  { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
+        tarih:   { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
+        tapinak: { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
+        "tapınak": { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
+
+        dag:     { color: "#78716c", symbol: "⛰️", label: "Dağ" },
+        "dağ":   { color: "#78716c", symbol: "⛰️", label: "Dağ" },
+        magara:  { color: "#57534e", symbol: "🪨", label: "Mağara" },
+        "mağara":{ color: "#57534e", symbol: "🪨", label: "Mağara" },
+        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
+        "çöl":   { color: "#f59e0b", symbol: "🏜️", label: "Çöl" }
       };
 
       return map[key] || { color: "#3b82f6", symbol: "🎧", label: "Kayıt" };
+    }
+
+    function getCoreClass(environment) {
+      const key = normalize(environment);
+
+      if (["deniz", "gol", "göl", "nehir", "sahil"].includes(key)) {
+        return "core-sea";
+      }
+
+      if (["orman", "kirsal", "kırsal"].includes(key)) {
+        return "core-forest";
+      }
+
+      if (["sehir", "şehir", "liman", "pazar"].includes(key)) {
+        return "core-city";
+      }
+
+      if (["muze", "müze", "tarih", "tapinak", "tapınak"].includes(key)) {
+        return "core-museum";
+      }
+
+      if (["dag", "dağ", "magara", "mağara", "col", "çöl"].includes(key)) {
+        return "core-mountain";
+      }
+
+      return "core-default";
     }
 
     function makePinIcon(environment, isActive = false) {
@@ -658,20 +685,7 @@
         ? `0 0 0 10px ${color}33, 0 10px 22px rgba(0,0,0,.35)`
         : `0 6px 14px rgba(0,0,0,.28)`;
 
-      let coreClass = "core-default";
-      const key = normalize(environment);
-
-      if (key === "deniz" || key === "gol" || key === "göl" || key === "nehir" || key === "sahil") {
-        coreClass = "core-sea";
-      } else if (key === "orman" || key === "kirsal" || key === "kırsal") {
-        coreClass = "core-forest";
-      } else if (key === "sehir" || key === "şehir" || key === "liman" || key === "pazar") {
-        coreClass = "core-city";
-      } else if (key === "muze" || key === "müze" || key === "tarih" || key === "tapinak" || key === "tapınak") {
-        coreClass = "core-museum";
-      } else if (key === "dag" || key === "dağ" || key === "magara" || key === "mağara" || key === "col" || key === "çöl") {
-        coreClass = "core-mountain";
-      }
+      const coreClass = getCoreClass(environment);
 
       return L.divIcon({
         className: "",
@@ -814,6 +828,7 @@
         if (pin.lat == null || pin.lng == null) return;
 
         const isActive = pin.id === activePinId;
+
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
           icon: makePinIcon(pin.environment || pin.category, isActive)
         }).addTo(map);
