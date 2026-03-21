@@ -856,11 +856,14 @@
    function normalize(value) {
   return (value || "")
     .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim()
+    .replace(/ı/g, "i")
+    .replace(/İ/g, "i")
     .replace(/ç/g, "c")
     .replace(/ğ/g, "g")
-    .replace(/ı/g, "i")
     .replace(/ö/g, "o")
     .replace(/ş/g, "s")
     .replace(/ü/g, "u");
