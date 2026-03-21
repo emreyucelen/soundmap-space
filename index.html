@@ -1183,13 +1183,24 @@
 
     activePinId = pin.id;
     renderMarkers();
+    openFloatingPlayer(pin, true);
 
-    map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+    const targetLat = Number(pin.lat);
+    const targetLng = Number(pin.lng);
+
+    // 1) önce hafif kuş bakışı
+    map.flyTo(map.getCenter(), 6, {
       animate: true,
-      duration: 1.6
+      duration: 0.9
     });
 
-    openFloatingPlayer(pin, true);
+    // 2) sonra hedefe iniş
+    setTimeout(() => {
+      map.flyTo([targetLat, targetLng], 14, {
+        animate: true,
+        duration: 1.6
+      });
+    }, 700);
   });
 });
     }
