@@ -1977,22 +1977,22 @@
 
       const formData = new FormData(submitPinForm);
       const payload = {
-        title: (formData.get("title") || "").toString().trim(),
-        category: (formData.get("category") || "").toString().trim(),
-        city: (formData.get("city") || "").toString().trim(),
-        country: (formData.get("country") || "").toString().trim(),
-        lat: Number(formData.get("lat")),
-        lng: Number(formData.get("lng")),
-        environment: (formData.get("environment") || "").toString().trim(),
-        vibe: (formData.get("vibe") || "").toString().trim(),
-        source_type: (formData.get("source_type") || "").toString().trim(),
-        embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
-        description: (formData.get("description") || "").toString().trim()
-        // 🔥 EKLEDİĞİMİZ KISIM
+  title: (formData.get("title") || "").toString().trim(),
+  category: (formData.get("category") || "").toString().trim(),
+  city: (formData.get("city") || "").toString().trim(),
+  country: (formData.get("country") || "").toString().trim(),
+  lat: Number(formData.get("lat")),
+  lng: Number(formData.get("lng")),
+  environment: (formData.get("environment") || "").toString().trim(),
+  vibe: (formData.get("vibe") || "").toString().trim(),
+  source_type: (formData.get("source_type") || "").toString().trim(),
+  embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
+  description: (formData.get("description") || "").toString().trim(),
+
+  // 🔥 BURASI KRİTİK
   status: "pending",
   submitted_at: new Date().toISOString()
 };
-      };
 
       if (!payload.title || !payload.city || !payload.country || !payload.embed_url || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
         showFormStatus("Lütfen başlık, şehir, ülke, koordinatlar ve link alanlarını doldur.", "error");
