@@ -1938,16 +1938,14 @@
         }).addTo(map);
 
         marker.on("mouseover", () => {
-          hoverPinId = pin.id;
-          renderMarkers();
-          syncDiscoveryHighlight(pin.id);
-        });
+  hoverPinId = pin.id;
+  syncDiscoveryHighlight(pin.id);
+});
 
-        marker.on("mouseout", () => {
-          hoverPinId = null;
-          renderMarkers();
-          syncDiscoveryHighlight(null);
-        });
+marker.on("mouseout", () => {
+  hoverPinId = null;
+  syncDiscoveryHighlight(null);
+});
 
         marker.on("click", () => {
           activePinId = pin.id;
