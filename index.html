@@ -216,6 +216,249 @@
       background: #020617;
     }
 
+    /* PIN CORE */
+    .ey-pin {
+      position: relative;
+      transform: rotate(-45deg);
+      overflow: hidden;
+      isolation: isolate;
+      will-change: transform;
+    }
+
+    .ey-pin.is-active {
+      filter: saturate(1.06);
+    }
+
+    .ey-pin-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+      z-index: 2;
+    }
+
+    .ey-pin-symbol {
+      position: relative;
+      z-index: 5;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,.25));
+      user-select: none;
+    }
+
+    .ey-pin-overlay,
+    .ey-pin-overlay::before,
+    .ey-pin-overlay::after {
+      position: absolute;
+      content: "";
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* DENIZ / GOL */
+    .env-deniz .ey-pin-inner,
+    .env-gol .ey-pin-inner {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.20), transparent 45%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+    }
+
+    .env-deniz .ey-pin-overlay,
+    .env-gol .ey-pin-overlay {
+      opacity: .95;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255,255,255,0) 0px,
+          rgba(255,255,255,0) 3px,
+          rgba(255,255,255,.16) 4px,
+          rgba(255,255,255,0) 6px
+        );
+      background-size: 100% 12px;
+      animation: seaFlow 3.4s linear infinite;
+    }
+
+    .env-deniz .ey-pin-overlay::after,
+    .env-gol .ey-pin-overlay::after {
+      inset: auto 10% 18% 10%;
+      height: 36%;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,.22), transparent 68%);
+      animation: waterGlow 3.2s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    /* ORMAN */
+    .env-orman .ey-pin-inner {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.16), transparent 42%),
+        radial-gradient(circle at 30% 70%, rgba(255,255,255,.08), transparent 32%);
+    }
+
+    .env-orman .ey-pin-overlay {
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,.14), transparent 28%),
+        radial-gradient(circle at 65% 65%, rgba(255,255,255,.10), transparent 25%);
+      animation: forestBreathe 3.6s ease-in-out infinite;
+    }
+
+    .env-orman .ey-pin-overlay::before {
+      inset: 18% 18% 18% 18%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.13), transparent 20%),
+        radial-gradient(circle at 70% 40%, rgba(255,255,255,.10), transparent 18%),
+        radial-gradient(circle at 45% 70%, rgba(255,255,255,.08), transparent 20%);
+      animation: forestBreathe 4.4s ease-in-out infinite reverse;
+    }
+
+    /* SEHIR */
+    .env-sehir .ey-pin-inner {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+    }
+
+    .env-sehir .ey-pin-overlay {
+      inset: 18% 18% 18% 18%;
+      background:
+        linear-gradient(90deg,
+          rgba(255,255,255,.06) 0%,
+          rgba(255,255,255,.06) 18%,
+          transparent 18%,
+          transparent 30%,
+          rgba(255,255,255,.08) 30%,
+          rgba(255,255,255,.08) 48%,
+          transparent 48%,
+          transparent 62%,
+          rgba(255,255,255,.10) 62%,
+          rgba(255,255,255,.10) 80%,
+          transparent 80%
+        );
+      border-radius: 4px;
+      animation: cityPulse 2.8s ease-in-out infinite;
+    }
+
+    .env-sehir .ey-pin-overlay::after {
+      inset: auto 14% 16% 14%;
+      height: 28%;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,.26), transparent 70%);
+      animation: cityLights 2.1s ease-in-out infinite;
+    }
+
+    /* MUZE / TARIH */
+    .env-muze .ey-pin-inner,
+    .env-tarih .ey-pin-inner,
+    .env-tapinak .ey-pin-inner {
+      background:
+        radial-gradient(circle at 50% 40%, rgba(255,255,255,.18), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+    }
+
+    .env-muze .ey-pin-overlay,
+    .env-tarih .ey-pin-overlay,
+    .env-tapinak .ey-pin-overlay {
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+      background: radial-gradient(circle, rgba(255,255,255,.14), transparent 68%);
+      animation: museumGlow 3.8s ease-in-out infinite;
+    }
+
+    /* DAG */
+    .env-dag .ey-pin-inner {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.12), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+    }
+
+    .env-dag .ey-pin-overlay {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.10), transparent 55%);
+      animation: mountainAura 4.5s ease-in-out infinite;
+    }
+
+    /* DIGERLERI */
+    .env-liman .ey-pin-inner,
+    .env-pazar .ey-pin-inner,
+    .env-sahil .ey-pin-inner,
+    .env-kirsal .ey-pin-inner,
+    .env-col .ey-pin-inner,
+    .env-nehir .ey-pin-inner,
+    .env-magara .ey-pin-inner {
+      background:
+        radial-gradient(circle at 50% 38%, rgba(255,255,255,.14), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+    }
+
+    .env-liman .ey-pin-overlay,
+    .env-pazar .ey-pin-overlay,
+    .env-sahil .ey-pin-overlay,
+    .env-kirsal .ey-pin-overlay,
+    .env-col .ey-pin-overlay,
+    .env-nehir .ey-pin-overlay,
+    .env-magara .ey-pin-overlay {
+      background: radial-gradient(circle, rgba(255,255,255,.11), transparent 70%);
+      animation: softAlive 3.5s ease-in-out infinite;
+    }
+
+    /* ACTIVE PIN - biraz daha canlı */
+    .ey-pin.is-active .ey-pin-overlay {
+      animation-duration: 2.2s !important;
+      opacity: 1;
+    }
+
+    .ey-pin.is-active .ey-pin-inner {
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.24),
+        0 0 16px rgba(255,255,255,.10);
+    }
+
+    @keyframes seaFlow {
+      0%   { transform: translateY(0); opacity: .55; }
+      50%  { transform: translateY(4px); opacity: .95; }
+      100% { transform: translateY(10px); opacity: .55; }
+    }
+
+    @keyframes waterGlow {
+      0%, 100% { transform: scale(.88); opacity: .25; }
+      50% { transform: scale(1.15); opacity: .46; }
+    }
+
+    @keyframes forestBreathe {
+      0%, 100% { transform: scale(.92); opacity: .38; }
+      50% { transform: scale(1.08); opacity: .78; }
+    }
+
+    @keyframes cityPulse {
+      0%, 100% { opacity: .42; transform: scale(.96); }
+      50% { opacity: .95; transform: scale(1.02); }
+    }
+
+    @keyframes cityLights {
+      0%, 100% { opacity: .20; transform: scale(.8); }
+      50% { opacity: .55; transform: scale(1.15); }
+    }
+
+    @keyframes museumGlow {
+      0%, 100% { opacity: .32; transform: scale(.90); }
+      50% { opacity: .70; transform: scale(1.08); }
+    }
+
+    @keyframes mountainAura {
+      0%, 100% { opacity: .22; transform: scale(.96); }
+      50% { opacity: .44; transform: scale(1.03); }
+    }
+
+    @keyframes softAlive {
+      0%, 100% { opacity: .22; transform: scale(.95); }
+      50% { opacity: .48; transform: scale(1.05); }
+    }
+
     @media (max-width: 900px) {
       .page {
         grid-template-columns: 1fr;
@@ -228,6 +471,14 @@
 
       #map {
         height: 65vh;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ey-pin-overlay,
+      .ey-pin-overlay::before,
+      .ey-pin-overlay::after {
+        animation: none !important;
       }
     }
   </style>
@@ -411,37 +662,37 @@
       const key = normalize(environment);
 
       const map = {
-        deniz:   { color: "#0ea5e9", symbol: "🌊", label: "Deniz" },
-        gol:     { color: "#38bdf8", symbol: "💧", label: "Göl" },
-        "göl":   { color: "#38bdf8", symbol: "💧", label: "Göl" },
-        orman:   { color: "#16a34a", symbol: "🌲", label: "Orman" },
-        dag:     { color: "#78716c", symbol: "⛰️", label: "Dağ" },
-        "dağ":   { color: "#78716c", symbol: "⛰️", label: "Dağ" },
-        sehir:   { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
-        "şehir": { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
-        muze:    { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
-        "müze":  { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
-        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
-        "çöl":   { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
-        nehir:   { color: "#06b6d4", symbol: "💦", label: "Nehir" },
-        sahil:   { color: "#14b8a6", symbol: "🐚", label: "Sahil" },
-        liman:   { color: "#475569", symbol: "⚓", label: "Liman" },
-        pazar:   { color: "#f97316", symbol: "🧺", label: "Pazar" },
-        magara:  { color: "#57534e", symbol: "🪨", label: "Mağara" },
-        "mağara":{ color: "#57534e", symbol: "🪨", label: "Mağara" },
-        tapinak: { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
-        "tapınak": { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
-        kirsal:  { color: "#65a30d", symbol: "🌾", label: "Kırsal" },
-        "kırsal":{ color: "#65a30d", symbol: "🌾", label: "Kırsal" }
+        deniz:   { color: "#0ea5e9", symbol: "🌊", label: "Deniz", className: "env-deniz" },
+        gol:     { color: "#38bdf8", symbol: "💧", label: "Göl", className: "env-gol" },
+        "göl":   { color: "#38bdf8", symbol: "💧", label: "Göl", className: "env-gol" },
+        orman:   { color: "#16a34a", symbol: "🌲", label: "Orman", className: "env-orman" },
+        dag:     { color: "#78716c", symbol: "⛰️", label: "Dağ", className: "env-dag" },
+        "dağ":   { color: "#78716c", symbol: "⛰️", label: "Dağ", className: "env-dag" },
+        sehir:   { color: "#2563eb", symbol: "🏙️", label: "Şehir", className: "env-sehir" },
+        "şehir": { color: "#2563eb", symbol: "🏙️", label: "Şehir", className: "env-sehir" },
+        muze:    { color: "#7c3aed", symbol: "🏛️", label: "Müze", className: "env-muze" },
+        "müze":  { color: "#7c3aed", symbol: "🏛️", label: "Müze", className: "env-muze" },
+        tarih:   { color: "#ef4444", symbol: "🕰️", label: "Tarih", className: "env-tarih" },
+        tapinak: { color: "#dc2626", symbol: "⛩️", label: "Tapınak", className: "env-tapinak" },
+        "tapınak": { color: "#dc2626", symbol: "⛩️", label: "Tapınak", className: "env-tapinak" },
+        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl", className: "env-col" },
+        "çöl":   { color: "#f59e0b", symbol: "🏜️", label: "Çöl", className: "env-col" },
+        nehir:   { color: "#06b6d4", symbol: "💦", label: "Nehir", className: "env-nehir" },
+        sahil:   { color: "#14b8a6", symbol: "🐚", label: "Sahil", className: "env-sahil" },
+        liman:   { color: "#475569", symbol: "⚓", label: "Liman", className: "env-liman" },
+        pazar:   { color: "#f97316", symbol: "🧺", label: "Pazar", className: "env-pazar" },
+        magara:  { color: "#57534e", symbol: "🪨", label: "Mağara", className: "env-magara" },
+        "mağara":{ color: "#57534e", symbol: "🪨", label: "Mağara", className: "env-magara" },
+        kirsal:  { color: "#65a30d", symbol: "🌾", label: "Kırsal", className: "env-kirsal" },
+        "kırsal":{ color: "#65a30d", symbol: "🌾", label: "Kırsal", className: "env-kirsal" }
       };
 
-      return map[key] || { color: "#3b82f6", symbol: "🎧", label: "Kayıt" };
+      return map[key] || { color: "#3b82f6", symbol: "🎧", label: "Kayıt", className: "env-default" };
     }
 
     function makePinIcon(environment, isActive = false) {
       const env = getEnvironmentStyle(environment);
       const color = isActive ? "#ef4444" : env.color;
-
       const size = isActive ? 36 : 30;
       const innerSize = isActive ? 18 : 15;
       const border = isActive ? 4 : 3;
@@ -452,30 +703,28 @@
       return L.divIcon({
         className: "",
         html: `
-          <div style="
-            position: relative;
-            width: ${size}px;
-            height: ${size}px;
-            transform: rotate(-45deg);
-            background: ${color};
-            border-radius: 50% 50% 50% 0;
-            border: ${border}px solid #ffffff;
-            box-shadow: ${glow};
-          ">
-            <div style="
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              width: ${innerSize}px;
-              height: ${innerSize}px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              transform: translate(-50%, -50%) rotate(45deg);
-              font-size: ${isActive ? "13px" : "11px"};
-              line-height: 1;
-            ">
-              ${env.symbol}
+          <div
+            class="ey-pin ${env.className} ${isActive ? 'is-active' : ''}"
+            style="
+              width:${size}px;
+              height:${size}px;
+              background:${color};
+              border-radius:50% 50% 50% 0;
+              border:${border}px solid #ffffff;
+              box-shadow:${glow};
+            "
+          >
+            <div
+              class="ey-pin-inner"
+              style="
+                width:${innerSize}px;
+                height:${innerSize}px;
+              "
+            >
+              <div class="ey-pin-overlay"></div>
+              <div class="ey-pin-symbol" style="font-size:${isActive ? '13px' : '11px'};">
+                ${env.symbol}
+              </div>
             </div>
           </div>
         `,
@@ -666,7 +915,6 @@
       }
 
       const currentVisibleActive = visiblePins.find(p => p.id === activePinId);
-
       if (!currentVisibleActive) {
         activePinId = visiblePins[0].id;
       }
