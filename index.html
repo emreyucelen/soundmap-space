@@ -25,6 +25,7 @@
       grid-template-columns: 380px 1fr;
     }
 
+    /* --- Sidebar --- */
     .sidebar {
       position: relative;
       padding: 16px;
@@ -63,351 +64,117 @@
       box-shadow: 0 18px 50px rgba(0,0,0,0.18);
     }
 
-    .hero-kicker {
-      color: #7dd3fc;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    .hero h1 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.02;
-      letter-spacing: -0.03em;
-    }
-
-    .hero p {
-      margin: 10px 0 0;
-      color: #cbd5e1;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .search-wrap {
-      margin-top: 14px;
-    }
+    .hero-kicker { color: #7dd3fc; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+    .hero h1 { margin: 0; font-size: 24px; letter-spacing: -0.03em; }
+    .hero p { margin: 10px 0 0; color: #cbd5e1; font-size: 13px; line-height: 1.55; }
 
     .search {
-      width: 100%;
-      padding: 13px 15px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      outline: none;
-      font-size: 14px;
-      transition: .2s ease;
+      width: 100%; padding: 13px 15px; margin-top: 14px; border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05);
+      color: white; outline: none; transition: .2s;
     }
+    .search:focus { border-color: rgba(56,189,248,0.35); box-shadow: 0 0 0 4px rgba(56,189,248,0.10); }
 
-    .search:focus {
-      border-color: rgba(56,189,248,0.35);
-      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
+    /* --- Buttons & Filters --- */
+    .section-title { font-size: 11px; text-transform: uppercase; color: #94a3b8; margin: 14px 0 10px; font-weight: 700; }
+    .moods, .categories, .environments { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mood-btn, .cat-btn, .env-btn, .mini-btn, .filters-toggle {
+      border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05);
+      color: #e2e8f0; border-radius: 999px; padding: 9px 12px; cursor: pointer; font-size: 12px; transition: .2s;
     }
+    .mood-btn.active, .cat-btn.active, .env-btn.active { background: rgba(34,211,238,0.14); border-color: rgba(34,211,238,0.35); }
 
-    .search::placeholder {
-      color: #94a3b8;
-    }
-
-    .section {
-      margin-top: 14px;
-    }
-
-    .section-title {
-      font-size: 11px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .moods,
-    .categories,
-    .environments {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .mood-btn,
-    .cat-btn,
-    .env-btn,
-    .mini-btn,
-    .filters-toggle {
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: #e2e8f0;
-      border-radius: 999px;
-      padding: 9px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: .2s ease;
-      backdrop-filter: blur(8px);
-    }
-
-    .mood-btn:hover,
-    .cat-btn:hover,
-    .env-btn:hover,
-    .mini-btn:hover,
-    .filters-toggle:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.08);
-    }
-
-    .mood-btn.active,
-    .cat-btn.active,
-    .env-btn.active,
-    .mini-btn.active {
-      background: rgba(34,211,238,0.14);
-      border-color: rgba(34,211,238,0.35);
-      color: #ecfeff;
-    }
-
-    .env-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .filters-shell {
-      margin-top: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      background: rgba(255,255,255,0.04);
-      overflow: hidden;
-    }
-
-    .filters-toggle {
-      width: 100%;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #f8fafc;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .filters-body {
-      display: none;
-      padding: 0 14px 14px;
-    }
-
-    .filters-body.show {
-      display: block;
-    }
-
+    /* --- Discovery Panel --- */
     .discovery-panel {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 22px;
+      margin-top: 14px; padding: 14px; border-radius: 22px;
       border: 1px solid rgba(255,255,255,0.10);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
-        radial-gradient(circle at top left, rgba(168,85,247,0.10), transparent 28%);
-      box-shadow: 0 18px 50px rgba(0,0,0,0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
     }
-
-    .discovery-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .discovery-title {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .discovery-sub {
-      color: #94a3b8;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
     .discovery-list {
-      display: grid;
-      gap: 10px;
-      max-height: 400px; /* Genişleyebileceği için limit artırıldı */
-      overflow-y: auto;
-      padding-right: 6px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.18) transparent;
+      display: grid; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 6px;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) transparent;
     }
-
-    .discovery-list::-webkit-scrollbar { width: 8px; }
-    .discovery-list::-webkit-scrollbar-track { background: transparent; }
-    .discovery-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 999px; }
-
     .discover-card {
-      padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      cursor: pointer;
-      transition: .2s ease;
+      padding: 12px 14px; border-radius: 18px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08); cursor: pointer; transition: .2s;
     }
-
     .discover-card:hover { transform: translateY(-1px); background: rgba(255,255,255,0.08); }
-
-    .discover-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
-    .discover-meta { color: #94a3b8; font-size: 12px; margin-bottom: 8px; line-height: 1.35; }
-
-    .discover-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-    .pill { padding: 6px 9px; border-radius: 999px; font-size: 11px; background: rgba(255,255,255,0.06); color: #cbd5e1; }
-
     .more-btn {
-      margin-top: 10px;
-      width: 100%;
-      padding: 11px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: #e2e8f0;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: .2s ease;
+      margin-top: 10px; width: 100%; padding: 11px; border-radius: 14px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      color: #e2e8f0; font-size: 13px; font-weight: 700; cursor: pointer;
     }
 
-    .more-btn:hover {
-      background: rgba(255,255,255,0.08);
-      transform: translateY(-1px);
-    }
-
-    .status-line { margin-top: 12px; color: #94a3b8; font-size: 13px; padding-bottom: 8px; }
-
-    #map { height: 100vh; width: 100%; background: #07111f; }
-
+    /* --- Travel Notice --- */
     .travel-notice {
-      position: fixed;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-14px);
-      z-index: 10000;
-      padding: 12px 18px;
-      border-radius: 999px;
-      background: rgba(8,17,31,0.82);
-      border: 1px solid rgba(255,255,255,0.10);
-      color: #e0f2fe;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.25);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease, transform .35s ease;
+      position: fixed; top: 22px; left: 50%; transform: translateX(-50%) translateY(-14px);
+      z-index: 10000; padding: 12px 18px; border-radius: 999px; background: rgba(8,17,31,0.82);
+      color: #e0f2fe; font-weight: 700; backdrop-filter: blur(14px); opacity: 0; transition: .35s;
     }
-
     .travel-notice.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    .ey-pin { position: relative; transform: rotate(-45deg); overflow: hidden; isolation: isolate; }
-    .ey-pin-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.20); }
-    .ey-pin-core { position: relative; width: 100%; height: 100%; }
-
-    /* Keyframes (Sadeleştirilmiş) */
-    @keyframes waveMove { 0%, 100% { transform: translateX(-1px); opacity: .55; } 50% { transform: translateX(2px); opacity: 1; } }
-    .core-sea::before { top: 30%; position: absolute; content: ""; left: 8%; right: 8%; height: 3px; background: #fff; animation: waveMove 2.2s infinite; }
-    
+    /* --- Floating Player --- */
     .floating-player {
-      position: fixed; right: 22px; bottom: 22px; width: min(460px, calc(100vw - 24px)); z-index: 9999;
-      border-radius: 26px; border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(8,17,31,0.92), rgba(13,22,38,0.92));
-      backdrop-filter: blur(18px); transform: translateY(120%); opacity: 0; transition: .35s ease;
+      position: fixed; right: 22px; bottom: 22px; width: min(460px, calc(100vw - 24px));
+      z-index: 9999; border-radius: 26px; border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8,17,31,0.92); backdrop-filter: blur(18px); transform: translateY(120%); opacity: 0; transition: .35s;
     }
     .floating-player.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-    .player-head { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; }
-    .player-title { font-size: 18px; font-weight: 800; }
-    .player-body { padding: 16px; }
-    .player-embed-wrap iframe { width: 100%; border: 0; border-radius: 18px; min-height: 220px; }
 
-    @media (max-width: 980px) {
-      .page { grid-template-columns: 1fr; }
-      #map { height: 62vh; }
-    }
+    /* --- Pins & Map --- */
+    #map { height: 100vh; width: 100%; background: #07111f; }
+    .ey-pin { position: relative; transform: rotate(-45deg); border-radius: 50% 50% 50% 0; border: 3px solid #fff; }
+    .ey-pin-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); border-radius: 50%; background: rgba(255,255,255,0.2); width: 16px; height: 16px; }
+
+    /* Pin Animasyonları */
+    @keyframes waveMove { 0%, 100% { transform: translateX(-1px); opacity: .55; } 50% { transform: translateX(2px); opacity: 1; } }
+    .core-sea::before { content: ""; position: absolute; top: 30%; left: 10%; right: 10%; height: 2px; background: #fff; animation: waveMove 2s infinite; }
   </style>
 </head>
 <body>
+
   <div class="page">
     <aside class="sidebar">
       <div class="brand">🌍 Soundmap Space</div>
-
+      
       <div class="hero">
         <div class="hero-kicker">Ses Keşif Rehberi</div>
         <h1>Dünyayı sesle keşfet</h1>
-        <p>Hangi atmosferi özledin? Bir mod seç, önerilere tıkla ve haritada yeni bir ses durağına bağlan.</p>
-        <div class="search-wrap">
-          <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
-        </div>
+        <p>Hangi atmosferi özledin? Haritayı keşfet veya senin için seçtiklerimize göz at.</p>
+        <input id="searchInput" class="search" type="text" placeholder="Şehir veya mekan ara..." />
       </div>
 
       <div class="section">
-        <div class="section-title">Moduna Göre Keşfet</div>
+        <div class="section-title">Modlar</div>
         <div id="moods" class="moods"></div>
       </div>
 
-      <div class="filters-shell">
-        <button id="toggleFiltersBtn" class="filters-toggle">
-          <span>Filtreler</span>
-          <span id="toggleFiltersIcon">+</span>
-        </button>
-        <div id="filtersBody" class="filters-body">
-          <div class="section">
-            <div class="section-title">Kategoriler</div>
-            <div id="categories" class="categories"></div>
-          </div>
-          <div class="section">
-            <div class="section-title">Atmosferler</div>
-            <div id="environments" class="environments"></div>
-          </div>
-        </div>
-      </div>
-
       <div class="discovery-panel">
-        <div class="discovery-head">
-          <div class="discovery-title">Günün Ses Durakları</div>
+        <div class="discovery-head" style="display:flex; justify-content: space-between; align-items: center; margin-bottom:10px;">
+          <span style="font-weight: 800;">Günün Ses Durakları</span>
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
-        <div id="discoverySub" class="discovery-sub">Seçtiğin moda göre sana özel öneriler burada.</div>
+        <div id="discoverySub" class="discovery-sub" style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;"></div>
         <div id="discoveryList" class="discovery-list"></div>
         <button id="toggleDiscoveryBtn" class="more-btn" style="display:none;">Daha fazlasını göster</button>
       </div>
 
-      <div id="resultCount" class="status-line"></div>
-      <div id="errorBox" class="error" style="display:none;"></div>
+      <div id="resultCount" class="status-line" style="margin-top:10px; font-size:12px; color:#94a3b8;"></div>
     </aside>
 
-    <main>
-      <div id="map"></div>
-    </main>
+    <main><div id="map"></div></main>
   </div>
 
   <div id="floatingPlayer" class="floating-player">
-    <div class="player-head">
+    <div style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between;">
       <div>
-        <div class="player-kicker">Dinleniyor</div>
-        <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
-        <div id="playerSub" class="player-sub">Haritadaki noktalara tıklayarak ses yolculuğuna başlayın.</div>
+        <div id="playerTitle" style="font-weight: 800; font-size: 16px;">Mekan İsmi</div>
+        <div id="playerSub" style="font-size: 12px; color: #94a3b8;">Konum bilgisi</div>
       </div>
-      <div class="player-actions">
-        <button id="playerMinBtn" class="player-icon-btn">—</button>
-        <button id="playerCloseBtn" class="player-icon-btn">✕</button>
-      </div>
+      <button onclick="document.getElementById('floatingPlayer').classList.remove('show')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
     </div>
-    <div class="player-body">
-      <div id="playerEmbedArea" class="player-placeholder">Haritadan bir kayıt seçin.</div>
-      <div id="playerMetaRow" class="player-meta-row"></div>
+    <div style="padding: 16px;">
+      <div id="playerEmbedArea"></div>
     </div>
   </div>
 
@@ -422,15 +189,10 @@
 
     const travelNoticeEl = document.getElementById("travelNotice");
     const discoveryListEl = document.getElementById("discoveryList");
-    const discoverySubEl = document.getElementById("discoverySub");
     const toggleDiscoveryBtn = document.getElementById("toggleDiscoveryBtn");
     const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
 
-    let discoveryExpanded = false;
-    let allPins = [];
-    let visiblePins = [];
-    let activeMood = "tum";
-    let map, markers = [];
+    let map, allPins = [], markers = [], discoveryExpanded = false, activeMood = "tum";
 
     const MOODS = [
       { key: "tum", label: "✨ Hepsi", matcher: () => true },
@@ -439,14 +201,16 @@
     ];
 
     function normalize(v) { return (v || "").toString().toLowerCase().trim(); }
-    function shuffleArray(arr) { return arr.sort(() => Math.random() - 0.5); }
+    function shuffleArray(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
-    function getEnvironmentStyle(env) { 
-      return { color: "#38bdf8", symbol: "🎧", label: "Kayıt" };
+    function showTravelNotice(text = "Yeni durağa gidiliyor…") {
+      travelNoticeEl.textContent = text;
+      travelNoticeEl.classList.add("show");
     }
 
-    function showTravelNotice(text) { travelNoticeEl.textContent = text; travelNoticeEl.classList.add("show"); }
-    function hideTravelNotice() { travelNoticeEl.classList.remove("show"); }
+    function hideTravelNotice() {
+      travelNoticeEl.classList.remove("show");
+    }
 
     function cinematicFlyTo(lat, lng) {
       showTravelNotice("Yeni durağa gidiliyor…");
@@ -457,32 +221,59 @@
       setTimeout(hideTravelNotice, 3900);
     }
 
+    function openFloatingPlayer(pin) {
+      document.getElementById("playerTitle").textContent = pin.title;
+      document.getElementById("playerSub").textContent = `${pin.city}, ${pin.country}`;
+      let videoId = pin.embed_url.includes("v=") ? pin.embed_url.split("v=")[1].split("&")[0] : pin.embed_url.split("/").pop();
+      document.getElementById("playerEmbedArea").innerHTML = `<iframe width="100%" height="220" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:14px;"></iframe>`;
+      document.getElementById("floatingPlayer").classList.add("show");
+    }
+
+    function renderMarkers() {
+      markers.forEach(m => map.removeLayer(m)); markers = [];
+      const moodMatcher = MOODS.find(m => m.key === activeMood)?.matcher || (() => true);
+      const filtered = allPins.filter(moodMatcher);
+
+      filtered.forEach(pin => {
+        const marker = L.marker([pin.lat, pin.lng], {
+          icon: L.divIcon({
+            className: "",
+            html: `<div class="ey-pin" style="width:34px; height:34px; background:#38bdf8;">
+                     <div class="ey-pin-inner core-sea"></div>
+                   </div>`,
+            iconAnchor: [17, 34]
+          })
+        }).addTo(map);
+        marker.on("click", () => {
+          openFloatingPlayer(pin);
+          map.flyTo([pin.lat, pin.lng], 14, { duration: 2.0 });
+        });
+        markers.push(marker);
+      });
+      document.getElementById("resultCount").textContent = `${filtered.length} lokasyon gösteriliyor`;
+    }
+
     function renderDiscovery() {
       const moodMatcher = MOODS.find(m => m.key === activeMood)?.matcher || (() => true);
       const base = allPins.filter(pin => moodMatcher(pin));
       const pickedAll = shuffleArray(base).filter(pin => pin.lat != null && pin.lng != null).slice(0, 6);
 
+      document.getElementById("discoverySub").textContent = activeMood === "tum" ? "Senin için seçtiğimiz duraklar." : "Moduna uygun seçkiler.";
+
       if (!pickedAll.length) {
-        discoveryListEl.innerHTML = `<div class="empty">Sonuç bulunamadı.</div>`;
+        discoveryListEl.innerHTML = `<div style="padding:10px; font-size:12px;">Sonuç bulunamadı.</div>`;
         toggleDiscoveryBtn.style.display = "none";
         return;
       }
 
       const visibleItems = discoveryExpanded ? pickedAll : pickedAll.slice(0, 2);
 
-      discoveryListEl.innerHTML = visibleItems.map(pin => {
-        const env = getEnvironmentStyle(pin.environment || "");
-        return `
-          <div class="discover-card" data-discover-id="${pin.id}">
-            <div class="discover-title">${pin.title || "Gizemli Durak"}</div>
-            <div class="discover-meta">${pin.city || ""}, ${pin.country || ""}</div>
-            <div class="discover-pills">
-              ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
-              <div class="pill">${env.symbol} ${env.label}</div>
-            </div>
-          </div>
-        `;
-      }).join("");
+      discoveryListEl.innerHTML = visibleItems.map(pin => `
+        <div class="discover-card" data-id="${pin.id}">
+          <div style="font-size:13px; font-weight:700;">${pin.title}</div>
+          <div style="font-size:11px; color:#94a3b8;">${pin.city}, ${pin.country}</div>
+        </div>
+      `).join("");
 
       if (pickedAll.length > 2) {
         toggleDiscoveryBtn.style.display = "block";
@@ -491,36 +282,58 @@
         toggleDiscoveryBtn.style.display = "none";
       }
 
-      discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
+      discoveryListEl.querySelectorAll(".discover-card").forEach(el => {
         el.addEventListener("click", () => {
-          const pin = allPins.find(p => String(p.id) === el.dataset.discoverId);
-          if (pin) cinematicFlyTo(pin.lat, pin.lng);
+          const pin = allPins.find(p => String(p.id) === el.dataset.id);
+          if (pin) {
+            openFloatingPlayer(pin);
+            cinematicFlyTo(pin.lat, pin.lng);
+          }
         });
       });
     }
 
-    async function loadPins() {
+    async function init() {
+      map = L.map("map").setView([39.0, 35.0], 6);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       const { data } = await supabase.from("soundmap_pins").select("*");
       allPins = data || [];
-      renderDiscovery();
+
+      // Mood Butonları
+      const moodsDiv = document.getElementById("moods");
+      MOODS.forEach(m => {
+        const btn = document.createElement("button");
+        btn.className = "mood-btn" + (m.key === activeMood ? " active" : "");
+        btn.textContent = m.label;
+        btn.onclick = () => {
+          activeMood = m.key;
+          document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderMarkers(); renderDiscovery();
+        };
+        moodsDiv.appendChild(btn);
+      });
+
+      renderMarkers(); renderDiscovery();
     }
 
-    toggleDiscoveryBtn.addEventListener("click", () => {
-      discoveryExpanded = !discoveryExpanded;
-      renderDiscovery();
-    });
+    toggleDiscoveryBtn.onclick = () => { discoveryExpanded = !discoveryExpanded; renderDiscovery(); };
+    refreshDiscoveryBtn.onclick = () => { discoveryExpanded = false; renderDiscovery(); };
+    document.getElementById("searchInput").oninput = (e) => {
+      const q = normalize(e.target.value);
+      markers.forEach((m, i) => {
+        const pin = allPins[i];
+        if (normalize(pin.title).includes(q) || normalize(pin.city).includes(q)) {
+          m.getElement().style.display = "block";
+        } else {
+          m.getElement().style.display = "none";
+        }
+      });
+    };
 
-    refreshDiscoveryBtn.addEventListener("click", () => {
-      discoveryExpanded = false;
-      renderDiscovery();
-    });
-
-    window.addEventListener("load", () => {
-      map = L.map("map").setView([39, 35], 6);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-      loadPins();
-    });
+    window.onload = init;
   </script>
 </body>
 </html>
