@@ -1183,7 +1183,12 @@
 
     activePinId = pin.id;
     renderMarkers();
-    map.setView([Number(pin.lat), Number(pin.lng)], 11, { animate: true });
+
+    map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+      animate: true,
+      duration: 1.6
+    });
+
     openFloatingPlayer(pin, true);
   });
 });
@@ -1195,7 +1200,10 @@
       visiblePins.forEach(pin => {
         if (pin.lat == null || pin.lng == null) return;
 
-        const currentVisibleActive = visiblePins.find(p => String(p.id) === String(activePinId));
+        map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+  animate: true,
+  duration: 1.6
+});
 
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
           icon: makePinIcon(pin.environment || pin.category, isActive)
