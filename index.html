@@ -275,6 +275,7 @@
         lat: 41.18,
         lng: 29.09,
         category: "Kültür",
+        environment: "muze",
         vibe: "Tarihî",
         duration: "3:23",
         source_type: "soundcloud",
@@ -292,6 +293,7 @@
         lat: 41.24,
         lng: 29.42,
         category: "Doğa",
+        environment: "deniz",
         vibe: "Sakin",
         duration: "2:14",
         source_type: "",
@@ -309,8 +311,63 @@
         lat: 40.953,
         lng: 29.096,
         category: "Şehir",
+        environment: "sehir",
         vibe: "Canlı",
         duration: "1:58",
+        source_type: "",
+        embed_url: "",
+        preview_audio_url: "",
+        shopify_url: "#",
+        price_label: ""
+      },
+      {
+        id: 4,
+        title: "Belgrad Forest Echo",
+        city: "Istanbul",
+        country: "Turkey",
+        description: "Ağaçlar, kuşlar ve doğal yankılar.",
+        lat: 41.178,
+        lng: 28.988,
+        category: "Doğa",
+        environment: "orman",
+        vibe: "Derin",
+        duration: "2:41",
+        source_type: "",
+        embed_url: "",
+        preview_audio_url: "",
+        shopify_url: "#",
+        price_label: ""
+      },
+      {
+        id: 5,
+        title: "Mountain Wind",
+        city: "Rize",
+        country: "Turkey",
+        description: "Yüksek rakımda rüzgar ve doğa ambiyansı.",
+        lat: 40.92,
+        lng: 40.82,
+        category: "Doğa",
+        environment: "dag",
+        vibe: "Açık",
+        duration: "2:07",
+        source_type: "",
+        embed_url: "",
+        preview_audio_url: "",
+        shopify_url: "#",
+        price_label: ""
+      },
+      {
+        id: 6,
+        title: "Lakeside Silence",
+        city: "Bolu",
+        country: "Turkey",
+        description: "Göl kıyısında sakin ve dingin ambiyans.",
+        lat: 40.61,
+        lng: 31.62,
+        category: "Doğa",
+        environment: "gol",
+        vibe: "Sessiz",
+        duration: "3:01",
         source_type: "",
         embed_url: "",
         preview_audio_url: "",
@@ -350,63 +407,86 @@
       return [...set];
     }
 
-    function getCategoryColor(category) {
-      const key = normalize(category);
+    function getEnvironmentStyle(environment) {
+      const key = normalize(environment);
 
-      const colorMap = {
-        "kültür": "#8b5cf6",
-        "doğa": "#10b981",
-        "şehir": "#3b82f6",
-        "gece": "#f59e0b",
-        "ritüel": "#ec4899",
-        "tarih": "#ef4444",
-        "tarihî": "#ef4444",
-        "ambient": "#06b6d4",
-        "festival": "#f97316"
+      const map = {
+        deniz:   { color: "#0ea5e9", symbol: "🌊", label: "Deniz" },
+        gol:     { color: "#38bdf8", symbol: "💧", label: "Göl" },
+        "göl":   { color: "#38bdf8", symbol: "💧", label: "Göl" },
+        orman:   { color: "#16a34a", symbol: "🌲", label: "Orman" },
+        dag:     { color: "#78716c", symbol: "⛰️", label: "Dağ" },
+        "dağ":   { color: "#78716c", symbol: "⛰️", label: "Dağ" },
+        sehir:   { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
+        "şehir": { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
+        muze:    { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
+        "müze":  { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
+        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
+        "çöl":   { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
+        nehir:   { color: "#06b6d4", symbol: "💦", label: "Nehir" },
+        sahil:   { color: "#14b8a6", symbol: "🐚", label: "Sahil" },
+        liman:   { color: "#475569", symbol: "⚓", label: "Liman" },
+        pazar:   { color: "#f97316", symbol: "🧺", label: "Pazar" },
+        magara:  { color: "#57534e", symbol: "🪨", label: "Mağara" },
+        "mağara":{ color: "#57534e", symbol: "🪨", label: "Mağara" },
+        tapinak: { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
+        "tapınak": { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
+        kirsal:  { color: "#65a30d", symbol: "🌾", label: "Kırsal" },
+        "kırsal":{ color: "#65a30d", symbol: "🌾", label: "Kırsal" }
       };
 
-      return colorMap[key] || "#3b82f6";
+      return map[key] || { color: "#3b82f6", symbol: "🎧", label: "Kayıt" };
     }
 
-    function makePinIcon(color, isActive = false) {
-  const size = isActive ? 34 : 28;
-  const inner = isActive ? 16 : 13;
-  const border = isActive ? 4 : 3;
-  const glow = isActive ? `0 0 0 10px ${color}33, 0 10px 22px rgba(0,0,0,.35)` : `0 6px 14px rgba(0,0,0,.28)`;
+    function makePinIcon(environment, isActive = false) {
+      const env = getEnvironmentStyle(environment);
+      const color = isActive ? "#ef4444" : env.color;
 
-  return L.divIcon({
-    className: "",
-    html: `
-      <div style="
-        position: relative;
-        width: ${size}px;
-        height: ${size}px;
-        transform: rotate(-45deg);
-        background: ${color};
-        border-radius: 50% 50% 50% 0;
-        border: ${border}px solid #ffffff;
-        box-shadow: ${glow};
-      ">
-        <div style="
-          position: absolute;
-          width: ${inner}px;
-          height: ${inner}px;
-          background: rgba(255,255,255,.95);
-          border-radius: 50%;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) rotate(45deg);
-        "></div>
-      </div>
-    `,
-    iconSize: [size, size],
-    iconAnchor: [size / 2 - 2, size - 2],
-    popupAnchor: [0, -size + 8]
-  });
-}
+      const size = isActive ? 36 : 30;
+      const innerSize = isActive ? 18 : 15;
+      const border = isActive ? 4 : 3;
+      const glow = isActive
+        ? `0 0 0 10px ${color}33, 0 10px 22px rgba(0,0,0,.35)`
+        : `0 6px 14px rgba(0,0,0,.28)`;
+
+      return L.divIcon({
+        className: "",
+        html: `
+          <div style="
+            position: relative;
+            width: ${size}px;
+            height: ${size}px;
+            transform: rotate(-45deg);
+            background: ${color};
+            border-radius: 50% 50% 50% 0;
+            border: ${border}px solid #ffffff;
+            box-shadow: ${glow};
+          ">
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: ${innerSize}px;
+              height: ${innerSize}px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transform: translate(-50%, -50%) rotate(45deg);
+              font-size: ${isActive ? "13px" : "11px"};
+              line-height: 1;
+            ">
+              ${env.symbol}
+            </div>
+          </div>
+        `,
+        iconSize: [size, size],
+        iconAnchor: [size / 2 - 2, size - 2],
+        popupAnchor: [0, -size + 8]
+      });
+    }
 
     function clearMarkers() {
-      markers.forEach(m => map.removeLayer(m));
+      markers.forEach(marker => map.removeLayer(marker));
       markers = [];
     }
 
@@ -441,6 +521,7 @@
           pin.city,
           pin.country,
           pin.category,
+          pin.environment,
           pin.description,
           pin.vibe
         ].map(normalize).join(" ");
@@ -467,6 +548,7 @@
       const embedUrl = pin.embed_url || "";
       const audioUrl = pin.preview_audio_url || "";
       const shopifyUrl = pin.shopify_url || "#";
+      const env = getEnvironmentStyle(pin.environment || "");
 
       let mediaHtml = "";
       if ((sourceType === "soundcloud" || sourceType === "youtube") && embedUrl) {
@@ -488,6 +570,7 @@
 
         <div class="meta-row">
           ${category ? `<div class="pill">${category}</div>` : ""}
+          ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
           ${vibe ? `<div class="pill">${vibe}</div>` : ""}
           ${duration ? `<div class="pill">${duration}</div>` : ""}
           ${sourceType ? `<div class="pill">${sourceType}</div>` : ""}
@@ -511,11 +594,9 @@
       visiblePins.forEach(pin => {
         if (pin.lat == null || pin.lng == null) return;
 
-        const pinColor = getCategoryColor(pin.category);
         const isActive = pin.id === activePinId;
-
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
-          icon: makePinIcon(isActive ? "#ef4444" : pinColor, isActive)
+          icon: makePinIcon(pin.environment || pin.category, isActive)
         }).addTo(map);
 
         marker.on("click", () => {
@@ -524,6 +605,8 @@
           renderMarkers();
           marker.openPopup();
         });
+
+        const env = getEnvironmentStyle(pin.environment || "");
 
         marker.bindPopup(`
           <div style="min-width:180px;font-family:sans-serif;">
@@ -535,20 +618,37 @@
               ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
             </div>
 
-            ${pin.category ? `
-              <div style="
-                font-size:11px;
-                background:${getCategoryColor(pin.category)}22;
-                color:#e5e7eb;
-                padding:4px 7px;
-                border-radius:999px;
-                display:inline-block;
-                margin-bottom:8px;
-                border:1px solid ${getCategoryColor(pin.category)}55;
-              ">
-                ${pin.category}
-              </div>
-            ` : ""}
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              ${pin.category ? `
+                <div style="
+                  font-size:11px;
+                  background:rgba(255,255,255,.06);
+                  color:#e5e7eb;
+                  padding:4px 7px;
+                  border-radius:999px;
+                  display:inline-block;
+                  margin-bottom:8px;
+                  border:1px solid rgba(255,255,255,.10);
+                ">
+                  ${pin.category}
+                </div>
+              ` : ""}
+
+              ${pin.environment ? `
+                <div style="
+                  font-size:11px;
+                  background:${env.color}22;
+                  color:#e5e7eb;
+                  padding:4px 7px;
+                  border-radius:999px;
+                  display:inline-block;
+                  margin-bottom:8px;
+                  border:1px solid ${env.color}55;
+                ">
+                  ${env.symbol} ${env.label}
+                </div>
+              ` : ""}
+            </div>
 
             <div style="font-size:12px;color:#cbd5e1;">
               🎧 Dinlemek için pine tıkla
