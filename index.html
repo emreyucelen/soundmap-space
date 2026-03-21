@@ -2116,41 +2116,58 @@ marker.on("mouseout", () => {
       }
     }
 
-    function createMainBaseLayers() {
-      const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-        maxZoom: 20
-      });
+   function createMainBaseLayers() {
+  // Local test için boş bırakabilirsin.
+  // Canlı domaine geçince Stadia hesabından key alıp buraya koy:
+  const STADIA_API_KEY = "";
 
-      const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        maxZoom: 20
-      });
+  const stadiaSuffix = STADIA_API_KEY ? `?api_key=${STADIA_API_KEY}` : "";
 
-      const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        maxZoom: 20
-      });
+  const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 20
+  });
 
-      const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap",
-        maxZoom: 17
-      });
-
-      const hot = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-        maxZoom: 20
-      });
-
-      return {
-        "Standart": standard,
-        "Hafif": light,
-        "Koyu": dark,
-        "OpenTopo": topo,
-        "Detaylı": hot
-      };
+  const stadiaSmooth = L.tileLayer(
+    `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png${stadiaSuffix}`,
+    {
+      attribution: '&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors',
+      maxZoom: 20
     }
+  );
 
+  const stadiaDark = L.tileLayer(
+    `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png${stadiaSuffix}`,
+    {
+      attribution: '&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors',
+      maxZoom: 20
+    }
+  );
+
+  const stadiaOutdoors = L.tileLayer(
+    `https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png${stadiaSuffix}`,
+    {
+      attribution: '&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors',
+      maxZoom: 20
+    }
+  );
+
+  const stadiaTerrain = L.tileLayer(
+    `https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png${stadiaSuffix}`,
+    {
+      attribution: '&copy; Stadia Maps &copy; Stamen Design &copy; OpenMapTiles &copy; OpenStreetMap contributors',
+      maxZoom: 18
+    }
+  );
+
+  return {
+    "Stadia Smooth": stadiaSmooth,
+    "Stadia Dark": stadiaDark,
+    "Stadia Outdoors": stadiaOutdoors,
+    "Stadia Terrain": stadiaTerrain,
+    "Standart OSM": standard
+  };
+}
     function initMap() {
       try {
         map = L.map("map", {
