@@ -290,14 +290,8 @@
       scrollbar-color: rgba(255,255,255,0.18) transparent;
     }
 
-    .discovery-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .discovery-list::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
+    .discovery-list::-webkit-scrollbar { width: 8px; }
+    .discovery-list::-webkit-scrollbar-track { background: transparent; }
     .discovery-list::-webkit-scrollbar-thumb {
       background: rgba(255,255,255,0.18);
       border-radius: 999px;
@@ -381,6 +375,16 @@
       white-space: pre-wrap;
     }
 
+    .empty {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(255,255,255,0.10);
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
     #map {
       height: 100vh;
       width: 100%;
@@ -406,9 +410,7 @@
       transition: transform .18s ease, filter .18s ease;
     }
 
-    .ey-pin:hover {
-      filter: brightness(1.08);
-    }
+    .ey-pin:hover { filter: brightness(1.08); }
 
     .ey-pin:hover .ey-pin-inner {
       transform: translate(-50%, -50%) rotate(45deg) scale(1.08);
@@ -436,11 +438,6 @@
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.30),
         0 0 18px rgba(255,255,255,.10);
-    }
-
-    .ey-pin.is-featured .ey-pin-core::before,
-    .ey-pin.is-featured .ey-pin-core::after {
-      animation-duration: 1.6s !important;
     }
 
     .ey-pin-inner {
@@ -476,15 +473,8 @@
       opacity: .9;
     }
 
-    .core-sea::before {
-      top: 30%;
-      animation: waveMove 2.2s ease-in-out infinite;
-    }
-
-    .core-sea::after {
-      top: 58%;
-      animation: waveMove 2.2s ease-in-out infinite reverse;
-    }
+    .core-sea::before { top: 30%; animation: waveMove 2.2s ease-in-out infinite; }
+    .core-sea::after { top: 58%; animation: waveMove 2.2s ease-in-out infinite reverse; }
 
     .core-forest::before,
     .core-forest::after {
@@ -499,18 +489,14 @@
     .core-forest::before {
       top: 28%;
       left: 26%;
-      box-shadow:
-        8px 4px 0 rgba(255,255,255,.88),
-        2px 10px 0 rgba(255,255,255,.78);
+      box-shadow: 8px 4px 0 rgba(255,255,255,.88), 2px 10px 0 rgba(255,255,255,.78);
       animation: forestPulse 2.8s ease-in-out infinite;
     }
 
     .core-forest::after {
       top: 38%;
       left: 48%;
-      box-shadow:
-        6px -5px 0 rgba(255,255,255,.72),
-        -5px 8px 0 rgba(255,255,255,.62);
+      box-shadow: 6px -5px 0 rgba(255,255,255,.72), -5px 8px 0 rgba(255,255,255,.62);
       animation: forestPulse 2.8s ease-in-out infinite reverse;
     }
 
@@ -527,9 +513,7 @@
     .core-city::before {
       left: 28%;
       height: 11px;
-      box-shadow:
-        8px -2px 0 rgba(255,255,255,.85),
-        16px 2px 0 rgba(255,255,255,.72);
+      box-shadow: 8px -2px 0 rgba(255,255,255,.85), 16px 2px 0 rgba(255,255,255,.72);
       animation: cityBlink 2.1s ease-in-out infinite;
     }
 
@@ -628,14 +612,8 @@
     }
 
     @keyframes ringPulse {
-      0% {
-        opacity: .55;
-        transform: scale(.92);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1.22);
-      }
+      0% { opacity: .55; transform: scale(.92); }
+      100% { opacity: 0; transform: scale(1.22); }
     }
 
     .floating-player {
@@ -934,30 +912,20 @@
     }
 
     @media (max-width: 980px) {
-      .page {
-        grid-template-columns: 1fr;
-      }
-
+      .page { grid-template-columns: 1fr; }
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
         max-height: none;
       }
-
-      #map {
-        height: 62vh;
-      }
-
+      #map { height: 62vh; }
       .floating-player {
         right: 12px;
         left: 12px;
         width: auto;
         bottom: 12px;
       }
-
-      .submit-form-grid {
-        grid-template-columns: 1fr;
-      }
+      .submit-form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -977,7 +945,7 @@
 
         <div class="hero-actions">
           <button id="randomJourneyBtn" class="random-journey-btn">🎲 Bugün ne dinlemeliyim?</button>
-          <button id="openSubmitModalBtn" class="submit-sound-btn">➕ Ses ekle</button>
+          <button id="openSubmitModalBtn" class="submit-sound-btn">➕ Ses öner</button>
         </div>
       </div>
 
@@ -1056,9 +1024,9 @@
     <div class="submit-modal-card">
       <div class="submit-modal-head">
         <div>
-          <div class="submit-modal-title">Yeni ses durağı ekle</div>
+          <div class="submit-modal-title">Yeni ses öner</div>
           <div class="submit-modal-sub">
-            YouTube veya SoundCloud bağlantısı gir, koordinatları ekle, haritaya yeni bir keşif noktası kazandır.
+            YouTube veya SoundCloud bağlantısı gir, koordinatları ekle. Önerin inceleme sonrası yayına alınır.
           </div>
         </div>
         <button id="closeSubmitModalBtn" class="submit-close-btn" type="button">✕</button>
@@ -1145,7 +1113,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="form-btn primary">Kaydı haritaya ekle</button>
+          <button type="submit" class="form-btn primary">Öneriyi gönder</button>
           <button type="button" id="cancelSubmitBtn" class="form-btn secondary">Vazgeç</button>
         </div>
 
@@ -1167,10 +1135,14 @@
       { key: "derin", label: "🌲 Derin", matcher: pin => ["derin", "mistik"].includes(normalize(pin.vibe)) || ["orman", "muze", "tapinak"].includes(canonicalEnvironment(pin.environment)) },
       { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "sehir" },
       { key: "manevi", label: "🕌 Ruhsal", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
-      { key: "yolculuk", label: "🚂 Dinamik", matcher: pin => {
-        const text = `${pin.title || ""} ${pin.description || ""}`.toLowerCase();
-        return text.includes("tren") || text.includes("road") || text.includes("journey") || text.includes("yol");
-      }}
+      {
+        key: "yolculuk",
+        label: "🚂 Dinamik",
+        matcher: pin => {
+          const text = `${pin.title || ""} ${pin.description || ""}`.toLowerCase();
+          return text.includes("tren") || text.includes("road") || text.includes("journey") || text.includes("yol");
+        }
+      }
     ];
 
     const DEMO = [
@@ -1188,7 +1160,8 @@
         source_type: "youtube",
         embed_url: "https://www.youtube.com/embed/gwFg8AlN9zk",
         shopify_url: "",
-        price_label: ""
+        price_label: "",
+        status: "approved"
       }
     ];
 
@@ -1747,7 +1720,6 @@
 
       const moodMatcher = getMoodMatcher();
       let pool = valid.filter(pin => moodMatcher(pin));
-
       if (!pool.length) pool = valid;
 
       const differentCityPool = pool.filter(pin => normalize(pin.city) !== normalize(lastRandomCity));
@@ -1921,11 +1893,11 @@
         hideError();
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-       const { data, error } = await supabaseClient
-  .from("soundmap_pins")
-  .select("*")
-.eq("status", "approved")
-  .order("title", { ascending: true });
+        const { data, error } = await supabaseClient
+          .from("soundmap_pins")
+          .select("*")
+          .eq("status", "approved")
+          .order("title", { ascending: true });
 
         if (error || !data || !data.length) {
           allPins = DEMO.map(preparePinRow);
@@ -1977,24 +1949,29 @@
 
       const formData = new FormData(submitPinForm);
       const payload = {
-  title: (formData.get("title") || "").toString().trim(),
-  category: (formData.get("category") || "").toString().trim(),
-  city: (formData.get("city") || "").toString().trim(),
-  country: (formData.get("country") || "").toString().trim(),
-  lat: Number(formData.get("lat")),
-  lng: Number(formData.get("lng")),
-  environment: (formData.get("environment") || "").toString().trim(),
-  vibe: (formData.get("vibe") || "").toString().trim(),
-  source_type: (formData.get("source_type") || "").toString().trim(),
-  embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
-  description: (formData.get("description") || "").toString().trim(),
+        title: (formData.get("title") || "").toString().trim(),
+        category: (formData.get("category") || "").toString().trim(),
+        city: (formData.get("city") || "").toString().trim(),
+        country: (formData.get("country") || "").toString().trim(),
+        lat: Number(formData.get("lat")),
+        lng: Number(formData.get("lng")),
+        environment: (formData.get("environment") || "").toString().trim(),
+        vibe: (formData.get("vibe") || "").toString().trim(),
+        source_type: (formData.get("source_type") || "").toString().trim(),
+        embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
+        description: (formData.get("description") || "").toString().trim(),
+        status: "pending",
+        submitted_at: new Date().toISOString()
+      };
 
-  // 🔥 BURASI KRİTİK
-  status: "pending",
-  submitted_at: new Date().toISOString()
-};
-
-      if (!payload.title || !payload.city || !payload.country || !payload.embed_url || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
+      if (
+        !payload.title ||
+        !payload.city ||
+        !payload.country ||
+        !payload.embed_url ||
+        Number.isNaN(payload.lat) ||
+        Number.isNaN(payload.lng)
+      ) {
         showFormStatus("Lütfen başlık, şehir, ülke, koordinatlar ve link alanlarını doldur.", "error");
         return;
       }
@@ -2004,38 +1981,21 @@
           supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
 
-        const { data, error } = await supabaseClient
+        const { error } = await supabaseClient
           .from("soundmap_pins")
-          .insert([payload])
-          .select()
-          .single();
+          .insert([payload]);
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
-        const insertedPin = preparePinRow(data || {
-          ...payload,
-          id: Date.now()
-        });
-
-        allPins.unshift(insertedPin);
-
-        renderCategories();
-        renderEnvironments();
-        hasFittedBounds = false;
-        applyFilters();
-
-        showFormStatus(""Önerin alındı. İnceleme sonrası yayına alınacaktır."", "success");
+        showFormStatus("Önerin alındı. İnceleme sonrası yayına alınacaktır.", "success");
         submitPinForm.reset();
 
         setTimeout(() => {
           closeSubmitModal();
-          goToPin(insertedPin, true);
-        }, 700);
+        }, 900);
       } catch (err) {
         showFormStatus(
-          "Kayıt eklenemedi.\n\nMuhtemel sebep: Supabase tablo kolonları birebir uyuşmuyor ya da insert yetkisi kapalı.\n\nDetay:\n" + (err?.message || err),
+          "Kayıt gönderilemedi.\n\nDetay:\n" + (err?.message || err),
           "error"
         );
       }
@@ -2076,8 +2036,8 @@
     });
 
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (submitModal.classList.contains("show")) closeSubmitModal();
+      if (e.key === "Escape" && submitModal.classList.contains("show")) {
+        closeSubmitModal();
       }
     });
 
