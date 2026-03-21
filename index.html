@@ -2116,7 +2116,7 @@ marker.on("mouseout", () => {
       }
     }
 
-  function createMainBaseLayers() {
+ function createMainBaseLayers() {
   const cartoLight = L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     {
@@ -2142,9 +2142,9 @@ marker.on("mouseout", () => {
   );
 
   return {
-    "🌤️ Light": cartoLight,
-    "🌙 Dark": cartoDark,
-    "🧭 Classic": osm
+    Light: cartoLight,
+    Dark: cartoDark,
+    Classic: osm
   };
 }
 
@@ -2172,26 +2172,28 @@ marker.on("mouseout", () => {
     "Standart OSM": standard
   };
 }
-    function initMap() {
-      try {
-        map = L.map("map", {
-          zoomControl: true,
-          maxZoom: 20
-        }).setView([39.0, 35.0], 6);
+   function initMap() {
+  try {
+    map = L.map("map", {
+      zoomControl: true,
+      maxZoom: 20
+    }).setView([39.0, 35.0], 6);
 
-        mainBaseLayers = createMainBaseLayers();
-       mainBaseLayers["🌤️ Light"].addTo(map);
+    mainBaseLayers = createMainBaseLayers();
 
-       L.control.layers(mainBaseLayers, null, {
-  collapsed: false,
-  position: "topright"
-}).addTo(map);
+    // Varsayılan harita
+    mainBaseLayers["Light"].addTo(map);
 
-        setTimeout(() => map.invalidateSize(), 600);
-      } catch (err) {
-        showError("Harita servisi başlatılamadı:\n" + (err?.message || err));
-      }
-    }
+    L.control.layers(mainBaseLayers, null, {
+      collapsed: false,
+      position: "topright"
+    }).addTo(map);
+
+    setTimeout(() => map.invalidateSize(), 600);
+  } catch (err) {
+    showError("Harita servisi başlatılamadı:\n" + (err?.message || err));
+  }
+}
 
     function setPickerCoords(lat, lng) {
       pinLatInput.value = Number(lat).toFixed(6);
