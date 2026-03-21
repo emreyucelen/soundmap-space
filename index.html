@@ -102,12 +102,17 @@
       transition: .2s ease;
     }
 
-    .search:focus {
+    .search:focus,
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus,
+    .map-search-input:focus {
       border-color: rgba(56,189,248,0.35);
       box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
     }
 
-    .search::placeholder {
+    .search::placeholder,
+    .map-search-input::placeholder {
       color: #94a3b8;
     }
 
@@ -119,7 +124,8 @@
 
     .random-journey-btn,
     .submit-sound-btn,
-    .form-btn {
+    .form-btn,
+    .map-search-btn {
       width: 100%;
       border: 0;
       cursor: pointer;
@@ -136,24 +142,28 @@
       box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
     }
 
-    .submit-sound-btn {
+    .submit-sound-btn,
+    .form-btn.secondary,
+    .map-search-btn.secondary {
       background: rgba(255,255,255,0.08);
       color: #e0f2fe;
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
     }
 
-    .random-journey-btn:hover,
-    .submit-sound-btn:hover,
-    .form-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.04);
+    .form-btn.primary,
+    .map-search-btn.primary {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #03131c;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
     }
 
-    .random-journey-btn:active,
-    .submit-sound-btn:active,
-    .form-btn:active {
-      transform: translateY(0);
+    .random-journey-btn:hover,
+    .submit-sound-btn:hover,
+    .form-btn:hover,
+    .map-search-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
     }
 
     .section {
@@ -325,10 +335,11 @@
       line-height: 1.35;
     }
 
-    .discover-pills {
+    .discover-pills,
+    .player-meta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
     }
 
     .pill {
@@ -402,6 +413,18 @@
       background: #020617;
     }
 
+    .leaflet-control-layers {
+      border-radius: 14px !important;
+      background: rgba(2,6,23,0.88) !important;
+      color: white !important;
+      border: 1px solid rgba(255,255,255,.08) !important;
+      box-shadow: 0 14px 36px rgba(0,0,0,.22) !important;
+    }
+
+    .leaflet-control-layers label {
+      color: white !important;
+    }
+
     .ey-pin {
       position: relative;
       transform: rotate(-45deg);
@@ -435,9 +458,7 @@
     }
 
     .ey-pin.is-featured .ey-pin-inner {
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.30),
-        0 0 18px rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.30), 0 0 18px rgba(255,255,255,.10);
     }
 
     .ey-pin-inner {
@@ -565,9 +586,7 @@
     }
 
     .ey-pin.is-active .ey-pin-inner {
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.28),
-        0 0 16px rgba(255,255,255,.12);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 0 16px rgba(255,255,255,.12);
     }
 
     @keyframes waveMove {
@@ -690,9 +709,7 @@
       font-size: 16px;
     }
 
-    .player-icon-btn:hover {
-      background: rgba(255,255,255,0.10);
-    }
+    .player-icon-btn:hover { background: rgba(255,255,255,0.10); }
 
     .player-body {
       padding: 14px 16px 18px;
@@ -713,13 +730,6 @@
       border-radius: 18px;
       background: #000;
       min-height: 220px;
-    }
-
-    .player-meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
     }
 
     .travel-notice {
@@ -765,7 +775,7 @@
     }
 
     .submit-modal-card {
-      width: min(720px, 100%);
+      width: min(760px, 100%);
       max-height: 92vh;
       overflow-y: auto;
       border-radius: 26px;
@@ -809,9 +819,7 @@
       font-size: 18px;
     }
 
-    .submit-close-btn:hover {
-      background: rgba(255,255,255,0.10);
-    }
+    .submit-close-btn:hover { background: rgba(255,255,255,0.10); }
 
     .submit-form-grid {
       display: grid;
@@ -837,7 +845,8 @@
 
     .form-input,
     .form-select,
-    .form-textarea {
+    .form-textarea,
+    .map-search-input {
       width: 100%;
       padding: 12px 13px;
       border-radius: 14px;
@@ -846,13 +855,6 @@
       color: white;
       outline: none;
       font-size: 14px;
-    }
-
-    .form-input:focus,
-    .form-select:focus,
-    .form-textarea:focus {
-      border-color: rgba(56,189,248,0.35);
-      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
     }
 
     .form-textarea {
@@ -874,18 +876,6 @@
       flex-wrap: wrap;
     }
 
-    .form-btn.primary {
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #03131c;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
-    }
-
-    .form-btn.secondary {
-      background: rgba(255,255,255,0.08);
-      color: #e2e8f0;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
     .form-status {
       margin-top: 12px;
       padding: 12px 14px;
@@ -895,9 +885,7 @@
       white-space: pre-wrap;
     }
 
-    .form-status.show {
-      display: block;
-    }
+    .form-status.show { display: block; }
 
     .form-status.success {
       background: rgba(20, 83, 45, 0.45);
@@ -911,21 +899,57 @@
       color: #fecaca;
     }
 
+    .map-picker-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .map-picker-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    #pickerMap {
+      width: 100%;
+      height: 280px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #07111f;
+    }
+
+    .coords-note {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
+
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
         max-height: none;
       }
+
       #map { height: 62vh; }
+
       .floating-player {
         right: 12px;
         left: 12px;
         width: auto;
         bottom: 12px;
       }
+
       .submit-form-grid { grid-template-columns: 1fr; }
+      .map-picker-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1026,7 +1050,7 @@
         <div>
           <div class="submit-modal-title">Yeni ses öner</div>
           <div class="submit-modal-sub">
-            YouTube veya SoundCloud bağlantısı gir, koordinatları ekle. Önerin inceleme sonrası yayına alınır.
+            Haritada nokta seçebilir veya yer araması yapabilirsin. Önerin inceleme sonrası yayına alınır.
           </div>
         </div>
         <button id="closeSubmitModalBtn" class="submit-close-btn" type="button">✕</button>
@@ -1112,6 +1136,22 @@
           </div>
         </div>
 
+        <div class="map-picker-box">
+          <div class="section-title">Haritada konum seç</div>
+
+          <div class="map-picker-row">
+            <input id="pickerSearchInput" class="map-search-input" type="text" placeholder="İzmir Kordon, Mardin, Kapadokya..." />
+            <button id="pickerSearchBtn" type="button" class="map-search-btn primary">Ara</button>
+            <button id="useMapCenterBtn" type="button" class="map-search-btn secondary">Merkezi kullan</button>
+          </div>
+
+          <div id="pickerMap"></div>
+
+          <div class="coords-note">
+            Mini haritada bir noktaya tıkla. Latitude ve longitude alanları otomatik dolacak.
+          </div>
+        </div>
+
         <div class="form-actions">
           <button type="submit" class="form-btn primary">Öneriyi gönder</button>
           <button type="button" id="cancelSubmitBtn" class="form-btn secondary">Vazgeç</button>
@@ -1159,8 +1199,6 @@
         vibe: "Mistik",
         source_type: "youtube",
         embed_url: "https://www.youtube.com/embed/gwFg8AlN9zk",
-        shopify_url: "",
-        price_label: "",
         status: "approved"
       }
     ];
@@ -1199,8 +1237,16 @@
     const submitPinForm = document.getElementById("submitPinForm");
     const submitFormStatus = document.getElementById("submitFormStatus");
 
+    const pinLatInput = document.getElementById("pinLat");
+    const pinLngInput = document.getElementById("pinLng");
+    const pickerSearchInput = document.getElementById("pickerSearchInput");
+    const pickerSearchBtn = document.getElementById("pickerSearchBtn");
+    const useMapCenterBtn = document.getElementById("useMapCenterBtn");
+
     let supabaseClient = null;
     let map;
+    let pickerMap;
+    let pickerMarker = null;
     let allPins = [];
     let visiblePins = [];
     let markers = [];
@@ -1214,6 +1260,9 @@
     let featuredPinIds = [];
     let featuredPinsInterval = null;
     let lastRandomCity = "";
+
+    let mainBaseLayers = {};
+    let currentMainBaseLayer = null;
 
     function normalize(value) {
       return (value || "")
@@ -1520,7 +1569,6 @@
     function buildPlayableEmbed(pin, autoplay = false) {
       const sourceType = normalize(pin.source_type);
       const raw = cleanUrl(pin.embed_url || "");
-
       if (!raw) return "";
 
       if (sourceType === "youtube") {
@@ -1715,7 +1763,6 @@
     function smartRandomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(pin => pin.lat != null && pin.lng != null);
-
       if (!valid.length) return;
 
       const moodMatcher = getMoodMatcher();
@@ -1919,13 +1966,45 @@
       }
     }
 
+    function createMainBaseLayers() {
+      const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap"
+      });
+
+      const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
+      });
+
+      const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
+      });
+
+      const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap"
+      });
+
+      const hot = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors"
+      });
+
+      return {
+        "Standart": standard,
+        "Hafif": light,
+        "Koyu": dark,
+        "OpenTopo": topo,
+        "Detaylı": hot
+      };
+    }
+
     function initMap() {
       try {
         map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 6);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap"
-        }).addTo(map);
+        mainBaseLayers = createMainBaseLayers();
+        currentMainBaseLayer = mainBaseLayers["Standart"];
+        currentMainBaseLayer.addTo(map);
+
+        L.control.layers(mainBaseLayers, null, { collapsed: false }).addTo(map);
 
         setTimeout(() => map.invalidateSize(), 600);
       } catch (err) {
@@ -1933,9 +2012,90 @@
       }
     }
 
+    function setPickerCoords(lat, lng) {
+      pinLatInput.value = Number(lat).toFixed(6);
+      pinLngInput.value = Number(lng).toFixed(6);
+
+      if (!pickerMap) return;
+
+      if (pickerMarker) {
+        pickerMarker.setLatLng([lat, lng]);
+      } else {
+        pickerMarker = L.marker([lat, lng]).addTo(pickerMap);
+      }
+    }
+
+    function initPickerMap() {
+      if (pickerMap) {
+        setTimeout(() => pickerMap.invalidateSize(), 150);
+        return;
+      }
+
+      pickerMap = L.map("pickerMap", { zoomControl: true }).setView([39.0, 35.0], 5);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(pickerMap);
+
+      pickerMap.on("click", (e) => {
+        const { lat, lng } = e.latlng;
+        setPickerCoords(lat, lng);
+      });
+
+      setTimeout(() => pickerMap.invalidateSize(), 200);
+    }
+
+    async function searchLocationOnPicker() {
+      const query = (pickerSearchInput.value || "").trim();
+      if (!query) {
+        showFormStatus("Konum araması için bir yer adı yaz.", "error");
+        return;
+      }
+
+      try {
+        showFormStatus("Konum aranıyor...", "success");
+
+        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}&limit=1`;
+        const res = await fetch(url, {
+          headers: { "Accept-Language": "tr,en;q=0.8" }
+        });
+
+        if (!res.ok) throw new Error("Konum servisi cevap vermedi.");
+
+        const data = await res.json();
+        if (!data || !data.length) {
+          showFormStatus("Konum bulunamadı. Daha detaylı bir isim dene veya haritada tıkla.", "error");
+          return;
+        }
+
+        const hit = data[0];
+        const lat = Number(hit.lat);
+        const lng = Number(hit.lon);
+
+        pickerMap.flyTo([lat, lng], 13, { animate: true, duration: 1.8 });
+        setPickerCoords(lat, lng);
+
+        showFormStatus("Konum bulundu. Gerekirse mini haritada noktayı yeniden seçebilirsin.", "success");
+      } catch (err) {
+        showFormStatus("Konum aranamadı.\n\nDetay:\n" + (err?.message || err), "error");
+      }
+    }
+
+    function usePickerMapCenter() {
+      if (!pickerMap) return;
+      const center = pickerMap.getCenter();
+      setPickerCoords(center.lat, center.lng);
+      showFormStatus("Mini haritanın merkezi koordinat olarak alındı.", "success");
+    }
+
     function openSubmitModal() {
       clearFormStatus();
       submitModal.classList.add("show");
+      initPickerMap();
+
+      setTimeout(() => {
+        pickerMap.invalidateSize();
+      }, 180);
     }
 
     function closeSubmitModal() {
@@ -1990,6 +2150,11 @@
         showFormStatus("Önerin alındı. İnceleme sonrası yayına alınacaktır.", "success");
         submitPinForm.reset();
 
+        if (pickerMarker) {
+          pickerMap.removeLayer(pickerMarker);
+          pickerMarker = null;
+        }
+
         setTimeout(() => {
           closeSubmitModal();
         }, 900);
@@ -2030,6 +2195,16 @@
     closeSubmitModalBtn.addEventListener("click", closeSubmitModal);
     cancelSubmitBtn.addEventListener("click", closeSubmitModal);
     submitPinForm.addEventListener("submit", submitNewPin);
+
+    pickerSearchBtn.addEventListener("click", searchLocationOnPicker);
+    useMapCenterBtn.addEventListener("click", usePickerMapCenter);
+
+    pickerSearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchLocationOnPicker();
+      }
+    });
 
     submitModal.addEventListener("click", (e) => {
       if (e.target === submitModal) closeSubmitModal();
