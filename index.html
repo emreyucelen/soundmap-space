@@ -853,7 +853,18 @@
     let hasFittedBounds = false;
     let discoveryExpanded = false;
 
-    function normalize(value) {
+   function normalize(value) {
+  return (value || "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/ç/g, "c")
+    .replace(/ğ/g, "g")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ş/g, "s")
+    .replace(/ü/g, "u");
+}
       return (value || "").toString().toLowerCase().trim();
     }
 
@@ -1266,7 +1277,7 @@
 
     function renderDiscovery() {
       const moodMatcher = getMoodMatcher();
-      const base = allPins.filter(pin => moodMatcher(pin));
+      const base = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
       const pickedAll = shuffleArray(base).filter(pin => pin.lat != null && pin.lng != null).slice(0, 6);
 
       const mood = MOODS.find(m => m.key === activeMood);
@@ -1388,9 +1399,10 @@
     }
 
     function applyFilters() {
-      visiblePins = filterPins();
-      renderMarkers();
-    }
+  visiblePins = filterPins();
+  renderMarkers();
+  renderDiscovery();
+}
 
     async function loadPins() {
       try {
@@ -1443,9 +1455,10 @@
     }
 
     searchInput.addEventListener("input", () => {
-      hasFittedBounds = false;
-      applyFilters();
-    });
+  hasFittedBounds = false;
+  discoveryExpanded = false;
+  applyFilters();
+});
 
     refreshDiscoveryBtn.addEventListener("click", () => {
       discoveryExpanded = false;
