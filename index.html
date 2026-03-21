@@ -90,7 +90,11 @@
       margin-top: 14px;
     }
 
-    .search {
+    .search,
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .map-search-input {
       width: 100%;
       padding: 13px 15px;
       border-radius: 16px;
@@ -136,7 +140,9 @@
       transition: .2s ease;
     }
 
-    .random-journey-btn {
+    .random-journey-btn,
+    .form-btn.primary,
+    .map-search-btn.primary {
       background: linear-gradient(135deg, #22d3ee, #3b82f6);
       color: #03131c;
       box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
@@ -149,13 +155,6 @@
       color: #e0f2fe;
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
-    }
-
-    .form-btn.primary,
-    .map-search-btn.primary {
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #03131c;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
     }
 
     .random-journey-btn:hover,
@@ -843,20 +842,6 @@
       letter-spacing: .02em;
     }
 
-    .form-input,
-    .form-select,
-    .form-textarea,
-    .map-search-input {
-      width: 100%;
-      padding: 12px 13px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      outline: none;
-      font-size: 14px;
-    }
-
     .form-textarea {
       min-height: 110px;
       resize: vertical;
@@ -932,22 +917,18 @@
 
     @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
-
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
         max-height: none;
       }
-
       #map { height: 62vh; }
-
       .floating-player {
         right: 12px;
         left: 12px;
         width: auto;
         bottom: 12px;
       }
-
       .submit-form-grid { grid-template-columns: 1fr; }
       .map-picker-row { grid-template-columns: 1fr; }
     }
@@ -1262,7 +1243,6 @@
     let lastRandomCity = "";
 
     let mainBaseLayers = {};
-    let currentMainBaseLayer = null;
 
     function normalize(value) {
       return (value || "")
@@ -1611,6 +1591,11 @@
         ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
         ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
         ${pin.source_type ? `<div class="pill">${escapeHtml(pin.source_type)}</div>` : ""}
+        ${
+          pin.lat != null && pin.lng != null
+            ? `<button type="button" id="streetZoomFromPlayer" class="mini-btn">🛣️ Sokağa in</button>`
+            : ""
+        }
       `;
 
       if (embed) {
@@ -1632,6 +1617,13 @@
       }
 
       floatingPlayerEl.classList.add("show");
+
+      const streetBtn = document.getElementById("streetZoomFromPlayer");
+      if (streetBtn && pin.lat != null && pin.lng != null) {
+        streetBtn.addEventListener("click", () => {
+          zoomToStreetLevel(pin.lat, pin.lng);
+        });
+      }
     }
 
     function closeFloatingPlayer() {
@@ -1668,7 +1660,7 @@
       let firstDuration = 1.2;
       let secondDuration = 2.6;
       let delay = 1100;
-      const finalZoom = 14;
+      const finalZoom = 15;
 
       if (distanceKm > 150) {
         zoomOutLevel = Math.max(5.9, currentZoom - 1.5);
@@ -1706,6 +1698,21 @@
       setTimeout(() => {
         hideTravelNotice();
       }, delay + (secondDuration * 1000) + 300);
+    }
+
+    function zoomToStreetLevel(lat, lng) {
+      if (!map) return;
+
+      showTravelNotice("Sokak seviyesine iniliyor…");
+
+      map.flyTo([Number(lat), Number(lng)], 18, {
+        animate: true,
+        duration: 2.4
+      });
+
+      setTimeout(() => {
+        hideTravelNotice();
+      }, 2600);
     }
 
     function clearMarkers() {
@@ -1753,9 +1760,9 @@
       if (cinematic) {
         cinematicFlyTo(pin.lat, pin.lng);
       } else {
-        map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+        map.flyTo([Number(pin.lat), Number(pin.lng)], 17, {
           animate: true,
-          duration: 2.0
+          duration: 2.2
         });
       }
     }
@@ -1846,16 +1853,16 @@
           marker.openPopup();
           openFloatingPlayer(pin, true);
 
-          map.flyTo([Number(pin.lat), Number(pin.lng)], 14, {
+          map.flyTo([Number(pin.lat), Number(pin.lng)], 17, {
             animate: true,
-            duration: 2.0
+            duration: 2.2
           });
         });
 
         const env = getEnvironmentStyle(pin.environment || "");
 
         marker.bindPopup(`
-          <div style="min-width:190px;font-family:sans-serif;">
+          <div style="min-width:210px;font-family:sans-serif;">
             <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
             <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
               ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
@@ -1865,8 +1872,43 @@
               ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
             </div>
             <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
+
+            <button
+              type="button"
+              class="street-zoom-btn"
+              data-lat="${Number(pin.lat)}"
+              data-lng="${Number(pin.lng)}"
+              style="
+                margin-top:10px;
+                width:100%;
+                border:0;
+                cursor:pointer;
+                font-weight:700;
+                font-size:12px;
+                padding:10px 12px;
+                border-radius:12px;
+                background:linear-gradient(135deg,#22d3ee,#3b82f6);
+                color:#03131c;
+              "
+            >
+              🛣️ Sokağa in
+            </button>
           </div>
         `);
+
+        marker.on("popupopen", (e) => {
+          const popupEl = e.popup.getElement();
+          if (!popupEl) return;
+
+          const streetBtn = popupEl.querySelector(".street-zoom-btn");
+          if (!streetBtn) return;
+
+          streetBtn.addEventListener("click", () => {
+            const lat = Number(streetBtn.getAttribute("data-lat"));
+            const lng = Number(streetBtn.getAttribute("data-lng"));
+            zoomToStreetLevel(lat, lng);
+          });
+        });
 
         markers.push(marker);
         markersById[String(pin.id)] = marker;
@@ -1968,23 +2010,28 @@
 
     function createMainBaseLayers() {
       const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap"
+        attribution: "&copy; OpenStreetMap",
+        maxZoom: 20
       });
 
       const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
       });
 
       const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
       });
 
       const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap"
+        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap",
+        maxZoom: 17
       });
 
       const hot = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors"
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 20
       });
 
       return {
@@ -1998,11 +2045,13 @@
 
     function initMap() {
       try {
-        map = L.map("map", { zoomControl: true }).setView([39.0, 35.0], 6);
+        map = L.map("map", {
+          zoomControl: true,
+          maxZoom: 20
+        }).setView([39.0, 35.0], 6);
 
         mainBaseLayers = createMainBaseLayers();
-        currentMainBaseLayer = mainBaseLayers["Standart"];
-        currentMainBaseLayer.addTo(map);
+        mainBaseLayers["Standart"].addTo(map);
 
         L.control.layers(mainBaseLayers, null, { collapsed: false }).addTo(map);
 
@@ -2034,7 +2083,8 @@
       pickerMap = L.map("pickerMap", { zoomControl: true }).setView([39.0, 35.0], 5);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap"
+        attribution: "&copy; OpenStreetMap",
+        maxZoom: 20
       }).addTo(pickerMap);
 
       pickerMap.on("click", (e) => {
@@ -2072,7 +2122,7 @@
         const lat = Number(hit.lat);
         const lng = Number(hit.lon);
 
-        pickerMap.flyTo([lat, lng], 13, { animate: true, duration: 1.8 });
+        pickerMap.flyTo([lat, lng], 15, { animate: true, duration: 1.8 });
         setPickerCoords(lat, lng);
 
         showFormStatus("Konum bulundu. Gerekirse mini haritada noktayı yeniden seçebilirsin.", "success");
