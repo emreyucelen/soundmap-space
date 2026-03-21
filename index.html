@@ -1924,7 +1924,7 @@
        const { data, error } = await supabaseClient
   .from("soundmap_pins")
   .select("*")
-  .eq("status", "approved")
+.eq("status", "approved")
   .order("title", { ascending: true });
 
         if (error || !data || !data.length) {
@@ -1988,6 +1988,10 @@
         source_type: (formData.get("source_type") || "").toString().trim(),
         embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
         description: (formData.get("description") || "").toString().trim()
+        // 🔥 EKLEDİĞİMİZ KISIM
+  status: "pending",
+  submitted_at: new Date().toISOString()
+};
       };
 
       if (!payload.title || !payload.city || !payload.country || !payload.embed_url || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
@@ -2022,7 +2026,7 @@
         hasFittedBounds = false;
         applyFilters();
 
-        showFormStatus("Yeni ses durağı başarıyla eklendi. Harita güncellendi.", "success");
+        showFormStatus(""Önerin alındı. İnceleme sonrası yayına alınacaktır."", "success");
         submitPinForm.reset();
 
         setTimeout(() => {
