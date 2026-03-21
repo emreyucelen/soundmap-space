@@ -1931,7 +1931,7 @@
         const isActive = String(pin.id) === String(activePinId);
         const isFeatured = featuredPinIds.includes(String(pin.id));
         const isSpotlight = spotlightPinIds.includes(String(pin.id));
-        const isHovered = String(pin.id) === String(hoverPinId);
+        const isHovered = false;
 
         const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
           icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isSpotlight, isHovered)
