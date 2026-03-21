@@ -1174,7 +1174,7 @@
         `;
       }).join("");
 
-      discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
+     discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
   el.addEventListener("click", () => {
     const id = String(el.getAttribute("data-discover-id"));
     const pin = allPins.find(p => String(p.id) === id);
