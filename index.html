@@ -22,19 +22,20 @@
     .page {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 380px 1fr;
     }
 
     .sidebar {
       position: relative;
-      padding: 22px;
+      padding: 16px;
       border-right: 1px solid rgba(255,255,255,0.08);
       background:
-        radial-gradient(circle at top left, rgba(34,211,238,0.12), transparent 26%),
-        radial-gradient(circle at bottom left, rgba(168,85,247,0.10), transparent 35%),
+        radial-gradient(circle at top left, rgba(34,211,238,0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(168,85,247,0.08), transparent 35%),
         linear-gradient(180deg, rgba(8,17,31,0.92), rgba(9,19,35,0.88));
       backdrop-filter: blur(18px);
       overflow-y: auto;
+      max-height: 100vh;
     }
 
     .brand {
@@ -52,9 +53,9 @@
     }
 
     .hero {
-      margin-top: 18px;
-      padding: 20px;
-      border-radius: 28px;
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 22px;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
         radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 30%);
@@ -64,40 +65,40 @@
 
     .hero-kicker {
       color: #7dd3fc;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: .10em;
-      margin-bottom: 10px;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
       font-weight: 700;
     }
 
     .hero h1 {
       margin: 0;
-      font-size: 30px;
+      font-size: 24px;
       line-height: 1.02;
       letter-spacing: -0.03em;
     }
 
     .hero p {
-      margin: 14px 0 0;
+      margin: 10px 0 0;
       color: #cbd5e1;
-      font-size: 15px;
-      line-height: 1.65;
+      font-size: 13px;
+      line-height: 1.55;
     }
 
     .search-wrap {
-      margin-top: 16px;
+      margin-top: 14px;
     }
 
     .search {
       width: 100%;
-      padding: 14px 16px;
-      border-radius: 18px;
+      padding: 13px 15px;
+      border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.05);
       color: white;
       outline: none;
-      font-size: 15px;
+      font-size: 14px;
       transition: .2s ease;
     }
 
@@ -106,10 +107,12 @@
       box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
     }
 
-    .search::placeholder { color: #94a3b8; }
+    .search::placeholder {
+      color: #94a3b8;
+    }
 
     .section {
-      margin-top: 18px;
+      margin-top: 14px;
     }
 
     .section-title {
@@ -132,14 +135,15 @@
     .mood-btn,
     .cat-btn,
     .env-btn,
-    .mini-btn {
+    .mini-btn,
+    .filters-toggle {
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.05);
       color: #e2e8f0;
       border-radius: 999px;
-      padding: 10px 13px;
+      padding: 9px 12px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       transition: .2s ease;
       backdrop-filter: blur(8px);
     }
@@ -147,7 +151,8 @@
     .mood-btn:hover,
     .cat-btn:hover,
     .env-btn:hover,
-    .mini-btn:hover {
+    .mini-btn:hover,
+    .filters-toggle:hover {
       transform: translateY(-1px);
       background: rgba(255,255,255,0.08);
     }
@@ -167,10 +172,41 @@
       gap: 6px;
     }
 
+    .filters-shell {
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      overflow: hidden;
+    }
+
+    .filters-toggle {
+      width: 100%;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .filters-body {
+      display: none;
+      padding: 0 14px 14px;
+    }
+
+    .filters-body.show {
+      display: block;
+    }
+
     .discovery-panel {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 24px;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 22px;
       border: 1px solid rgba(255,255,255,0.10);
       background:
         linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
@@ -183,30 +219,33 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .discovery-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
 
     .discovery-sub {
       color: #94a3b8;
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.5;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .discovery-list {
       display: grid;
-      gap: 10px;
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 2px;
     }
 
     .discover-card {
-      padding: 14px;
-      border-radius: 18px;
+      padding: 12px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
       cursor: pointer;
@@ -219,15 +258,15 @@
     }
 
     .discover-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       margin-bottom: 4px;
     }
 
     .discover-meta {
       color: #94a3b8;
-      font-size: 13px;
-      margin-bottom: 8px;
+      font-size: 12px;
+      margin-bottom: 7px;
     }
 
     .discover-pills {
@@ -237,101 +276,18 @@
     }
 
     .pill {
-      padding: 7px 10px;
+      padding: 6px 9px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 11px;
       background: rgba(255,255,255,0.06);
       color: #cbd5e1;
     }
 
     .status-line {
-      margin-top: 14px;
+      margin-top: 12px;
       color: #94a3b8;
       font-size: 13px;
-    }
-
-    .card {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 28px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255,255,255,0.09);
-      min-height: 240px;
-      box-shadow: 0 16px 50px rgba(0,0,0,0.16);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .badge {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .location {
-      color: #94a3b8;
-      margin: 8px 0 14px;
-      font-size: 14px;
-    }
-
-    .desc {
-      color: #e2e8f0;
-      line-height: 1.65;
-      margin-bottom: 16px;
-      min-height: 48px;
-    }
-
-    .meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .listen-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 0;
-      cursor: pointer;
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #03131c;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 13px 16px;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.25);
-    }
-
-    .listen-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.04);
-    }
-
-    .buy-btn {
-      display: inline-block;
-      margin-left: 10px;
-      text-decoration: none;
-      background: rgba(255,255,255,0.08);
-      color: #f8fafc;
-      font-weight: 700;
-      padding: 13px 16px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .empty,
-    .loading {
-      color: #cbd5e1;
-      padding: 14px 0;
+      padding-bottom: 8px;
     }
 
     .error {
@@ -342,6 +298,10 @@
       border-radius: 14px;
       margin-top: 10px;
       white-space: pre-wrap;
+    }
+
+    #cardArea {
+      display: none !important;
     }
 
     #map {
@@ -658,6 +618,7 @@
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
+        max-height: none;
       }
 
       #map {
@@ -682,8 +643,7 @@
         <div class="hero-kicker">Ses Keşif Rehberi</div>
         <h1>Dünyayı sesle keşfet</h1>
         <p>
-          Hangi atmosferi özledin? Sakin bir sahil mi, gizemli bir orman mı yoksa şehrin enerjisi mi? 
-          Bir pin seç ve yeni bir dünyaya kapı arala.
+          Hangi atmosferi özledin? Bir mod seç, önerilere tıkla ve haritada yeni bir ses durağına bağlan.
         </p>
 
         <div class="search-wrap">
@@ -696,14 +656,23 @@
         <div id="moods" class="moods"></div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Kategoriler</div>
-        <div id="categories" class="categories"></div>
-      </div>
+      <div class="filters-shell">
+        <button id="toggleFiltersBtn" class="filters-toggle">
+          <span>Filtreler</span>
+          <span id="toggleFiltersIcon">+</span>
+        </button>
 
-      <div class="section">
-        <div class="section-title">Atmosferler</div>
-        <div id="environments" class="environments"></div>
+        <div id="filtersBody" class="filters-body">
+          <div class="section">
+            <div class="section-title">Kategoriler</div>
+            <div id="categories" class="categories"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Atmosferler</div>
+            <div id="environments" class="environments"></div>
+          </div>
+        </div>
       </div>
 
       <div class="discovery-panel">
@@ -712,17 +681,12 @@
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
         <div id="discoverySub" class="discovery-sub">
-          Seçtiğin moda göre sana özel öneriler burada listelenecek.
+          Seçtiğin moda göre sana özel öneriler burada.
         </div>
         <div id="discoveryList" class="discovery-list"></div>
       </div>
 
       <div id="resultCount" class="status-line"></div>
-
-      <div id="cardArea" class="card">
-        <div class="loading">Ses kayıtları yükleniyor...</div>
-      </div>
-
       <div id="errorBox" class="error" style="display:none;"></div>
     </aside>
 
@@ -792,7 +756,6 @@
       }
     ];
 
-    const cardArea = document.getElementById("cardArea");
     const categoriesEl = document.getElementById("categories");
     const environmentsEl = document.getElementById("environments");
     const moodsEl = document.getElementById("moods");
@@ -802,6 +765,9 @@
     const discoveryListEl = document.getElementById("discoveryList");
     const discoverySubEl = document.getElementById("discoverySub");
     const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
+    const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+    const filtersBody = document.getElementById("filtersBody");
+    const toggleFiltersIcon = document.getElementById("toggleFiltersIcon");
 
     const floatingPlayerEl = document.getElementById("floatingPlayer");
     const playerTitleEl = document.getElementById("playerTitle");
@@ -1173,53 +1139,6 @@
       }, 300);
     }
 
-    function renderCard(pin) {
-      if (!pin) {
-        cardArea.innerHTML = '<div class="empty">Aradığın atmosfer bulunamadı.</div>';
-        return;
-      }
-
-      const title = pin.title || "İsimsiz Durak";
-      const city = pin.city || "";
-      const country = pin.country || "";
-      const description = pin.description || "Bu mekan henüz hikayesini anlatmamış.";
-      const price = pin.price_label || "";
-      const category = pin.category || "";
-      const vibe = pin.vibe || "";
-      const sourceType = normalize(pin.source_type);
-      const shopifyUrl = cleanUrl(pin.shopify_url || "");
-      const env = getEnvironmentStyle(pin.environment || "");
-
-      cardArea.innerHTML = `
-        <div class="card-header">
-          <div>
-            <h2 style="margin:0;font-size:20px;">${title}</h2>
-            <div class="location">${city}${country ? ", " + country : ""}</div>
-          </div>
-          ${price ? `<div class="badge">${price}</div>` : ""}
-        </div>
-
-        <div class="desc">${description}</div>
-
-        <div class="meta-row">
-          ${category ? `<div class="pill">${category}</div>` : ""}
-          ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
-          ${vibe ? `<div class="pill">${vibe}</div>` : ""}
-          ${sourceType ? `<div class="pill">${sourceType}</div>` : ""}
-        </div>
-
-        <div>
-          <button id="listenNowBtn" class="listen-btn">🎧 Hemen Dinle</button>
-          ${shopifyUrl ? `<a class="buy-btn" href="${shopifyUrl}" target="_blank" rel="noreferrer">Detaylara Git</a>` : ""}
-        </div>
-      `;
-
-      const listenNowBtn = document.getElementById("listenNowBtn");
-      if (listenNowBtn) {
-        listenNowBtn.addEventListener("click", () => openFloatingPlayer(pin, true));
-      }
-    }
-
     function clearMarkers() {
       markers.forEach(marker => map.removeLayer(marker));
       markers = [];
@@ -1232,11 +1151,11 @@
 
       const mood = MOODS.find(m => m.key === activeMood);
       discoverySubEl.textContent = mood && mood.key !== "tum"
-        ? `${mood.label} ruh haline uygun seçkiler burada. Tıkla ve atmosferi değiştir.`
+        ? `${mood.label} ruh haline uygun seçkiler burada.`
         : "Bugün için senin için seçtiğimiz ses yolculukları.";
 
       if (!picked.length) {
-        discoveryListEl.innerHTML = `<div class="empty">Şu an bu kategoride öneri bulunmuyor.</div>`;
+        discoveryListEl.innerHTML = `<div class="empty">Şu an bu modda öneri bulunmuyor.</div>`;
         return;
       }
 
@@ -1262,7 +1181,6 @@
           if (!pin || pin.lat == null || pin.lng == null) return;
 
           activePinId = pin.id;
-          renderCard(pin);
           renderMarkers();
           map.setView([Number(pin.lat), Number(pin.lng)], 11, { animate: true });
           openFloatingPlayer(pin, true);
@@ -1284,7 +1202,6 @@
 
         marker.on("click", () => {
           activePinId = pin.id;
-          renderCard(pin);
           renderMarkers();
           marker.openPopup();
           openFloatingPlayer(pin, true);
@@ -1313,7 +1230,6 @@
 
       if (visiblePins.length === 0) {
         activePinId = null;
-        renderCard(null);
         return;
       }
 
@@ -1321,9 +1237,6 @@
       if (!currentVisibleActive) {
         activePinId = visiblePins[0].id;
       }
-
-      const selected = visiblePins.find(p => Number(p.id) === Number(activePinId)) || visiblePins[0];
-      renderCard(selected);
 
       const validCoords = visiblePins
         .filter(p => p.lat != null && p.lng != null)
@@ -1401,6 +1314,11 @@
     refreshDiscoveryBtn.addEventListener("click", renderDiscovery);
     playerMinBtn.addEventListener("click", closeFloatingPlayer);
     playerCloseBtn.addEventListener("click", closeFloatingPlayer);
+
+    toggleFiltersBtn.addEventListener("click", () => {
+      filtersBody.classList.toggle("show");
+      toggleFiltersIcon.textContent = filtersBody.classList.contains("show") ? "−" : "+";
+    });
 
     window.addEventListener("load", () => {
       initMap();
