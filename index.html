@@ -91,6 +91,27 @@
       position: relative;
     }
 
+    .search {
+      width: 100%;
+      padding: 13px 15px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      font-size: 14px;
+      transition: .2s ease;
+    }
+
+    .search:focus {
+      border-color: rgba(56,189,248,0.35);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
+    }
+
+    .search::placeholder {
+      color: #94a3b8;
+    }
+
     .search-suggestions {
       position: absolute;
       top: calc(100% + 8px);
@@ -134,27 +155,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-    }
-
-    .search {
-      width: 100%;
-      padding: 13px 15px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      outline: none;
-      font-size: 14px;
-      transition: .2s ease;
-    }
-
-    .search:focus {
-      border-color: rgba(56,189,248,0.35);
-      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
-    }
-
-    .search::placeholder {
-      color: #94a3b8;
     }
 
     .hero-actions {
@@ -922,105 +922,7 @@
   <script>
     const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
     const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
-
-    const DEMO = [
-      {
-        id: 1,
-        title: "Kordon Gece Vibes",
-        city: "İzmir",
-        country: "Türkiye",
-        category: "Sokak",
-        environment: "Gece",
-        mood: "enerjik",
-        vibe: "Neon / şehir / gece",
-        description: "Kordon boyunca gecenin şehir uğultusu ve sahil ritmi.",
-        lat: 38.4237,
-        lng: 27.1428,
-        photo_url: "",
-        embed_url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        shopify_url: ""
-      },
-      {
-        id: 2,
-        title: "Foça Deniz Rüzgarı",
-        city: "Foça",
-        country: "Türkiye",
-        category: "Doğa",
-        environment: "Sahil",
-        mood: "sakin",
-        vibe: "Deniz / rüzgar / huzur",
-        description: "Dalgalar, rüzgar ve hafif kıyı atmosferi.",
-        lat: 38.6703,
-        lng: 26.7566,
-        photo_url: "",
-        embed_url: "https://www.youtube.com/embed/jfKfPfyJRdk",
-        shopify_url: ""
-      },
-      {
-        id: 3,
-        title: "Kapalıçarşı Kalabalığı",
-        city: "İstanbul",
-        country: "Türkiye",
-        category: "Pazar",
-        environment: "İç Mekan",
-        mood: "merakli",
-        vibe: "Kalabalık / ritim / yaşam",
-        description: "İnsan akışı, ayak sesleri ve çarşı atmosferi.",
-        lat: 41.0106,
-        lng: 28.9681,
-        photo_url: "",
-        embed_url: "https://www.youtube.com/embed/5qap5aO4i9A",
-        shopify_url: ""
-      },
-      {
-        id: 4,
-        title: "Xi'an Akşam Sokakları",
-        city: "Xi'an",
-        country: "Çin",
-        category: "Sokak",
-        environment: "Gece",
-        mood: "ilham",
-        vibe: "Kırmızı ışıklar / tarih / sinematik",
-        description: "Renkli sokak ışıkları ve akşam hareketi.",
-        lat: 34.3416,
-        lng: 108.9398,
-        photo_url: "",
-        embed_url: "https://www.youtube.com/embed/M7lc1UVf-VE",
-        shopify_url: ""
-      },
-      {
-        id: 5,
-        title: "Mardin Taş Sokak Yankısı",
-        city: "Mardin",
-        country: "Türkiye",
-        category: "Tarih",
-        environment: "Açık Hava",
-        mood: "duygusal",
-        vibe: "Taş / yankı / geçmiş",
-        description: "Taş sokaklarda yankılanan adımlar ve hava.",
-        lat: 37.3122,
-        lng: 40.7351,
-        photo_url: "",
-        embed_url: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293",
-        shopify_url: ""
-      },
-      {
-        id: 6,
-        title: "Beijing Park Morning",
-        city: "Beijing",
-        country: "Çin",
-        category: "Doğa",
-        environment: "Park",
-        mood: "odak",
-        vibe: "Sabah / nefes / dingin",
-        description: "Sabah egzersizi yapan insanlar ve park atmosferi.",
-        lat: 39.9042,
-        lng: 116.4074,
-        photo_url: "",
-        embed_url: "https://www.youtube.com/embed/21X5lGlDOfg",
-        shopify_url: ""
-      }
-    ];
+    const SUPABASE_TABLE = "soundmap_pins";
 
     const MOODS = [
       { key: "tum", label: "Hepsi" },
@@ -1038,6 +940,7 @@
       "İç Mekan": { color: "#f59e0b", label: "İç Mekan", symbol: "🏠" },
       "Açık Hava": { color: "#22c55e", label: "Açık Hava", symbol: "🌿" },
       "Park": { color: "#10b981", label: "Park", symbol: "🌳" },
+      "Doğa": { color: "#16a34a", label: "Doğa", symbol: "🍃" },
       "Varsayılan": { color: "#3b82f6", label: "Ambient", symbol: "🎧" }
     };
 
@@ -1126,6 +1029,22 @@
 
     function getEnvironmentStyle(environment) {
       return ENV_STYLES[environment] || ENV_STYLES["Varsayılan"];
+    }
+
+    function getFirstFilled(obj, keys, fallback = "") {
+      for (const key of keys) {
+        const value = obj?.[key];
+        if (value !== undefined && value !== null && String(value).trim() !== "") {
+          return value;
+        }
+      }
+      return fallback;
+    }
+
+    function toNumberOrNull(value) {
+      if (value === null || value === undefined || value === "") return null;
+      const n = Number(String(value).replace(",", "."));
+      return Number.isFinite(n) ? n : null;
     }
 
     function makePinIcon(environment, isActive = false, isFeatured = false) {
@@ -1270,7 +1189,6 @@
 
       return allPins.filter(pin => {
         if (!moodMatcher(pin)) return false;
-
         if (activeCategory !== "Tümü" && pin.category !== activeCategory) return false;
         if (activeEnvironment !== "Tümü" && pin.environment !== activeEnvironment) return false;
 
@@ -1375,7 +1293,6 @@
             pin.description,
             pin.vibe
           ].map(normalize).join(" ");
-
           return haystack.includes(q);
         })
         .map(pin => {
@@ -1574,9 +1491,7 @@
     function randomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(pin => pin.lat != null && pin.lng != null);
-
       if (!valid.length) return;
-
       const pick = valid[Math.floor(Math.random() * valid.length)];
       goToPin(pick, true);
     }
@@ -1679,6 +1594,7 @@
 
       if (visiblePins.length === 0) {
         activePinId = null;
+        closeFloatingPlayer();
         return;
       }
 
@@ -1709,35 +1625,90 @@
 
     async function loadPins() {
       try {
+        hideError();
+
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const { data, error } = await supabase
-          .from("soundmap_pins")
-          .select("*")
-          .order("title", { ascending: true });
+          .from(SUPABASE_TABLE)
+          .select("*");
 
-        if (error || !data || !data.length) {
-          allPins = DEMO;
-        } else {
-          allPins = data.map(pin => ({
+        if (error) {
+          throw error;
+        }
+
+        if (!data || !data.length) {
+          throw new Error("Supabase'ten hiç kayıt gelmedi.");
+        }
+
+        allPins = data.map((pin, index) => {
+          const lat = toNumberOrNull(
+            getFirstFilled(pin, ["lat", "latitude", "y", "map_lat", "location_lat"])
+          );
+
+          const lng = toNumberOrNull(
+            getFirstFilled(pin, ["lng", "lon", "longitude", "x", "map_lng", "location_lng"])
+          );
+
+          const title = getFirstFilled(pin, ["title", "name", "place_name", "location_name"], `Kayıt ${index + 1}`);
+          const city = getFirstFilled(pin, ["city", "sehir", "town", "district"], "");
+          const country = getFirstFilled(pin, ["country", "ulke"], "");
+          const category = getFirstFilled(pin, ["category", "type", "kategori"], "Diğer");
+          const environment = getFirstFilled(pin, ["environment", "env", "ortam"], "Varsayılan");
+          const mood = getFirstFilled(pin, ["mood", "ruh_hali"], "");
+          const vibe = getFirstFilled(pin, ["vibe", "tagline", "atmosphere"], "");
+          const description = getFirstFilled(pin, ["description", "desc", "aciklama", "content"], "");
+          const photo_url = cleanUrl(getFirstFilled(pin, ["photo_url", "image_url", "cover_url", "thumbnail_url", "photo"], ""));
+          const shopify_url = cleanUrl(getFirstFilled(pin, ["shopify_url", "url", "page_url", "link"], ""));
+          const embed_url = cleanUrl(getFirstFilled(pin, ["embed_url", "youtube_embed", "soundcloud_embed", "media_url", "player_url"], ""));
+
+          return {
             ...pin,
-            photo_url: cleanUrl(pin.photo_url || ""),
-            shopify_url: cleanUrl(pin.shopify_url || ""),
-            embed_url: cleanUrl(pin.embed_url || "")
-          }));
+            id: getFirstFilled(pin, ["id"], `row-${index}`),
+            lat,
+            lng,
+            title,
+            city,
+            country,
+            category,
+            environment,
+            mood,
+            vibe,
+            description,
+            photo_url,
+            shopify_url,
+            embed_url
+          };
+        }).filter(pin => pin.lat !== null && pin.lng !== null);
+
+        if (!allPins.length) {
+          throw new Error("Kayıtlar geldi ama geçerli lat/lng bulunamadı.");
         }
 
         renderMoods();
         renderCategories();
         renderEnvironments();
         applyFilters();
+
+        console.log("✅ Gerçek kayıtlar yüklendi:", allPins.length);
+
       } catch (err) {
-        allPins = DEMO;
+        console.error("❌ loadPins hatası:", err);
+
+        allPins = [];
+        visiblePins = [];
+        activePinId = null;
+
         renderMoods();
         renderCategories();
         renderEnvironments();
         applyFilters();
-        showError("Bağlantı sorunu yaşandı. Demo veriler yükleniyor.\n\n" + (err?.message || err));
+
+        showError(
+          "Gerçek kayıtlar yüklenemedi.\n\n" +
+          "Hata: " + (err?.message || err) + "\n\n" +
+          "Demo veri göstermedim; sorun direkt görünsün diye boş bıraktım."
+        );
       }
     }
 
