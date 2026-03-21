@@ -76,14 +76,27 @@
       color: #94a3b8;
     }
 
-    .categories {
+    .filter-group {
+      margin-bottom: 14px;
+    }
+
+    .filter-title {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .categories,
+    .environments {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 18px;
     }
 
-    .cat-btn {
+    .cat-btn,
+    .env-btn {
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.05);
       color: #e2e8f0;
@@ -94,19 +107,27 @@
       transition: .2s ease;
     }
 
-    .cat-btn:hover {
+    .cat-btn:hover,
+    .env-btn:hover {
       transform: translateY(-1px);
       background: rgba(255,255,255,.09);
     }
 
-    .cat-btn.active {
+    .cat-btn.active,
+    .env-btn.active {
       background: rgba(16,185,129,.14);
       border-color: rgba(16,185,129,.4);
       color: #d1fae5;
     }
 
+    .env-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .card {
-      margin-top: 14px;
+      margin-top: 18px;
       padding: 18px;
       border-radius: 24px;
       background: rgba(255,255,255,0.05);
@@ -183,6 +204,12 @@
       filter: brightness(1.04);
     }
 
+    .status-line {
+      margin-top: 14px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
     #map {
       height: 100vh;
       width: 100%;
@@ -216,10 +243,6 @@
       background: #020617;
     }
 
-    /* =========================
-       PIN SYSTEM
-    ========================= */
-
     .ey-pin {
       position: relative;
       transform: rotate(-45deg);
@@ -251,7 +274,6 @@
       height: 100%;
     }
 
-    /* SEA / LAKE / RIVER / SHORE */
     .core-sea::before,
     .core-sea::after {
       content: "";
@@ -274,7 +296,6 @@
       animation: waveMove 2.2s ease-in-out infinite reverse;
     }
 
-    /* FOREST / RURAL */
     .core-forest::before,
     .core-forest::after {
       content: "";
@@ -303,7 +324,6 @@
       animation: forestPulse 2.8s ease-in-out infinite reverse;
     }
 
-    /* CITY / PORT / MARKET */
     .core-city::before,
     .core-city::after {
       content: "";
@@ -329,7 +349,6 @@
       opacity: .6;
     }
 
-    /* MUSEUM / HISTORY / TEMPLE */
     .core-museum::before,
     .core-museum::after {
       content: "";
@@ -348,7 +367,6 @@
       background: rgba(255,255,255,.95);
     }
 
-    /* MOUNTAIN / CAVE / DESERT */
     .core-mountain::before {
       content: "";
       position: absolute;
@@ -363,7 +381,6 @@
       animation: mountainGlow 3.4s ease-in-out infinite;
     }
 
-    /* DEFAULT */
     .core-default::before {
       content: "";
       position: absolute;
@@ -449,7 +466,17 @@
 
       <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya kayıt ara" />
 
-      <div id="categories" class="categories"></div>
+      <div class="filter-group">
+        <div class="filter-title">Kategori</div>
+        <div id="categories" class="categories"></div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Ortam</div>
+        <div id="environments" class="environments"></div>
+      </div>
+
+      <div id="resultCount" class="status-line"></div>
 
       <div id="cardArea" class="card">
         <div class="loading">Kayıtlar yükleniyor...</div>
@@ -470,28 +497,9 @@
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
 
- const DEMO = [
-  {
-    id: 99,
-    title: "Bostancı Sahili",
-    city: "Istanbul",
-    country: "Turkey",
-    description: "Kıyı yürüyüşü ve sahil ambiyansı.",
-    lat: 40.953,
-    lng: 29.096,
-    category: "Şehir",
-    environment: "sahil",
-    vibe: "Canlı",
-    duration: "2:10",
-    source_type: "",
-    embed_url: "",
-    preview_audio_url: "",
-    shopify_url: "#",
-    price_label: ""
-  },  // 👈 BURASI ÇOK KRİTİK
-
-  {
-    id: 1,
+    const DEMO = [
+      {
+        id: 1,
         title: "Yoros Kalesi",
         city: "Istanbul",
         country: "Turkey",
@@ -535,7 +543,7 @@
         lat: 40.953,
         lng: 29.096,
         category: "Şehir",
-        environment: "sehir",
+        environment: "sahil",
         vibe: "Canlı",
         duration: "1:58",
         source_type: "",
@@ -602,14 +610,17 @@
 
     const cardArea = document.getElementById("cardArea");
     const categoriesEl = document.getElementById("categories");
+    const environmentsEl = document.getElementById("environments");
     const searchInput = document.getElementById("searchInput");
     const errorBox = document.getElementById("errorBox");
+    const resultCountEl = document.getElementById("resultCount");
 
     let map;
     let allPins = [];
     let visiblePins = [];
     let markers = [];
     let activeCategory = "Tümü";
+    let activeEnvironment = "Tümü";
     let activePinId = null;
     let hasFittedBounds = false;
 
@@ -631,62 +642,141 @@
       return [...set];
     }
 
-    function getEnvironmentStyle(environment) {
+    function canonicalEnvironment(environment) {
       const key = normalize(environment);
+
+      const aliases = {
+        deniz: "deniz",
+        sea: "deniz",
+        ocean: "deniz",
+
+        gol: "gol",
+        "göl": "gol",
+        lake: "gol",
+
+        nehir: "nehir",
+        river: "nehir",
+
+        sahil: "sahil",
+        coast: "sahil",
+        shore: "sahil",
+
+        orman: "orman",
+        forest: "orman",
+
+        kirsal: "kirsal",
+        "kırsal": "kirsal",
+        rural: "kirsal",
+
+        sehir: "sehir",
+        "şehir": "sehir",
+        city: "sehir",
+        urban: "sehir",
+
+        liman: "liman",
+        port: "liman",
+        harbor: "liman",
+
+        pazar: "pazar",
+        market: "pazar",
+
+        muze: "muze",
+        "müze": "muze",
+        museum: "muze",
+
+        tarih: "tarih",
+        history: "tarih",
+        historic: "tarih",
+
+        tapinak: "tapinak",
+        "tapınak": "tapinak",
+        temple: "tapinak",
+
+        dag: "dag",
+        "dağ": "dag",
+        mountain: "dag",
+
+        magara: "magara",
+        "mağara": "magara",
+        cave: "magara",
+
+        col: "col",
+        "çöl": "col",
+        desert: "col"
+      };
+
+      return aliases[key] || key;
+    }
+
+    function getEnvironmentStyle(environment) {
+      const key = canonicalEnvironment(environment);
 
       const map = {
         deniz:   { color: "#0ea5e9", symbol: "🌊", label: "Deniz" },
         gol:     { color: "#38bdf8", symbol: "💧", label: "Göl" },
-        "göl":   { color: "#38bdf8", symbol: "💧", label: "Göl" },
         nehir:   { color: "#06b6d4", symbol: "💦", label: "Nehir" },
         sahil:   { color: "#14b8a6", symbol: "🐚", label: "Sahil" },
 
         orman:   { color: "#16a34a", symbol: "🌲", label: "Orman" },
         kirsal:  { color: "#65a30d", symbol: "🌾", label: "Kırsal" },
-        "kırsal":{ color: "#65a30d", symbol: "🌾", label: "Kırsal" },
 
         sehir:   { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
-        "şehir": { color: "#2563eb", symbol: "🏙️", label: "Şehir" },
         liman:   { color: "#475569", symbol: "⚓", label: "Liman" },
         pazar:   { color: "#f97316", symbol: "🧺", label: "Pazar" },
 
         muze:    { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
-        "müze":  { color: "#7c3aed", symbol: "🏛️", label: "Müze" },
         tarih:   { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
         tapinak: { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
-        "tapınak": { color: "#dc2626", symbol: "⛩️", label: "Tapınak" },
 
         dag:     { color: "#78716c", symbol: "⛰️", label: "Dağ" },
-        "dağ":   { color: "#78716c", symbol: "⛰️", label: "Dağ" },
         magara:  { color: "#57534e", symbol: "🪨", label: "Mağara" },
-        "mağara":{ color: "#57534e", symbol: "🪨", label: "Mağara" },
-        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl" },
-        "çöl":   { color: "#f59e0b", symbol: "🏜️", label: "Çöl" }
+        col:     { color: "#f59e0b", symbol: "🏜️", label: "Çöl" }
       };
 
       return map[key] || { color: "#3b82f6", symbol: "🎧", label: "Kayıt" };
     }
 
-    function getCoreClass(environment) {
-      const key = normalize(environment);
+    function getEnvironmentButtons(pins) {
+      const seen = new Set();
+      const items = [{ key: "Tümü", label: "Tümü", symbol: "✨" }];
 
-      if (["deniz", "gol", "göl", "nehir", "sahil"].includes(key)) {
+      pins.forEach(pin => {
+        const envKey = canonicalEnvironment(pin.environment);
+        if (!envKey) return;
+        if (seen.has(envKey)) return;
+        seen.add(envKey);
+
+        const env = getEnvironmentStyle(envKey);
+        items.push({
+          key: envKey,
+          label: env.label,
+          symbol: env.symbol
+        });
+      });
+
+      return items;
+    }
+
+    function getCoreClass(environment) {
+      const key = canonicalEnvironment(environment);
+
+      if (["deniz", "gol", "nehir", "sahil"].includes(key)) {
         return "core-sea";
       }
 
-      if (["orman", "kirsal", "kırsal"].includes(key)) {
+      if (["orman", "kirsal"].includes(key)) {
         return "core-forest";
       }
 
-      if (["sehir", "şehir", "liman", "pazar"].includes(key)) {
+      if (["sehir", "liman", "pazar"].includes(key)) {
         return "core-city";
       }
 
-      if (["muze", "müze", "tarih", "tapinak", "tapınak"].includes(key)) {
+      if (["muze", "tarih", "tapinak"].includes(key)) {
         return "core-museum";
       }
 
-      if (["dag", "dağ", "magara", "mağara", "col", "çöl"].includes(key)) {
+      if (["dag", "magara", "col"].includes(key)) {
         return "core-mountain";
       }
 
@@ -762,11 +852,33 @@
       });
     }
 
+    function renderEnvironments() {
+      const envs = getEnvironmentButtons(allPins);
+      environmentsEl.innerHTML = "";
+
+      envs.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "env-btn" + (item.key === activeEnvironment ? " active" : "");
+        btn.innerHTML = `<span>${item.symbol}</span><span>${item.label}</span>`;
+
+        btn.addEventListener("click", () => {
+          activeEnvironment = item.key;
+          renderEnvironments();
+          hasFittedBounds = false;
+          applyFilters();
+        });
+
+        environmentsEl.appendChild(btn);
+      });
+    }
+
     function filterPins() {
       const q = normalize(searchInput.value);
 
       return allPins.filter(pin => {
         const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+        const envKey = canonicalEnvironment(pin.environment);
+        const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
 
         const text = [
           pin.title,
@@ -778,8 +890,22 @@
           pin.vibe
         ].map(normalize).join(" ");
 
-        return categoryOk && (!q || text.includes(q));
+        return categoryOk && environmentOk && (!q || text.includes(q));
       });
+    }
+
+    function renderStatusLine() {
+      const parts = [`${visiblePins.length} kayıt`];
+
+      if (activeCategory !== "Tümü") {
+        parts.push(`kategori: ${activeCategory}`);
+      }
+
+      if (activeEnvironment !== "Tümü") {
+        parts.push(`ortam: ${getEnvironmentStyle(activeEnvironment).label}`);
+      }
+
+      resultCountEl.textContent = parts.join(" • ");
     }
 
     function renderCard(pin) {
@@ -912,6 +1038,8 @@
         markers.push(marker);
       });
 
+      renderStatusLine();
+
       if (visiblePins.length === 0) {
         activePinId = null;
         renderCard(null);
@@ -960,10 +1088,12 @@
         }
 
         renderCategories();
+        renderEnvironments();
         applyFilters();
       } catch (err) {
         allPins = DEMO;
         renderCategories();
+        renderEnvironments();
         applyFilters();
         showError("Supabase fallback devrede. Demo veri gösteriliyor.\n\n" + (err?.message || err));
       }
