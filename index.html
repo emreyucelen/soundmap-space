@@ -113,28 +113,46 @@
 
     .hero-actions {
       margin-top: 12px;
+      display: grid;
+      gap: 10px;
     }
 
-    .random-journey-btn {
+    .random-journey-btn,
+    .submit-sound-btn,
+    .form-btn {
       width: 100%;
       border: 0;
       cursor: pointer;
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #03131c;
       font-weight: 800;
       font-size: 14px;
       padding: 13px 16px;
       border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
       transition: .2s ease;
     }
 
-    .random-journey-btn:hover {
+    .random-journey-btn {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #03131c;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+    }
+
+    .submit-sound-btn {
+      background: rgba(255,255,255,0.08);
+      color: #e0f2fe;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+    }
+
+    .random-journey-btn:hover,
+    .submit-sound-btn:hover,
+    .form-btn:hover {
       transform: translateY(-1px);
       filter: brightness(1.04);
     }
 
-    .random-journey-btn:active {
+    .random-journey-btn:active,
+    .submit-sound-btn:active,
+    .form-btn:active {
       transform: translateY(0);
     }
 
@@ -385,6 +403,15 @@
       transform: rotate(-45deg);
       overflow: hidden;
       isolation: isolate;
+      transition: transform .18s ease, filter .18s ease;
+    }
+
+    .ey-pin:hover {
+      filter: brightness(1.08);
+    }
+
+    .ey-pin:hover .ey-pin-inner {
+      transform: translate(-50%, -50%) rotate(45deg) scale(1.08);
     }
 
     .ey-pin.is-active {
@@ -393,6 +420,16 @@
 
     .ey-pin.is-featured {
       animation: featuredPinFloat 3.8s ease-in-out infinite;
+    }
+
+    .ey-pin.is-featured::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 50% 50% 50% 0;
+      border: 2px solid rgba(255,255,255,.22);
+      animation: ringPulse 2.4s ease-out infinite;
+      pointer-events: none;
     }
 
     .ey-pin.is-featured .ey-pin-inner {
@@ -418,6 +455,7 @@
       justify-content: center;
       background: rgba(255,255,255,.10);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.20);
+      transition: transform .18s ease;
     }
 
     .ey-pin-core {
@@ -589,6 +627,17 @@
       }
     }
 
+    @keyframes ringPulse {
+      0% {
+        opacity: .55;
+        transform: scale(.92);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.22);
+      }
+    }
+
     .floating-player {
       position: fixed;
       right: 22px;
@@ -721,6 +770,169 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    .submit-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(2,6,23,0.70);
+      backdrop-filter: blur(10px);
+    }
+
+    .submit-modal.show {
+      display: flex;
+    }
+
+    .submit-modal-card {
+      width: min(720px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(180deg, rgba(8,17,31,0.96), rgba(13,22,38,0.96)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.10), transparent 30%);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+      padding: 18px;
+    }
+
+    .submit-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .submit-modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .submit-modal-sub {
+      margin-top: 6px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .submit-close-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .submit-close-btn:hover {
+      background: rgba(255,255,255,0.10);
+    }
+
+    .submit-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: #cbd5e1;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: rgba(56,189,248,0.35);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
+    }
+
+    .form-textarea {
+      min-height: 110px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .form-help {
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .form-btn.primary {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #03131c;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+    }
+
+    .form-btn.secondary {
+      background: rgba(255,255,255,0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .form-status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .form-status.show {
+      display: block;
+    }
+
+    .form-status.success {
+      background: rgba(20, 83, 45, 0.45);
+      border: 1px solid rgba(74, 222, 128, 0.24);
+      color: #dcfce7;
+    }
+
+    .form-status.error {
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      color: #fecaca;
+    }
+
     @media (max-width: 980px) {
       .page {
         grid-template-columns: 1fr;
@@ -742,6 +954,10 @@
         width: auto;
         bottom: 12px;
       }
+
+      .submit-form-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -761,6 +977,7 @@
 
         <div class="hero-actions">
           <button id="randomJourneyBtn" class="random-journey-btn">🎲 Bugün ne dinlemeliyim?</button>
+          <button id="openSubmitModalBtn" class="submit-sound-btn">➕ Ses ekle</button>
         </div>
       </div>
 
@@ -835,6 +1052,108 @@
 
   <div id="travelNotice" class="travel-notice">Yeni durağa gidiliyor…</div>
 
+  <div id="submitModal" class="submit-modal">
+    <div class="submit-modal-card">
+      <div class="submit-modal-head">
+        <div>
+          <div class="submit-modal-title">Yeni ses durağı ekle</div>
+          <div class="submit-modal-sub">
+            YouTube veya SoundCloud bağlantısı gir, koordinatları ekle, haritaya yeni bir keşif noktası kazandır.
+          </div>
+        </div>
+        <button id="closeSubmitModalBtn" class="submit-close-btn" type="button">✕</button>
+      </div>
+
+      <form id="submitPinForm">
+        <div class="submit-form-grid">
+          <div class="form-group">
+            <label class="form-label" for="pinTitle">Başlık</label>
+            <input id="pinTitle" name="title" class="form-input" type="text" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinCategory">Kategori</label>
+            <input id="pinCategory" name="category" class="form-input" type="text" placeholder="Kültür, Doğa, Şehir..." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinCity">Şehir</label>
+            <input id="pinCity" name="city" class="form-input" type="text" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinCountry">Ülke</label>
+            <input id="pinCountry" name="country" class="form-input" type="text" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinLat">Latitude</label>
+            <input id="pinLat" name="lat" class="form-input" type="number" step="any" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinLng">Longitude</label>
+            <input id="pinLng" name="lng" class="form-input" type="number" step="any" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinEnvironment">Atmosfer</label>
+            <select id="pinEnvironment" name="environment" class="form-select">
+              <option value="deniz">Deniz</option>
+              <option value="gol">Göl</option>
+              <option value="nehir">Nehir</option>
+              <option value="sahil">Sahil</option>
+              <option value="orman">Orman</option>
+              <option value="kirsal">Kırsal</option>
+              <option value="sehir">Şehir</option>
+              <option value="liman">Liman</option>
+              <option value="pazar">Pazar</option>
+              <option value="muze">Müze</option>
+              <option value="tarih">Tarih</option>
+              <option value="tapinak">Tapınak</option>
+              <option value="dag">Dağ</option>
+              <option value="magara">Mağara</option>
+              <option value="col">Çöl</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinVibe">Vibe / Mod</label>
+            <input id="pinVibe" name="vibe" class="form-input" type="text" placeholder="Sakin, mistik, enerjik..." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pinSourceType">Kaynak tipi</label>
+            <select id="pinSourceType" name="source_type" class="form-select">
+              <option value="youtube">YouTube</option>
+              <option value="soundcloud">SoundCloud</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="pinEmbedUrl">Embed / paylaşım linki</label>
+            <input id="pinEmbedUrl" name="embed_url" class="form-input" type="url" required placeholder="https://youtu.be/... veya https://soundcloud.com/..." />
+            <div class="form-help">
+              YouTube linki, embed linki veya SoundCloud paylaşım linki olabilir.
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="pinDescription">Açıklama</label>
+            <textarea id="pinDescription" name="description" class="form-textarea" placeholder="Bu ses durağını özel yapan şey ne?"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="form-btn primary">Kaydı haritaya ekle</button>
+          <button type="button" id="cancelSubmitBtn" class="form-btn secondary">Vazgeç</button>
+        </div>
+
+        <div id="submitFormStatus" class="form-status"></div>
+      </form>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -900,10 +1219,19 @@
     const randomJourneyBtn = document.getElementById("randomJourneyBtn");
     const travelNoticeEl = document.getElementById("travelNotice");
 
+    const submitModal = document.getElementById("submitModal");
+    const openSubmitModalBtn = document.getElementById("openSubmitModalBtn");
+    const closeSubmitModalBtn = document.getElementById("closeSubmitModalBtn");
+    const cancelSubmitBtn = document.getElementById("cancelSubmitBtn");
+    const submitPinForm = document.getElementById("submitPinForm");
+    const submitFormStatus = document.getElementById("submitFormStatus");
+
+    let supabaseClient = null;
     let map;
     let allPins = [];
     let visiblePins = [];
     let markers = [];
+    let markersById = {};
     let activeCategory = "Tümü";
     let activeEnvironment = "Tümü";
     let activeMood = "tum";
@@ -911,6 +1239,8 @@
     let hasFittedBounds = false;
     let discoveryExpanded = false;
     let featuredPinIds = [];
+    let featuredPinsInterval = null;
+    let lastRandomCity = "";
 
     function normalize(value) {
       return (value || "")
@@ -936,10 +1266,34 @@
       return raw;
     }
 
+    function escapeHtml(value) {
+      return (value || "").toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function showError(message) {
       errorBox.style.display = "block";
       errorBox.textContent = message;
       console.error(message);
+    }
+
+    function hideError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    function showFormStatus(message, type = "success") {
+      submitFormStatus.className = `form-status show ${type}`;
+      submitFormStatus.textContent = message;
+    }
+
+    function clearFormStatus() {
+      submitFormStatus.className = "form-status";
+      submitFormStatus.textContent = "";
     }
 
     function shuffleArray(arr) {
@@ -972,7 +1326,6 @@
         sea: "deniz",
         ocean: "deniz",
         gol: "gol",
-        "gol": "gol",
         lake: "gol",
         nehir: "nehir",
         river: "nehir",
@@ -1146,8 +1499,26 @@
       });
     }
 
+    function buildSearchText(pin) {
+      const raw = [
+        pin.title,
+        pin.city,
+        pin.country,
+        pin.category,
+        pin.environment,
+        pin.description,
+        pin.vibe
+      ].filter(Boolean).join(" ");
+
+      return {
+        normalized: normalize(raw),
+        lower: raw.toLowerCase()
+      };
+    }
+
     function filterPins() {
-      const q = normalize(searchInput.value);
+      const qNormalized = normalize(searchInput.value);
+      const qLower = (searchInput.value || "").toLowerCase().trim();
       const moodMatcher = getMoodMatcher();
 
       return allPins.filter(pin => {
@@ -1155,17 +1526,10 @@
         const envKey = canonicalEnvironment(pin.environment);
         const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
 
-        const text = [
-          pin.title,
-          pin.city,
-          pin.country,
-          pin.category,
-          pin.environment,
-          pin.description,
-          pin.vibe
-        ].map(normalize).join(" ");
+        const searchText = buildSearchText(pin);
+        const searchOk = !qNormalized || searchText.normalized.includes(qNormalized) || (qLower && searchText.lower.includes(qLower));
 
-        return categoryOk && environmentOk && moodMatcher(pin) && (!q || text.includes(q));
+        return categoryOk && environmentOk && moodMatcher(pin) && searchOk;
       });
     }
 
@@ -1222,10 +1586,10 @@
       playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
 
       playerMetaRowEl.innerHTML = `
-        ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
-        ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
-        ${pin.vibe ? `<div class="pill">${pin.vibe}</div>` : ""}
-        ${pin.source_type ? `<div class="pill">${pin.source_type}</div>` : ""}
+        ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
+        ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+        ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
+        ${pin.source_type ? `<div class="pill">${escapeHtml(pin.source_type)}</div>` : ""}
       `;
 
       if (embed) {
@@ -1326,6 +1690,7 @@
     function clearMarkers() {
       markers.forEach(marker => map.removeLayer(marker));
       markers = [];
+      markersById = {};
     }
 
     function pickFeaturedPins() {
@@ -1342,12 +1707,27 @@
         .map(pin => String(pin.id));
     }
 
+    function focusMarkerAndPopup(pinId) {
+      const marker = markersById[String(pinId)];
+      if (!marker) return;
+
+      setTimeout(() => {
+        marker.openPopup();
+      }, 120);
+    }
+
     function goToPin(pin, cinematic = true) {
       if (!pin || pin.lat == null || pin.lng == null) return;
 
       activePinId = pin.id;
       renderMarkers();
       openFloatingPlayer(pin, true);
+      focusMarkerAndPopup(pin.id);
+
+      setTimeout(() => {
+        renderMarkers();
+        focusMarkerAndPopup(pin.id);
+      }, 180);
 
       if (cinematic) {
         cinematicFlyTo(pin.lat, pin.lng);
@@ -1359,13 +1739,22 @@
       }
     }
 
-    function randomJourney() {
+    function smartRandomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(pin => pin.lat != null && pin.lng != null);
 
       if (!valid.length) return;
 
-      const pick = valid[Math.floor(Math.random() * valid.length)];
+      const moodMatcher = getMoodMatcher();
+      let pool = valid.filter(pin => moodMatcher(pin));
+
+      if (!pool.length) pool = valid;
+
+      const differentCityPool = pool.filter(pin => normalize(pin.city) !== normalize(lastRandomCity));
+      const finalPool = differentCityPool.length ? differentCityPool : pool;
+
+      const pick = finalPool[Math.floor(Math.random() * finalPool.length)];
+      lastRandomCity = pick.city || "";
       goToPin(pick, true);
     }
 
@@ -1391,12 +1780,12 @@
         const env = getEnvironmentStyle(pin.environment || "");
         return `
           <div class="discover-card" data-discover-id="${pin.id}">
-            <div class="discover-title">${pin.title || "Gizemli Durak"}</div>
-            <div class="discover-meta">${pin.city || ""}${pin.country ? ", " + pin.country : ""}</div>
+            <div class="discover-title">${escapeHtml(pin.title || "Gizemli Durak")}</div>
+            <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
             <div class="discover-pills">
-              ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
-              ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
-              ${pin.vibe ? `<div class="pill">${pin.vibe}</div>` : ""}
+              ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
+              ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+              ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
             </div>
           </div>
         `;
@@ -1448,19 +1837,20 @@
 
         marker.bindPopup(`
           <div style="min-width:190px;font-family:sans-serif;">
-            <div style="font-weight:700;margin-bottom:6px;">${pin.title || "Kayıt"}</div>
+            <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
             <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-              ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
+              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${pin.category}</div>` : ""}
-              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${env.label}</div>` : ""}
+              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
+              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
             </div>
             <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
           </div>
         `);
 
         markers.push(marker);
+        markersById[String(pin.id)] = marker;
       });
 
       renderStatusLine();
@@ -1488,31 +1878,58 @@
       }
     }
 
+    function startLivingMap() {
+      if (featuredPinsInterval) clearInterval(featuredPinsInterval);
+
+      featuredPinsInterval = setInterval(() => {
+        const currentActive = activePinId ? String(activePinId) : null;
+        const candidates = (visiblePins.length ? visiblePins : allPins)
+          .filter(pin => pin.lat != null && pin.lng != null)
+          .filter(pin => String(pin.id) !== currentActive);
+
+        if (!candidates.length) return;
+
+        featuredPinIds = shuffleArray(candidates)
+          .slice(0, Math.min(3, candidates.length))
+          .map(pin => String(pin.id));
+
+        renderMarkers();
+      }, 4000);
+    }
+
     function applyFilters() {
       visiblePins = filterPins();
       pickFeaturedPins();
       renderMarkers();
       renderDiscovery();
+      startLivingMap();
+    }
+
+    function preparePinRow(pin) {
+      return {
+        ...pin,
+        photo_url: cleanUrl(pin.photo_url || ""),
+        shopify_url: cleanUrl(pin.shopify_url || ""),
+        embed_url: cleanUrl(pin.embed_url || ""),
+        lat: pin.lat != null ? Number(pin.lat) : null,
+        lng: pin.lng != null ? Number(pin.lng) : null
+      };
     }
 
     async function loadPins() {
       try {
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        hideError();
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("soundmap_pins")
           .select("*")
           .order("title", { ascending: true });
 
         if (error || !data || !data.length) {
-          allPins = DEMO;
+          allPins = DEMO.map(preparePinRow);
         } else {
-          allPins = data.map(pin => ({
-            ...pin,
-            photo_url: cleanUrl(pin.photo_url || ""),
-            shopify_url: cleanUrl(pin.shopify_url || ""),
-            embed_url: cleanUrl(pin.embed_url || "")
-          }));
+          allPins = data.map(preparePinRow);
         }
 
         renderMoods();
@@ -1520,7 +1937,7 @@
         renderEnvironments();
         applyFilters();
       } catch (err) {
-        allPins = DEMO;
+        allPins = DEMO.map(preparePinRow);
         renderMoods();
         renderCategories();
         renderEnvironments();
@@ -1540,6 +1957,82 @@
         setTimeout(() => map.invalidateSize(), 600);
       } catch (err) {
         showError("Harita servisi başlatılamadı:\n" + (err?.message || err));
+      }
+    }
+
+    function openSubmitModal() {
+      clearFormStatus();
+      submitModal.classList.add("show");
+    }
+
+    function closeSubmitModal() {
+      submitModal.classList.remove("show");
+      clearFormStatus();
+    }
+
+    async function submitNewPin(event) {
+      event.preventDefault();
+      clearFormStatus();
+
+      const formData = new FormData(submitPinForm);
+      const payload = {
+        title: (formData.get("title") || "").toString().trim(),
+        category: (formData.get("category") || "").toString().trim(),
+        city: (formData.get("city") || "").toString().trim(),
+        country: (formData.get("country") || "").toString().trim(),
+        lat: Number(formData.get("lat")),
+        lng: Number(formData.get("lng")),
+        environment: (formData.get("environment") || "").toString().trim(),
+        vibe: (formData.get("vibe") || "").toString().trim(),
+        source_type: (formData.get("source_type") || "").toString().trim(),
+        embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
+        description: (formData.get("description") || "").toString().trim()
+      };
+
+      if (!payload.title || !payload.city || !payload.country || !payload.embed_url || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
+        showFormStatus("Lütfen başlık, şehir, ülke, koordinatlar ve link alanlarını doldur.", "error");
+        return;
+      }
+
+      try {
+        if (!supabaseClient) {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        const { data, error } = await supabaseClient
+          .from("soundmap_pins")
+          .insert([payload])
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        const insertedPin = preparePinRow(data || {
+          ...payload,
+          id: Date.now()
+        });
+
+        allPins.unshift(insertedPin);
+
+        renderCategories();
+        renderEnvironments();
+        hasFittedBounds = false;
+        applyFilters();
+
+        showFormStatus("Yeni ses durağı başarıyla eklendi. Harita güncellendi.", "success");
+        submitPinForm.reset();
+
+        setTimeout(() => {
+          closeSubmitModal();
+          goToPin(insertedPin, true);
+        }, 700);
+      } catch (err) {
+        showFormStatus(
+          "Kayıt eklenemedi.\n\nMuhtemel sebep: Supabase tablo kolonları birebir uyuşmuyor ya da insert yetkisi kapalı.\n\nDetay:\n" + (err?.message || err),
+          "error"
+        );
       }
     }
 
@@ -1566,7 +2059,22 @@
 
     playerMinBtn.addEventListener("click", closeFloatingPlayer);
     playerCloseBtn.addEventListener("click", closeFloatingPlayer);
-    randomJourneyBtn.addEventListener("click", randomJourney);
+    randomJourneyBtn.addEventListener("click", smartRandomJourney);
+
+    openSubmitModalBtn.addEventListener("click", openSubmitModal);
+    closeSubmitModalBtn.addEventListener("click", closeSubmitModal);
+    cancelSubmitBtn.addEventListener("click", closeSubmitModal);
+    submitPinForm.addEventListener("submit", submitNewPin);
+
+    submitModal.addEventListener("click", (e) => {
+      if (e.target === submitModal) closeSubmitModal();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (submitModal.classList.contains("show")) closeSubmitModal();
+      }
+    });
 
     window.addEventListener("load", () => {
       initMap();
