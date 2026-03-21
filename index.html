@@ -1209,24 +1209,60 @@
     }
 
     function cinematicFlyTo(lat, lng) {
-      showTravelNotice("Yeni durağa gidiliyor…");
+  showTravelNotice("Yeni durağa gidiliyor…");
 
-      map.flyTo(map.getCenter(), 5.7, {
-        animate: true,
-        duration: 1.8
-      });
+  const currentCenter = map.getCenter();
+  const currentZoom = map.getZoom();
+  const target = L.latLng(Number(lat), Number(lng));
 
-      setTimeout(() => {
-        map.flyTo([Number(lat), Number(lng)], 14, {
-          animate: true,
-          duration: 2.8
-        });
-      }, 1400);
+  const distanceKm = currentCenter.distanceTo(target) / 1000;
 
-      setTimeout(() => {
-        hideTravelNotice();
-      }, 3900);
-    }
+  // Mesafeye göre daha yavaş süreler
+  let zoomOutLevel = 5.7;
+  let firstDuration = 1.8;
+  let secondDuration = 2.8;
+  let delay = 1400;
+  let finalZoom = 14;
+
+  if (distanceKm > 150) {
+    zoomOutLevel = 5.3;
+    firstDuration = 2.4;
+    secondDuration = 3.4;
+    delay = 1900;
+  }
+
+  if (distanceKm > 400) {
+    zoomOutLevel = 4.9;
+    firstDuration = 3.0;
+    secondDuration = 4.2;
+    delay = 2400;
+  }
+
+  if (distanceKm > 800) {
+    zoomOutLevel = 4.5;
+    firstDuration = 3.8;
+    secondDuration = 5.2;
+    delay = 3000;
+  }
+
+  // önce hafif geri çekil
+  map.flyTo(currentCenter, Math.min(currentZoom, zoomOutLevel), {
+    animate: true,
+    duration: firstDuration
+  });
+
+  // sonra hedefe daha yavaş iniş
+  setTimeout(() => {
+    map.flyTo([Number(lat), Number(lng)], finalZoom, {
+      animate: true,
+      duration: secondDuration
+    });
+  }, delay);
+
+  setTimeout(() => {
+    hideTravelNotice();
+  }, delay + (secondDuration * 1000) + 300);
+}
 
     function clearMarkers() {
       markers.forEach(marker => map.removeLayer(marker));
