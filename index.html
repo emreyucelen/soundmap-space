@@ -1,1055 +1,212 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundmap Space</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soundmap Space</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: Inter, Arial, sans-serif;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.10), transparent 28%),
-        radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.10), transparent 30%),
-        linear-gradient(180deg, #07111f 0%, #0b1528 100%);
-      color: white;
-    }
+<style>
 
-    .page {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 380px 1fr;
-    }
+/* ============ GENEL ============ */
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#07111f;
+  color:white;
+}
 
-    .sidebar {
-      position: relative;
-      padding: 16px;
-      border-right: 1px solid rgba(255,255,255,0.08);
-      background:
-        radial-gradient(circle at top left, rgba(34,211,238,0.10), transparent 26%),
-        radial-gradient(circle at bottom left, rgba(168,85,247,0.08), transparent 35%),
-        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(9,19,35,0.88));
-      backdrop-filter: blur(18px);
-      overflow-y: auto;
-      max-height: 100vh;
-    }
+.page {
+  display:grid;
+  grid-template-columns:360px 1fr;
+  height:100vh;
+}
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      color: #e0f2fe;
-      font-size: 15px;
-      font-weight: 700;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-    }
+/* ============ SIDEBAR ============ */
+.sidebar {
+  padding:16px;
+  background:#0b1528;
+}
 
-    .hero, .discovery-panel {
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: 22px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
-        radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 30%);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 18px 50px rgba(0,0,0,0.18);
-    }
+.brand {
+  font-weight:700;
+  margin-bottom:12px;
+}
 
-    .hero-kicker {
-      color: #7dd3fc;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
+.search {
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #333;
+  background:#111;
+  color:white;
+}
 
-    .hero h1 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.02;
-      letter-spacing: -0.03em;
-    }
+/* ============ BUTON ============ */
+.btn {
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  margin-top:10px;
+}
 
-    .hero p {
-      margin: 10px 0 0;
-      color: #cbd5e1;
-      font-size: 13px;
-      line-height: 1.55;
-    }
+/* 🔥 ANA BUTON */
+.btn-primary {
+  background:linear-gradient(135deg,#22d3ee,#3b82f6);
+  color:black;
+  animation:breathe 3s ease-in-out infinite;
+}
 
-    .search {
-      width: 100%;
-      padding: 13px 15px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      outline: none;
-      font-size: 14px;
-      transition: .2s ease;
-      margin-top: 14px;
-    }
+/* 🫧 SOFT BUTON */
+.btn-secondary {
+  background:#1e293b;
+  color:white;
+  animation:breatheSoft 4s ease-in-out infinite;
+}
 
-    .search:focus {
-      border-color: rgba(56,189,248,0.35);
-      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
-    }
+/* 💫 ANİMASYON */
+@keyframes breathe {
+  0%,100% {transform:scale(1);box-shadow:0 0 0 rgba(0,0,0,0);}
+  50% {transform:scale(1.03);box-shadow:0 10px 30px rgba(59,130,246,0.4);}
+}
 
-    .search::placeholder {
-      color: #94a3b8;
-    }
+@keyframes breatheSoft {
+  0%,100% {transform:scale(1);}
+  50% {transform:scale(1.015);}
+}
 
-    .hero-actions {
-      margin-top: 12px;
-      display: grid;
-      gap: 10px;
-    }
+/* ============ MAP ============ */
+#map { height:100vh; }
 
-    .btn {
-      width: 100%;
-      border: 0;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 13px 16px;
-      border-radius: 16px;
-      transition: .2s ease;
-    }
+/* ============ PLAYER ============ */
+.player {
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:400px;
+  background:#020617;
+  border-radius:20px;
+  padding:14px;
+  display:none;
+}
 
-    .btn-primary {
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #03131c;
-      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
-    }
+.player.show { display:block; }
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: #e0f2fe;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
-      margin-top: 10px;
-    }
+.player img {
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:14px;
+}
 
-    .discovery-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
+.links a {
+  display:inline-block;
+  margin:4px;
+  padding:6px 10px;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  text-decoration:none;
+  font-size:12px;
+}
 
-    .discovery-title {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .discovery-sub {
-      color: #94a3b8;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
-    .discovery-list {
-      display: grid;
-      gap: 10px;
-      max-height: 320px;
-      overflow-y: auto;
-      padding-right: 6px;
-    }
-
-    .discover-card {
-      padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    .discover-card:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    .discover-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-
-    .discover-meta {
-      color: #94a3b8;
-      font-size: 12px;
-      margin-bottom: 8px;
-      line-height: 1.35;
-    }
-
-    .discover-pills,
-    .player-meta-row,
-    .player-link-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill {
-      padding: 6px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: rgba(255,255,255,0.06);
-      color: #cbd5e1;
-    }
-
-    .status-line {
-      margin-top: 12px;
-      color: #94a3b8;
-      font-size: 13px;
-      padding-bottom: 8px;
-    }
-
-    .error {
-      color: #fecaca;
-      background: rgba(127,29,29,.35);
-      border: 1px solid rgba(248,113,113,.25);
-      padding: 12px;
-      border-radius: 14px;
-      margin-top: 10px;
-      white-space: pre-wrap;
-      display: none;
-    }
-
-    #map {
-      height: 100vh;
-      width: 100%;
-      background: #07111f;
-    }
-
-    .leaflet-control-layers {
-      border-radius: 14px !important;
-      background: rgba(2,6,23,0.88) !important;
-      color: white !important;
-      border: 1px solid rgba(255,255,255,.08) !important;
-    }
-
-    .leaflet-control-layers label {
-      color: white !important;
-    }
-
-    .ey-pin {
-      width: 34px;
-      height: 34px;
-      background: #38bdf8;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      border: 3px solid white;
-      box-shadow: 0 8px 18px rgba(0,0,0,.22);
-    }
-
-    .floating-player {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      width: min(460px, calc(100vw - 24px));
-      z-index: 9999;
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background:
-        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(13,22,38,0.92)),
-        radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
-      overflow: hidden;
-      transform: translateY(120%);
-      opacity: 0;
-      pointer-events: none;
-      transition: .35s ease;
-    }
-
-    .floating-player.show {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .player-head {
-      padding: 14px 16px 10px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .player-kicker {
-      font-size: 11px;
-      letter-spacing: .10em;
-      text-transform: uppercase;
-      color: #7dd3fc;
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .player-title {
-      font-size: 18px;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
-    .player-sub {
-      margin-top: 4px;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-
-    .player-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .player-icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .player-body {
-      padding: 14px 16px 18px;
-    }
-
-    .player-placeholder {
-      padding: 20px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px dashed rgba(255,255,255,0.10);
-      color: #cbd5e1;
-      line-height: 1.6;
-    }
-
-    .player-embed-wrap iframe {
-      width: 100%;
-      border: 0;
-      border-radius: 18px;
-      background: #000;
-      min-height: 220px;
-    }
-
-    .player-hero {
-      width: 100%;
-      height: 180px;
-      border-radius: 18px;
-      overflow: hidden;
-      margin-bottom: 14px;
-      position: relative;
-      background: #0f172a;
-    }
-
-    .player-hero img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .player-hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.10) 45%, transparent 70%);
-    }
-
-    .player-hero-badge {
-      position: absolute;
-      left: 12px;
-      top: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(2,6,23,.58);
-      border: 1px solid rgba(255,255,255,.16);
-      color: #e0f2fe;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      backdrop-filter: blur(8px);
-    }
-
-    .player-hero-text {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-    }
-
-    .player-hero-title {
-      font-size: 18px;
-      line-height: 1.2;
-      font-weight: 800;
-      color: #ffffff;
-      text-shadow: 0 2px 10px rgba(0,0,0,.35);
-    }
-
-    .player-hero-sub {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #dbeafe;
-      text-shadow: 0 1px 6px rgba(0,0,0,.3);
-    }
-
-    .player-section-title {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-weight: 700;
-    }
-
-    .player-desc {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .player-link-row a {
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 9px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .street-btn {
-      width: 100%;
-      border: 0;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: linear-gradient(135deg,#22d3ee,#3b82f6);
-      color: #03131c;
-      margin-bottom: 14px;
-    }
-
-    @media (max-width: 980px) {
-      .page { grid-template-columns: 1fr; }
-      .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        max-height: none;
-      }
-      #map { height: 62vh; }
-      .floating-player {
-        right: 12px;
-        left: 12px;
-        width: auto;
-        bottom: 12px;
-      }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <div class="page">
-    <aside class="sidebar">
-      <div class="brand">🌍 Soundmap Space</div>
 
-      <div class="hero">
-        <div class="hero-kicker">Emre Yücelen Selection</div>
-        <h1>Dünyayı sesle keşfet</h1>
-        <p>Bilgiler sağdaki kartta açılır. Harita klasik görünüme döndü.</p>
+<div class="page">
 
-        <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
+<div class="sidebar">
+  <div class="brand">🌍 Soundmap</div>
 
-        <div class="hero-actions">
-          <button id="randomJourneyBtn" class="btn btn-primary">🎲 Bugün ne dinlemeliyim?</button>
-        </div>
-      </div>
+  <input id="search" class="search" placeholder="Ara...">
 
-      <div class="discovery-panel">
-        <div class="discovery-head">
-          <div class="discovery-title">Ses Durakları</div>
-          <button id="refreshDiscoveryBtn" class="btn btn-secondary" style="margin-top:0;padding:8px 12px;font-size:12px;width:auto;">Yenile</button>
-        </div>
+  <button id="randomBtn" class="btn btn-primary">
+    🎲 Bugün ne dinlemeliyim?
+  </button>
 
-        <div id="discoverySub" class="discovery-sub">
-          Haritadaki kayıtların seçkisi.
-        </div>
+  <button id="refreshBtn" class="btn btn-secondary">
+    Yenile
+  </button>
+</div>
 
-        <div id="discoveryList" class="discovery-list"></div>
-      </div>
+<div id="map"></div>
 
-      <div id="resultCount" class="status-line"></div>
-      <div id="errorBox" class="error"></div>
-    </aside>
+</div>
 
-    <main>
-      <div id="map"></div>
-    </main>
-  </div>
+<div id="player" class="player">
+  <img id="playerImg">
+  <h3 id="playerTitle"></h3>
+  <p id="playerLocation"></p>
 
-  <div id="floatingPlayer" class="floating-player">
-    <div class="player-head">
-      <div>
-        <div class="player-kicker">Dinleniyor</div>
-        <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
-        <div id="playerSub" class="player-sub">Haritadaki pinlere tıklayın.</div>
-      </div>
+  <div class="links" id="links"></div>
+</div>
 
-      <div class="player-actions">
-        <button id="playerCloseBtn" class="player-icon-btn">✕</button>
-      </div>
-    </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <div class="player-body">
-      <div id="playerEmbedArea" class="player-placeholder">
-        Oynatıcı burada açılacak.
-      </div>
-      <div id="playerMetaRow" class="player-meta-row"></div>
-    </div>
-  </div>
+<script>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+/* DEMO DATA */
+const pins = [
+  {
+    title:"Foça Sahil",
+    city:"İzmir",
+    lat:38.67,
+    lng:26.75,
+    photo:"",
+    youtube:"https://www.youtube.com/watch?v=jfKfPfyJRdk"
+  }
+];
 
-  <script>
-    const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
+/* MAP */
+const map = L.map("map").setView([39,35],6);
 
-    const DEMO_PINS = [
-      {
-        id: 1,
-        title: "Yoros Kalesi",
-        city: "İstanbul",
-        country: "Turkey",
-        lat: 41.18,
-        lng: 29.09,
-        category: "Kültür",
-        environment: "muze",
-        vibe: "mistik",
-        source_type: "youtube",
-        embed_url: "https://www.youtube.com/watch?v=gwFg8AlN9zk",
-        youtube_url: "https://www.youtube.com/watch?v=gwFg8AlN9zk",
-        description: "Boğaza bakan tarihi atmosfer.",
-        photo_url: ""
-      },
-      {
-        id: 2,
-        title: "Foça Sahili",
-        city: "İzmir",
-        country: "Turkey",
-        lat: 38.67,
-        lng: 26.75,
-        category: "Doğa",
-        environment: "sahil",
-        vibe: "sakin",
-        source_type: "youtube",
-        embed_url: "https://www.youtube.com/watch?v=jfKfPfyJRdk",
-        youtube_url: "https://www.youtube.com/watch?v=jfKfPfyJRdk",
-        description: "Deniz ve rüzgar hissi.",
-        photo_url: ""
-      }
-    ];
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-    const searchInput = document.getElementById("searchInput");
-    const discoveryListEl = document.getElementById("discoveryList");
-    const discoverySubEl = document.getElementById("discoverySub");
-    const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
-    const resultCountEl = document.getElementById("resultCount");
-    const errorBox = document.getElementById("errorBox");
-    const randomJourneyBtn = document.getElementById("randomJourneyBtn");
+/* FALLBACK FOTO */
+function getPhoto(pin){
+  return pin.photo || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e";
+}
 
-    const floatingPlayerEl = document.getElementById("floatingPlayer");
-    const playerTitleEl = document.getElementById("playerTitle");
-    const playerSubEl = document.getElementById("playerSub");
-    const playerEmbedAreaEl = document.getElementById("playerEmbedArea");
-    const playerMetaRowEl = document.getElementById("playerMetaRow");
-    const playerCloseBtn = document.getElementById("playerCloseBtn");
+/* MARKERS */
+pins.forEach(p=>{
+  const m = L.marker([p.lat,p.lng]).addTo(map);
 
-    let map = null;
-    let supabaseClient = null;
-    let allPins = [];
-    let visiblePins = [];
-    let markers = [];
+  m.on("click",()=>{
+    openPlayer(p);
+  });
+});
 
-    const fallbackImages = {
-      sea: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-      city: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80",
-      forest: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
-      history: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f40?auto=format&fit=crop&w=1200&q=80",
-      mountain: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
-    };
+/* PLAYER */
+function openPlayer(p){
+  document.getElementById("player").classList.add("show");
 
-    function normalize(value) {
-      return (value || "")
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .trim()
-        .replace(/ı/g, "i")
-        .replace(/İ/g, "i")
-        .replace(/ç/g, "c")
-        .replace(/ğ/g, "g")
-        .replace(/ö/g, "o")
-        .replace(/ş/g, "s")
-        .replace(/ü/g, "u");
-    }
+  document.getElementById("playerImg").src = getPhoto(p);
+  document.getElementById("playerTitle").innerText = p.title;
+  document.getElementById("playerLocation").innerText = p.city;
 
-    function cleanUrl(value) {
-      const raw = (value || "").toString().trim();
-      if (!raw) return "";
-      if (raw.startsWith("//")) return "https:" + raw;
-      if (raw.startsWith("www.")) return "https://" + raw;
-      return raw;
-    }
+  let html="";
 
-    function escapeHtml(value) {
-      return (value || "").toString()
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+  if(p.youtube){
+    html += `<a href="${p.youtube}" target="_blank">YouTube</a>`;
+  }
 
-    function normalizeExternalUrl(url) {
-      const raw = (url || "").toString().trim();
-      if (!raw) return "";
-      if (raw.startsWith("//")) return "https:" + raw;
-      if (raw.startsWith("www.")) return "https://" + raw;
-      return raw;
-    }
+  document.getElementById("links").innerHTML = html;
+}
 
-    function showError(message) {
-      errorBox.style.display = "block";
-      errorBox.textContent = message;
-    }
+/* RANDOM */
+document.getElementById("randomBtn").onclick=()=>{
+  const p = pins[Math.floor(Math.random()*pins.length)];
+  openPlayer(p);
+  map.flyTo([p.lat,p.lng],13);
+};
 
-    function hideError() {
-      errorBox.style.display = "none";
-      errorBox.textContent = "";
-    }
+</script>
 
-    function canonicalEnvironment(environment) {
-      const key = normalize(environment);
-      const aliases = {
-        deniz: "deniz", sea: "deniz", ocean: "deniz",
-        gol: "gol", lake: "gol",
-        nehir: "nehir", river: "nehir",
-        sahil: "sahil", coast: "sahil", shore: "sahil",
-        orman: "orman", forest: "orman",
-        kirsal: "kirsal", rural: "kirsal",
-        sehir: "sehir", city: "sehir", urban: "sehir",
-        liman: "liman", port: "liman",
-        pazar: "pazar", market: "pazar",
-        muze: "muze", museum: "muze",
-        tarih: "tarih", history: "tarih",
-        tapinak: "tapinak", temple: "tapinak",
-        dag: "dag", mountain: "dag",
-        magara: "magara", cave: "magara",
-        col: "col", desert: "col"
-      };
-      return aliases[key] || key;
-    }
-
-    function getEnvironmentStyle(environment) {
-      const key = canonicalEnvironment(environment);
-      const styles = {
-        deniz: { color: "#38bdf8", symbol: "🌊", label: "Deniz" },
-        gol: { color: "#60a5fa", symbol: "💧", label: "Göl" },
-        nehir: { color: "#22d3ee", symbol: "💦", label: "Nehir" },
-        sahil: { color: "#5eead4", symbol: "🐚", label: "Sahil" },
-        orman: { color: "#4ade80", symbol: "🌲", label: "Orman" },
-        kirsal: { color: "#84cc16", symbol: "🌾", label: "Kırsal" },
-        sehir: { color: "#3b82f6", symbol: "🏙️", label: "Şehir" },
-        liman: { color: "#64748b", symbol: "⚓", label: "Liman" },
-        pazar: { color: "#fb923c", symbol: "🧺", label: "Pazar" },
-        muze: { color: "#a855f7", symbol: "🏛️", label: "Müze" },
-        tarih: { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
-        tapinak: { color: "#f97316", symbol: "🕌", label: "Tapınak" },
-        dag: { color: "#94a3b8", symbol: "⛰️", label: "Dağ" },
-        magara: { color: "#78716c", symbol: "🪨", label: "Mağara" },
-        col: { color: "#eab308", symbol: "🏜️", label: "Çöl" }
-      };
-      return styles[key] || { color: "#38bdf8", symbol: "🎧", label: "Kayıt" };
-    }
-
-    function getFallbackPhoto(pin) {
-      const env = canonicalEnvironment(pin.environment);
-
-      if (["deniz", "sahil", "gol", "nehir"].includes(env)) return fallbackImages.sea;
-      if (["sehir", "liman", "pazar"].includes(env)) return fallbackImages.city;
-      if (["orman", "kirsal"].includes(env)) return fallbackImages.forest;
-      if (["muze", "tarih", "tapinak"].includes(env)) return fallbackImages.history;
-      if (["dag", "magara", "col"].includes(env)) return fallbackImages.mountain;
-
-      return fallbackImages.city;
-    }
-
-    function actionButton(label, url, bg = "rgba(255,255,255,.06)", color = "#e5e7eb", border = "rgba(255,255,255,.12)") {
-      const safeUrl = normalizeExternalUrl(url);
-      if (!safeUrl) return "";
-
-      return `
-        <a
-          href="${escapeHtml(safeUrl)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="
-            background:${bg};
-            color:${color};
-            border:1px solid ${border};
-          "
-        >
-          ${label}
-        </a>
-      `;
-    }
-
-    function createMainBaseLayers() {
-      const light = L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        { attribution: "&copy; OpenStreetMap &copy; CARTO", maxZoom: 20 }
-      );
-
-      const dark = L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        { attribution: "&copy; OpenStreetMap &copy; CARTO", maxZoom: 20 }
-      );
-
-      const classic = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        { attribution: "&copy; OpenStreetMap contributors", maxZoom: 20 }
-      );
-
-      return { Light: light, Dark: dark, Classic: classic };
-    }
-
-    function initMap() {
-      map = L.map("map", {
-        zoomControl: true,
-        maxZoom: 20
-      }).setView([39.0, 35.0], 6);
-
-      const layers = createMainBaseLayers();
-      layers.Classic.addTo(map);
-
-      L.control.layers(layers, null, {
-        collapsed: false,
-        position: "topright"
-      }).addTo(map);
-
-      setTimeout(() => map.invalidateSize(), 300);
-    }
-
-    function makePinIcon() {
-      return L.divIcon({
-        className: "",
-        html: `<div class="ey-pin"></div>`,
-        iconSize: [34, 34],
-        iconAnchor: [15, 32]
-      });
-    }
-
-    function clearMarkers() {
-      markers.forEach(marker => map.removeLayer(marker));
-      markers = [];
-    }
-
-    function buildPlayableEmbed(pin) {
-      const sourceType = normalize(pin.source_type);
-      const raw = cleanUrl(pin.embed_url || "");
-      if (!raw) return "";
-
-      if (sourceType === "youtube") {
-        if (raw.includes("youtube.com/embed/")) {
-          return raw + (raw.includes("?") ? "&" : "?") + "autoplay=1&rel=0";
-        }
-        if (raw.includes("youtu.be/")) {
-          const id = raw.split("youtu.be/")[1].split("?")[0];
-          return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-        }
-        if (raw.includes("watch?v=")) {
-          const id = raw.split("watch?v=")[1].split("&")[0];
-          return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-        }
-      }
-
-      if (sourceType === "soundcloud") {
-        return raw.includes("w.soundcloud.com")
-          ? raw
-          : `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=true&visual=true`;
-      }
-
-      return "";
-    }
-
-    function openFloatingPlayer(pin) {
-      const env = getEnvironmentStyle(pin.environment || "");
-      const embed = buildPlayableEmbed(pin);
-      const cardPhoto = pin.photo_url && pin.photo_url.trim()
-        ? pin.photo_url.trim()
-        : getFallbackPhoto(pin);
-
-      playerTitleEl.textContent = pin.title || "İsimsiz durak";
-      playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
-
-      playerMetaRowEl.innerHTML = `
-        ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
-        ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-        ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
-      `;
-
-      playerEmbedAreaEl.className = "player-placeholder";
-      playerEmbedAreaEl.innerHTML = `
-        <div class="player-hero">
-          <img
-            src="${escapeHtml(cardPhoto)}"
-            alt="${escapeHtml(pin.title || "Kayıt")}"
-          />
-          <div class="player-hero-overlay"></div>
-
-          <div class="player-hero-badge">
-            🎙️ Emre Yücelen Selection
-          </div>
-
-          <div class="player-hero-text">
-            <div class="player-hero-title">
-              ${escapeHtml(pin.title || "Kayıt")}
-            </div>
-
-            <div class="player-hero-sub">
-              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-            </div>
-          </div>
-        </div>
-
-        ${pin.description ? `
-          <div class="player-desc">
-            ${escapeHtml(pin.description)}
-          </div>
-        ` : ""}
-
-        <div class="player-section-title">Dinle / Keşfet</div>
-
-        <div class="player-link-row" style="margin-bottom:14px;">
-          ${actionButton("Spotify", pin.spotify_url, "rgba(34,197,94,.12)", "#dcfce7", "rgba(34,197,94,.28)")}
-          ${actionButton("Apple", pin.apple_url, "rgba(255,255,255,.08)", "#f8fafc", "rgba(255,255,255,.16)")}
-          ${actionButton("Deezer", pin.deezer_url, "rgba(168,85,247,.12)", "#f3e8ff", "rgba(168,85,247,.28)")}
-          ${actionButton("YouTube", pin.youtube_url || pin.embed_url, "rgba(239,68,68,.12)", "#fee2e2", "rgba(239,68,68,.28)")}
-          ${actionButton("Shopify", pin.shopify_url, "rgba(56,189,248,.12)", "#e0f2fe", "rgba(56,189,248,.28)")}
-        </div>
-
-        <button type="button" id="streetZoomInPlayer" class="street-btn">
-          🛣️ Sokağa in
-        </button>
-
-        ${embed ? `
-          <div class="player-embed-wrap">
-            <iframe
-              src="${embed}"
-              allow="autoplay; encrypted-media; fullscreen"
-              loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"
-            ></iframe>
-          </div>
-        ` : `
-          <div class="player-placeholder">
-            Bu kayıt için oynatıcı linki çözümlenemedi.
-          </div>
-        `}
-      `;
-
-      floatingPlayerEl.classList.add("show");
-
-      const streetBtn = document.getElementById("streetZoomInPlayer");
-      if (streetBtn && pin.lat != null && pin.lng != null) {
-        streetBtn.addEventListener("click", () => {
-          map.flyTo([Number(pin.lat), Number(pin.lng)], 18, {
-            animate: true,
-            duration: 1.8
-          });
-        });
-      }
-    }
-
-    function closeFloatingPlayer() {
-      floatingPlayerEl.classList.remove("show");
-    }
-
-    function renderMarkers() {
-      clearMarkers();
-
-      visiblePins.forEach(pin => {
-        if (pin.lat == null || pin.lng == null) return;
-
-        const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
-          icon: makePinIcon()
-        }).addTo(map);
-
-        marker.on("click", () => {
-          openFloatingPlayer(pin);
-          map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
-            animate: true,
-            duration: 1.6
-          });
-        });
-
-        markers.push(marker);
-      });
-
-      if (visiblePins.length) {
-        const bounds = L.latLngBounds(
-          visiblePins
-            .filter(pin => pin.lat != null && pin.lng != null)
-            .map(pin => [Number(pin.lat), Number(pin.lng)])
-        );
-
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [40, 40] });
-        }
-      }
-
-      resultCountEl.textContent = `${visiblePins.length} lokasyon`;
-    }
-
-    function renderDiscovery() {
-      if (!visiblePins.length) {
-        discoveryListEl.innerHTML = `<div class="discover-card">Kayıt bulunamadı.</div>`;
-        return;
-      }
-
-      discoveryListEl.innerHTML = visiblePins.slice(0, 10).map(pin => {
-        const env = getEnvironmentStyle(pin.environment || "");
-        return `
-          <div class="discover-card" data-id="${pin.id}">
-            <div class="discover-title">${escapeHtml(pin.title || "İsimsiz durak")}</div>
-            <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
-            <div class="discover-pills">
-              ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
-              ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      discoveryListEl.querySelectorAll("[data-id]").forEach(card => {
-        card.addEventListener("click", () => {
-          const pin = visiblePins.find(p => String(p.id) === String(card.dataset.id));
-          if (!pin) return;
-          openFloatingPlayer(pin);
-          map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
-            animate: true,
-            duration: 1.6
-          });
-        });
-      });
-    }
-
-    function applySearch() {
-      const q = normalize(searchInput.value);
-
-      visiblePins = allPins.filter(pin => {
-        const text = normalize([
-          pin.title,
-          pin.city,
-          pin.country,
-          pin.category,
-          pin.environment,
-          pin.description,
-          pin.vibe
-        ].join(" "));
-        return !q || text.includes(q);
-      });
-
-      renderMarkers();
-      renderDiscovery();
-    }
-
-    function randomJourney() {
-      if (!visiblePins.length) return;
-      const pin = visiblePins[Math.floor(Math.random() * visiblePins.length)];
-      openFloatingPlayer(pin);
-      map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
-        animate: true,
-        duration: 1.8
-      });
-    }
-
-    async function loadPins() {
-      allPins = DEMO_PINS.map(pin => ({
-        ...pin,
-        lat: Number(pin.lat),
-        lng: Number(pin.lng)
-      }));
-
-      applySearch();
-
-      try {
-        if (!window.supabase) {
-          showError("Supabase script yüklenemedi. Demo verilerle devam ediliyor.");
-          return;
-        }
-
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const { data, error } = await supabaseClient
-          .from("soundmap_pins")
-          .select("*")
-          .eq("status", "approved")
-          .order("title", { ascending: true });
-
-        if (error) throw error;
-
-        if (data && data.length) {
-          allPins = data.map(pin => ({
-            ...pin,
-            lat: pin.lat != null ? Number(pin.lat) : null,
-            lng: pin.lng != null ? Number(pin.lng) : null
-          }));
-          hideError();
-          applySearch();
-        }
-      } catch (err) {
-        showError("Supabase verisi alınamadı. Demo verilerle devam ediliyor.\n\n" + (err?.message || err));
-      }
-    }
-
-    playerCloseBtn.addEventListener("click", closeFloatingPlayer);
-    searchInput.addEventListener("input", applySearch);
-    randomJourneyBtn.addEventListener("click", randomJourney);
-    refreshDiscoveryBtn.addEventListener("click", renderDiscovery);
-
-    window.addEventListener("load", async () => {
-      try {
-        initMap();
-        await loadPins();
-      } catch (err) {
-        showError("Sayfa başlatılırken hata oldu:\n\n" + (err?.message || err));
-      }
-    });
-  </script>
 </body>
 </html>
