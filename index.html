@@ -924,25 +924,280 @@
       }
     }
 
-    .floating-player {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      width: min(460px, calc(100vw - 24px));
-      z-index: 9999;
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background:
-        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(13,22,38,0.92)),
-        radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
-      overflow: hidden;
-      transform: translateY(120%);
-      opacity: 0;
-      pointer-events: none;
-      transition: .35s ease;
-    }
+   .floating-player {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: min(460px, calc(100vw - 24px));
+  z-index: 9999;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background:
+    linear-gradient(180deg, rgba(8,17,31,0.94), rgba(13,22,38,0.94)),
+    radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+  overflow: hidden;
+  transform: translateY(120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: .35s ease;
+}
+
+.floating-player.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.player-head {
+  padding: 0;
+  display: block;
+  border-bottom: 0;
+}
+
+.player-hero {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.player-hero-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.player-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.03);
+  filter: saturate(1.06) contrast(1.04);
+}
+
+.player-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to top, rgba(2,6,23,0.96) 0%, rgba(2,6,23,0.58) 42%, rgba(2,6,23,0.14) 78%, rgba(2,6,23,0.06) 100%);
+}
+
+.player-hero-top {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: flex;
+  justify-content: flex-end;
+  width: calc(100% - 28px);
+}
+
+.player-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.player-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(15,23,42,0.34);
+  backdrop-filter: blur(10px);
+  color: white;
+  cursor: pointer;
+  font-size: 17px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+}
+
+.player-icon-btn:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+.player-hero-copy {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3;
+}
+
+.player-kicker {
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 8px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+
+.player-title {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+  text-shadow: 0 8px 30px rgba(0,0,0,0.38);
+}
+
+.player-sub {
+  margin-top: 6px;
+  color: rgba(226,232,240,0.92);
+  font-size: 13px;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.28);
+}
+
+.player-hero-badges {
+  position: absolute;
+  left: 18px;
+  bottom: 92px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.player-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f8fafc;
+  background: rgba(15,23,42,0.42);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+}
+
+.player-body {
+  padding: 14px 16px 18px;
+}
+
+.player-embed-wrap iframe {
+  width: 100%;
+  border: 0;
+  border-radius: 24px;
+  background: #000;
+  min-height: 220px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.24);
+}
+
+.player-placeholder {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #cbd5e1;
+  line-height: 1.6;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.player-description {
+  margin-top: 12px;
+  color: #dbe4f0;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 13px 15px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 8px 24px rgba(0,0,0,0.18);
+}
+
+.player-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.player-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.player-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 11px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #f8fafc;
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+  transition: .18s ease;
+}
+
+.player-link-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.10);
+}
+
+.player-link-btn.primary {
+  background: linear-gradient(135deg, #22d3ee, #3b82f6);
+  color: #03131c;
+  border-color: transparent;
+}
+
+.player-link-btn.buy {
+  background: linear-gradient(135deg, rgba(250,204,21,0.95), rgba(251,146,60,0.95));
+  color: #1f1300;
+  border-color: transparent;
+}
+
+.player-link-btn.apple {
+  background: rgba(255,255,255,0.12);
+}
+
+.player-link-btn.spotify {
+  background: rgba(30,215,96,0.16);
+}
+
+@media (max-width: 980px) {
+  .floating-player {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .player-hero {
+    height: 200px;
+  }
+
+  .player-title {
+    font-size: 18px;
+  }
+
+  .player-link-btn {
+    width: 100%;
+  }
+}
 
     .floating-player.show {
       transform: translateY(0);
@@ -950,77 +1205,7 @@
       pointer-events: auto;
     }
 
-    .player-head {
-      padding: 14px 16px 10px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .player-kicker {
-      font-size: 11px;
-      letter-spacing: .10em;
-      text-transform: uppercase;
-      color: #7dd3fc;
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .player-title {
-      font-size: 18px;
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-    }
-
-    .player-sub {
-      margin-top: 4px;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-
-    .player-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .player-icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .player-icon-btn:hover { background: rgba(255,255,255,0.10); }
-
-    .player-body {
-      padding: 14px 16px 18px;
-    }
-
-    .player-placeholder {
-      padding: 20px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px dashed rgba(255,255,255,0.10);
-      color: #cbd5e1;
-      line-height: 1.6;
-    }
-
-    .player-embed-wrap iframe {
-      width: 100%;
-      border: 0;
-      border-radius: 18px;
-      background: #000;
-      min-height: 220px;
-    }
-
+   
     .travel-notice {
       position: fixed;
       top: 22px;
@@ -1719,9 +1904,7 @@ function safeExternalUrl(value) {
   return "";
 }
 
-function getPinImageUrl(pin) {
-  return cleanUrl(pin.photo_url || "") || "";
-}
+
 
 function buildPlayerLinkButtons(pin) {
   const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
