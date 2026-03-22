@@ -2003,17 +2003,24 @@
         : "";
 
       if (embed) {
-        playerEmbedAreaEl.className = "player-embed-wrap";
-        playerEmbedAreaEl.innerHTML = `
-          <iframe
-            src="${embed}"
-            allow="autoplay; encrypted-media; fullscreen"
-            loading="lazy"
-            referrerpolicy="strict-origin-when-cross-origin"
-          ></iframe>
-          ${descriptionBlock}
-        `;
-      } else {
+  const isSoundcloud = (pin.source_type || "").toString().trim().toLowerCase() === "soundcloud";
+
+  playerEmbedAreaEl.className = "player-embed-wrap";
+  playerEmbedAreaEl.innerHTML = `
+    <iframe
+      src="${embed}"
+      width="100%"
+      height="${isSoundcloud ? 120 : 195}"
+      scrolling="no"
+      frameborder="no"
+      allow="autoplay; encrypted-media; fullscreen"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+      style="border:0; width:100%; border-radius:${isSoundcloud ? 16 : 22}px; background:#000;"
+    ></iframe>
+    ${descriptionBlock}
+  `;
+} else {
         playerEmbedAreaEl.className = "player-placeholder";
         playerEmbedAreaEl.innerHTML = `
           Bu lokasyon için henüz aktif bir ses kaydı bulunmuyor.
