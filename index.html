@@ -1965,18 +1965,28 @@
         return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
       }
 
-      if (sourceType === "soundcloud") {
-        const iframeSrc = extractIframeSrc(raw);
-        if (iframeSrc) return iframeSrc;
+     if (sourceType === "soundcloud") {
+  const iframeSrc = extractIframeSrc(raw);
+  if (iframeSrc) {
+    let fixedSrc = iframeSrc.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
+    if (!/auto_play=/i.test(fixedSrc)) {
+      fixedSrc += (fixedSrc.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
+    }
+    return fixedSrc;
+  }
 
-        if (raw.includes("w.soundcloud.com/player/")) {
-          return raw;
-        }
+  if (raw.includes("w.soundcloud.com/player/")) {
+    let fixedRaw = raw.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
+    if (!/auto_play=/i.test(fixedRaw)) {
+      fixedRaw += (fixedRaw.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
+    }
+    return fixedRaw;
+  }
 
-        const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
+  const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
 
-        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
-      }
+  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
+}
 
       return "";
     }
