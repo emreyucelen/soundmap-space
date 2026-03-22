@@ -705,110 +705,99 @@
       border-bottom: 0;
     }
 
-    .player-hero {
-      position: relative;
-      height: 220px;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
+   .player-hero {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 14px 0;
+}
 
-    .player-hero-image {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
+.player-hero-image {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  height: 170px;
+  z-index: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+}
 
-    .player-hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transform: scale(1.03);
-      filter: saturate(1.06) contrast(1.04);
-    }
+.player-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.03);
+  filter: saturate(1.06) contrast(1.04);
+}
 
-    .player-hero-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background:
-        linear-gradient(to top, rgba(2,6,23,0.96) 0%, rgba(2,6,23,0.58) 42%, rgba(2,6,23,0.14) 78%, rgba(2,6,23,0.06) 100%);
-    }
+.player-hero-overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  height: 170px;
+  z-index: 1;
+  border-radius: 24px;
+  background:
+    linear-gradient(to top, rgba(2,6,23,0.90) 0%, rgba(2,6,23,0.52) 42%, rgba(2,6,23,0.10) 78%, rgba(2,6,23,0.04) 100%);
+}
 
-    .player-hero-top {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 3;
-      display: flex;
-      justify-content: flex-end;
-      width: calc(100% - 28px);
-    }
+.player-hero-top {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  z-index: 3;
+  display: flex;
+  justify-content: flex-end;
+}
 
-    .player-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+.player-hero-copy {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  bottom: 92px;
+  z-index: 3;
+}
 
-    .player-icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(15,23,42,0.34);
-      backdrop-filter: blur(10px);
-      color: white;
-      cursor: pointer;
-      font-size: 17px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
-    }
+.player-kicker {
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 8px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+}
 
-    .player-icon-btn:hover { background: rgba(255,255,255,0.14); }
+.player-title {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+  text-shadow: 0 8px 30px rgba(0,0,0,0.50);
+}
 
-    .player-hero-copy {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      z-index: 3;
-    }
+.player-sub {
+  margin-top: 6px;
+  color: rgba(226,232,240,0.96);
+  font-size: 13px;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.38);
+}
 
-    .player-kicker {
-      font-size: 11px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: #7dd3fc;
-      margin-bottom: 8px;
-      font-weight: 800;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.35);
-    }
-
-    .player-title {
-      font-size: 20px;
-      font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
-      color: #f8fafc;
-      text-shadow: 0 8px 30px rgba(0,0,0,0.38);
-    }
-
-    .player-sub {
-      margin-top: 6px;
-      color: rgba(226,232,240,0.92);
-      font-size: 13px;
-      text-shadow: 0 3px 14px rgba(0,0,0,0.28);
-    }
-
-    .player-hero-badges {
-      position: absolute;
-      left: 18px;
-      bottom: 92px;
-      z-index: 3;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+.player-hero-badges {
+  position: absolute;
+  left: 30px;
+  bottom: 26px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 
     .player-hero-badge {
       display: inline-flex;
