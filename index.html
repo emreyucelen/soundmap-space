@@ -1951,57 +1951,116 @@
           });
         });
 
-        const env = getEnvironmentStyle(pin.environment || "");
+       const env = getEnvironmentStyle(pin.environment || "");
+const cardPhoto = pin.photo_url && pin.photo_url.trim()
+  ? pin.photo_url.trim()
+  : getFallbackPhoto(pin);
 
-       marker.bindPopup(`
-  <div style="min-width:220px;font-family:sans-serif;">
+marker.bindPopup(`
+  <div style="min-width:240px;font-family:sans-serif;">
 
-   ${pin.photo_url ? `
-  <div style="
-    width:100%;
-    height:120px;
-    border-radius:14px;
-    overflow:hidden;
-    margin-bottom:10px;
-    position:relative;
-  ">
-    <img
-      src="${escapeHtml(pin.photo_url)}"
-      alt="${escapeHtml(pin.title || "Kayıt")}"
-      style="width:100%;height:100%;object-fit:cover;display:block;"
-    />
     <div style="
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      padding:8px 10px;
-      background:linear-gradient(to top, rgba(0,0,0,.70), transparent);
-      color:#e0f2fe;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:.04em;
+      width:100%;
+      height:132px;
+      border-radius:14px;
+      overflow:hidden;
+      margin-bottom:10px;
+      position:relative;
+      background:#0f172a;
     ">
-      🎙️ Emre Yücelen Selection
-    </div>
-  </div>
-` : ""}
+      <img
+        src="${escapeHtml(cardPhoto)}"
+        alt="${escapeHtml(pin.title || "Kayıt")}"
+        style="width:100%;height:100%;object-fit:cover;display:block;"
+      />
 
-    <div style="font-weight:700;margin-bottom:6px;">
-      ${escapeHtml(pin.title || "Kayıt")}
+      <div style="
+        position:absolute;
+        inset:0;
+        background:linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,.12) 45%, transparent 70%);
+      "></div>
+
+      <div style="
+        position:absolute;
+        left:10px;
+        top:10px;
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        padding:5px 9px;
+        border-radius:999px;
+        background:rgba(2,6,23,.58);
+        border:1px solid rgba(255,255,255,.16);
+        color:#e0f2fe;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.04em;
+        backdrop-filter:blur(8px);
+      ">
+        🎙️ Emre Yücelen Selection
+      </div>
+
+      <div style="
+        position:absolute;
+        left:10px;
+        right:10px;
+        bottom:10px;
+      ">
+        <div style="
+          font-size:15px;
+          line-height:1.2;
+          font-weight:800;
+          color:#ffffff;
+          text-shadow:0 2px 10px rgba(0,0,0,.35);
+        ">
+          ${escapeHtml(pin.title || "Kayıt")}
+        </div>
+
+        <div style="
+          margin-top:4px;
+          font-size:11px;
+          color:#dbeafe;
+          text-shadow:0 1px 6px rgba(0,0,0,.3);
+        ">
+          ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
+        </div>
+      </div>
     </div>
 
-    <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-      ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-    </div>
-
-    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
       ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
       ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+      ${pin.vibe ? `<div style="font-size:11px;background:rgba(125,211,252,.10);color:#dbeafe;padding:4px 7px;border-radius:999px;border:1px solid rgba(125,211,252,.18);">${escapeHtml(pin.vibe)}</div>` : ""}
     </div>
 
-    <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">
-      🎧 Dinlemek için tıkla
+    ${pin.description ? `
+      <div style="
+        font-size:12px;
+        color:#cbd5e1;
+        line-height:1.5;
+        margin-bottom:10px;
+      ">
+        ${escapeHtml(pin.description)}
+      </div>
+    ` : ""}
+
+    <div style="
+      font-size:11px;
+      color:#94a3b8;
+      margin-bottom:8px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+    ">
+      Dinle / Keşfet
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+      ${popupLinkButton("Spotify", pin.spotify_url, "rgba(34,197,94,.12)", "#dcfce7", "rgba(34,197,94,.28)")}
+      ${popupLinkButton("Apple", pin.apple_url, "rgba(255,255,255,.08)", "#f8fafc", "rgba(255,255,255,.16)")}
+      ${popupLinkButton("Deezer", pin.deezer_url, "rgba(168,85,247,.12)", "#f3e8ff", "rgba(168,85,247,.28)")}
+      ${popupLinkButton("YouTube", pin.youtube_url || pin.embed_url, "rgba(239,68,68,.12)", "#fee2e2", "rgba(239,68,68,.28)")}
+      ${popupLinkButton("Shopify", pin.shopify_url, "rgba(56,189,248,.12)", "#e0f2fe", "rgba(56,189,248,.28)")}
     </div>
 
     <button
@@ -2010,7 +2069,6 @@
       data-lat="${Number(pin.lat)}"
       data-lng="${Number(pin.lng)}"
       style="
-        margin-top:10px;
         width:100%;
         border:0;
         cursor:pointer;
