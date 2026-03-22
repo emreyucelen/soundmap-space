@@ -16,8 +16,8 @@
 }
 
 .player-hero {
-  position: relative;
-  min-height: 210px;
+  height: 220px;
+}
   padding: 18px 18px 16px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   overflow: hidden;
@@ -43,12 +43,8 @@
 }
 
 .player-hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
   background:
-    linear-gradient(to top, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.46) 42%, rgba(2,6,23,0.16) 68%, rgba(2,6,23,0.08) 100%),
-    linear-gradient(to right, rgba(2,6,23,0.28), rgba(2,6,23,0.05));
+    linear-gradient(to top, rgba(2,6,23,0.95) 0%, rgba(2,6,23,0.55) 40%, transparent 80%);
 }
 
 .player-hero-top {
@@ -61,10 +57,11 @@
 }
 
 .player-hero-copy {
-  position: relative;
-  z-index: 2;
-  margin-top: 58px;
-  max-width: calc(100% - 8px);
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  margin-top: 0;
 }
 
 .player-kicker {
@@ -1225,23 +1222,7 @@
       .submit-form-grid { grid-template-columns: 1fr; }
       .map-picker-row { grid-template-columns: 1fr; }
     }
-       .player-hero-image {
-  width: 100%;
-  height: 124px;
-border-radius: 20px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  position: relative;
-  border: 1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 35%),
-    linear-gradient(135deg, rgba(56,189,248,0.16), rgba(168,85,247,0.16)),
-    rgba(255,255,255,0.03);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.28),
-    inset 0 1px 0 rgba(255,255,255,0.08);
-}
-
+    
 .player-hero-image img {
   width: 100%;
   height: 100%;
