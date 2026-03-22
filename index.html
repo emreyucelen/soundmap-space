@@ -86,9 +86,7 @@
       line-height: 1.55;
     }
 
-    .search-wrap {
-      margin-top: 14px;
-    }
+    .search-wrap { margin-top: 14px; }
 
     .search,
     .form-input,
@@ -167,9 +165,7 @@
       filter: brightness(1.04);
     }
 
-    .section {
-      margin-top: 14px;
-    }
+    .section { margin-top: 14px; }
 
     .section-title {
       font-size: 11px;
@@ -255,9 +251,7 @@
       padding: 0 14px 14px;
     }
 
-    .filters-body.show {
-      display: block;
-    }
+    .filters-body.show { display: block; }
 
     .discovery-panel {
       margin-top: 14px;
@@ -350,11 +344,12 @@
     }
 
     .pill {
-      padding: 6px 9px;
+      padding: 6px 10px;
       border-radius: 999px;
-      font-size: 11px;
-      background: rgba(255,255,255,0.06);
-      color: #cbd5e1;
+      font-size: 10.5px;
+      background: rgba(255,255,255,0.05);
+      color: #d6deea;
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
     .more-btn {
@@ -408,9 +403,7 @@
       border: 1px solid rgba(255,255,255,.08);
     }
 
-    .leaflet-popup-tip {
-      background: #020617;
-    }
+    .leaflet-popup-tip { background: #020617; }
 
     .leaflet-control-layers {
       border-radius: 14px !important;
@@ -420,9 +413,7 @@
       box-shadow: 0 14px 36px rgba(0,0,0,.22) !important;
     }
 
-    .leaflet-control-layers label {
-      color: white !important;
-    }
+    .leaflet-control-layers label { color: white !important; }
 
     .ey-pin {
       position: relative;
@@ -463,9 +454,7 @@
       pointer-events: none;
     }
 
-    .ey-pin.is-hovered {
-      filter: brightness(1.12) saturate(1.08);
-    }
+    .ey-pin.is-hovered { filter: brightness(1.12) saturate(1.08); }
 
     .ey-pin.is-hovered .ey-pin-inner {
       transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
@@ -646,23 +635,13 @@
     }
 
     @keyframes spotlightFloat {
-      0%, 100% {
-        transform: rotate(-45deg) translateY(0) scale(1);
-      }
-      50% {
-        transform: rotate(-45deg) translateY(-4px) scale(1.03);
-      }
+      0%, 100% { transform: rotate(-45deg) translateY(0) scale(1); }
+      50% { transform: rotate(-45deg) translateY(-4px) scale(1.03); }
     }
 
     @keyframes spotlightGlow {
-      0%, 100% {
-        opacity: .25;
-        transform: scale(.92);
-      }
-      50% {
-        opacity: .85;
-        transform: scale(1.08);
-      }
+      0%, 100% { opacity: .25; transform: scale(.92); }
+      50% { opacity: .85; transform: scale(1.08); }
     }
 
     .floating-player {
@@ -835,8 +814,32 @@
       border: 0;
       border-radius: 22px;
       background: #000;
-      min-height: 195px;
       box-shadow: 0 12px 28px rgba(0,0,0,0.24);
+    }
+
+    .soundcloud-wrap {
+      margin-top: 2px;
+    }
+
+    .soundcloud-shell {
+      padding: 8px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 10px 30px rgba(0,0,0,0.16);
+    }
+
+    .soundcloud-shell iframe {
+      display: block;
+      width: 100%;
+      height: 92px;
+      border: 0;
+      border-radius: 18px;
+      background: #0b1220;
+      box-shadow: none;
     }
 
     .player-placeholder {
@@ -855,16 +858,16 @@
     .player-description {
       margin-top: 10px;
       color: #dbe4f0;
-      font-size: 13px;
-      line-height: 1.55;
-      padding: 12px 14px;
-      border-radius: 18px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      padding: 11px 14px;
+      border-radius: 20px;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
-      border: 1px solid rgba(255,255,255,0.08);
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+      border: 1px solid rgba(255,255,255,0.07);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 8px 24px rgba(0,0,0,0.18);
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 8px 22px rgba(0,0,0,0.14);
     }
 
     .player-meta-row {
@@ -877,8 +880,8 @@
     .player-link-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: 14px;
     }
 
     .player-link-btn {
@@ -886,16 +889,16 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 40px;
-      padding: 10px 13px;
+      min-height: 38px;
+      padding: 9px 16px;
       border-radius: 999px;
       text-decoration: none;
-      font-size: 13px;
-      font-weight: 800;
-      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.08);
       color: #f8fafc;
-      background: rgba(255,255,255,0.06);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      background: rgba(255,255,255,0.055);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
       transition: .18s ease;
     }
 
@@ -957,9 +960,7 @@
       backdrop-filter: blur(10px);
     }
 
-    .submit-modal.show {
-      display: flex;
-    }
+    .submit-modal.show { display: flex; }
 
     .submit-modal-card {
       width: min(760px, 100%);
@@ -1019,9 +1020,7 @@
       gap: 8px;
     }
 
-    .form-group.full {
-      grid-column: 1 / -1;
-    }
+    .form-group.full { grid-column: 1 / -1; }
 
     .form-label {
       font-size: 12px;
@@ -1124,11 +1123,13 @@
 
     @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
+
       .sidebar {
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
         max-height: none;
       }
+
       #map { height: 62vh; }
 
       .floating-player {
@@ -1175,26 +1176,28 @@
         top: 24px;
       }
 
-      .player-title {
-        font-size: 17px;
-      }
-
-      .player-sub {
-        font-size: 11px;
-      }
+      .player-title { font-size: 17px; }
+      .player-sub { font-size: 11px; }
 
       .player-hero-badges {
         left: 22px;
         bottom: 34px;
       }
 
-      .player-body {
-        padding: 8px 12px 12px;
-      }
+      .player-body { padding: 8px 12px 12px; }
 
       .player-embed-wrap iframe {
         min-height: 170px;
         border-radius: 18px;
+      }
+
+      .soundcloud-shell {
+        padding: 8px 10px;
+        border-radius: 18px;
+      }
+
+      .soundcloud-shell iframe {
+        height: 88px;
       }
 
       .player-link-btn {
@@ -1384,9 +1387,9 @@
 
           <div class="form-group full">
             <label class="form-label" for="pinEmbedUrl">Embed / paylaşım linki</label>
-            <input id="pinEmbedUrl" name="embed_url" class="form-input" type="url" required placeholder="https://youtu.be/... veya https://soundcloud.com/..." />
+            <input id="pinEmbedUrl" name="embed_url" class="form-input" type="text" required placeholder="https://youtu.be/... veya https://soundcloud.com/... veya SoundCloud iframe kodu" />
             <div class="form-help">
-              YouTube linki, embed linki veya SoundCloud paylaşım linki olabilir.
+              YouTube linki, SoundCloud linki, direkt SoundCloud player src linki veya SoundCloud iframe kodunun tamamı olabilir.
             </div>
           </div>
 
@@ -1479,8 +1482,8 @@
         category: "Kültür",
         environment: "muze",
         vibe: "Mistik",
-        source_type: "youtube",
-        embed_url: "https://www.youtube.com/embed/gwFg8AlN9zk",
+        source_type: "soundcloud",
+        embed_url: "https://soundcloud.com/emreyucelen/yoros-kalesi-binaural-sound-recording",
         status: "approved"
       }
     ];
@@ -1593,6 +1596,11 @@
       return "";
     }
 
+    function extractIframeSrc(htmlString) {
+      const match = (htmlString || "").match(/src\s*=\s*"([^"]+)"/i) || (htmlString || "").match(/src\s*=\s*'([^']+)'/i);
+      return match ? match[1] : "";
+    }
+
     function getFallbackImageByEnvironment(environment) {
       const envKey = canonicalEnvironment(environment);
       return DEFAULT_IMAGES_BY_ENV[envKey] || DEFAULT_IMAGES_BY_ENV.default;
@@ -1618,7 +1626,7 @@
       if (spotifyUrl) {
         items.push(`
           <a class="player-link-btn spotify" href="${escapeHtml(spotifyUrl)}" target="_blank" rel="noopener noreferrer">
-            🎵 Spotify
+            Spotify
           </a>
         `);
       }
@@ -1626,7 +1634,7 @@
       if (appleMusicUrl) {
         items.push(`
           <a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">
-             Apple Music
+            Apple Music
           </a>
         `);
       }
@@ -1634,7 +1642,7 @@
       if (buyUrl) {
         items.push(`
           <a class="player-link-btn buy" href="${escapeHtml(buyUrl)}" target="_blank" rel="noopener noreferrer">
-            🛒 Albümü Satın Al
+            Albümü Satın Al
           </a>
         `);
       }
@@ -1919,8 +1927,15 @@
     }
 
     function buildPlayableEmbed(pin, autoplay = false) {
-      const sourceType = normalize(pin.source_type);
-      const raw = cleanUrl(pin.embed_url || "");
+      const sourceType = (pin.source_type || "")
+        .toString()
+        .trim()
+        .toLowerCase();
+
+      const raw = (pin.embed_url || "")
+        .toString()
+        .trim();
+
       if (!raw) return "";
 
       if (sourceType === "youtube") {
@@ -1943,7 +1958,16 @@
       }
 
       if (sourceType === "soundcloud") {
-        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=${autoplay ? "true" : "false"}&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+        const iframeSrc = extractIframeSrc(raw);
+        if (iframeSrc) return iframeSrc;
+
+        if (raw.includes("w.soundcloud.com/player/")) {
+          return raw;
+        }
+
+        const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
+
+        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
       }
 
       return "";
@@ -1981,7 +2005,7 @@
 
       playerLinkRowEl.innerHTML = `
         ${linkButtons}
-        ${pin.lat != null && pin.lng != null ? `<button type="button" id="streetZoomFromPlayer" class="player-link-btn primary">🗺️ Sokağa in</button>` : ""}
+        ${pin.lat != null && pin.lng != null ? `<button type="button" id="streetZoomFromPlayer" class="player-link-btn primary">Sokağa in</button>` : ""}
       `;
 
       const descriptionBlock = pin.description
@@ -1989,16 +2013,41 @@
         : "";
 
       if (embed) {
-        playerEmbedAreaEl.className = "player-embed-wrap";
-        playerEmbedAreaEl.innerHTML = `
-          <iframe
-            src="${embed}"
-            allow="autoplay; encrypted-media; fullscreen"
-            loading="lazy"
-            referrerpolicy="strict-origin-when-cross-origin"
-          ></iframe>
-          ${descriptionBlock}
-        `;
+        const isSoundcloud = (pin.source_type || "").toString().trim().toLowerCase() === "soundcloud";
+
+        playerEmbedAreaEl.className = isSoundcloud
+          ? "player-embed-wrap soundcloud-wrap"
+          : "player-embed-wrap";
+
+        playerEmbedAreaEl.innerHTML = isSoundcloud
+          ? `
+            <div class="soundcloud-shell">
+              <iframe
+                src="${embed}"
+                width="100%"
+                height="92"
+                scrolling="no"
+                frameborder="no"
+                allow="autoplay"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            </div>
+            ${descriptionBlock}
+          `
+          : `
+            <iframe
+              src="${embed}"
+              width="100%"
+              height="195"
+              scrolling="no"
+              frameborder="no"
+              allow="autoplay; encrypted-media; fullscreen"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+            ${descriptionBlock}
+          `;
       } else {
         playerEmbedAreaEl.className = "player-placeholder";
         playerEmbedAreaEl.innerHTML = `
@@ -2445,7 +2494,7 @@
         cover_url: cleanUrl(pin.cover_url || ""),
         thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
         shopify_url: cleanUrl(pin.shopify_url || ""),
-        embed_url: cleanUrl(pin.embed_url || ""),
+        embed_url: (pin.embed_url || "").toString().trim(),
         spotify_url: cleanUrl(pin.spotify_url || ""),
         apple_music_url: cleanUrl(pin.apple_music_url || ""),
         buy_url: cleanUrl(pin.buy_url || ""),
@@ -2646,7 +2695,7 @@
         environment: (formData.get("environment") || "").toString().trim(),
         vibe: (formData.get("vibe") || "").toString().trim(),
         source_type: (formData.get("source_type") || "").toString().trim(),
-        embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
+        embed_url: (formData.get("embed_url") || "").toString().trim(),
         description: (formData.get("description") || "").toString().trim(),
         status: "pending",
         submitted_at: new Date().toISOString()
