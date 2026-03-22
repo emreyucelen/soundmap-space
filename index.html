@@ -1919,35 +1919,51 @@
     }
 
     function buildPlayableEmbed(pin, autoplay = false) {
-      const sourceType = normalize(pin.source_type);
-      const raw = cleanUrl(pin.embed_url || "");
-      if (!raw) return "";
+  const sourceType = (pin.source_type || "")
+    .toString()
+    .trim()
+    .toLowerCase();
 
-      if (sourceType === "youtube") {
-        let videoId = raw;
+  const raw = (pin.embed_url || "")
+    .toString()
+    .trim();
 
-        if (raw.includes("youtube.com/embed/")) {
-          const sep = raw.includes("?") ? "&" : "?";
-          return `${raw}${sep}autoplay=${autoplay ? 1 : 0}&rel=0`;
-        }
+  if (!raw) return "";
 
-        if (raw.includes("youtu.be/")) {
-          videoId = raw.split("youtu.be/")[1].split("?")[0];
-        } else if (raw.includes("watch?v=")) {
-          videoId = raw.split("watch?v=")[1].split("&")[0];
-        } else if (raw.includes("youtube.com/shorts/")) {
-          videoId = raw.split("youtube.com/shorts/")[1].split("?")[0];
-        }
+  // YOUTUBE
+  if (sourceType === "youtube") {
+    let videoId = raw;
 
-        return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
-      }
-
-      if (sourceType === "soundcloud") {
-        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=${autoplay ? "true" : "false"}&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
-      }
-
-      return "";
+    if (raw.includes("youtube.com/embed/")) {
+      const sep = raw.includes("?") ? "&" : "?";
+      return `${raw}${sep}autoplay=${autoplay ? 1 : 0}&rel=0`;
     }
+
+    if (raw.includes("youtu.be/")) {
+      videoId = raw.split("youtu.be/")[1].split("?")[0];
+    } else if (raw.includes("watch?v=")) {
+      videoId = raw.split("watch?v=")[1].split("&")[0];
+    } else if (raw.includes("youtube.com/shorts/")) {
+      videoId = raw.split("youtube.com/shorts/")[1].split("?")[0];
+    }
+
+    return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
+  }
+
+  // SOUNDCLOUD
+  if (sourceType === "soundcloud") {
+    let cleanSoundcloudUrl = raw.split("?")[0];
+
+    // kısa soundcloud linki gelirse yine player denesin
+    if (cleanSoundcloudUrl.includes("on.soundcloud.com/")) {
+      cleanSoundcloudUrl = raw;
+    }
+
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&auto_play=${autoplay ? "true" : "false"}&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+  }
+
+  return "";
+}
 
     function openFloatingPlayer(pin, autoplay = true) {
       const embed = buildPlayableEmbed(pin, autoplay);
