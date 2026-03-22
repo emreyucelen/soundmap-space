@@ -1929,7 +1929,6 @@
 
   if (!raw) return "";
 
-  // YOUTUBE
   if (sourceType === "youtube") {
     let videoId = raw;
 
@@ -1949,15 +1948,10 @@
     return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
   }
 
-  // SOUNDCLOUD - ince mini player
   if (sourceType === "soundcloud") {
-    let cleanSoundcloudUrl = raw.split("?")[0];
+    const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
 
-    if (cleanSoundcloudUrl.includes("on.soundcloud.com/")) {
-      cleanSoundcloudUrl = raw;
-    }
-
-    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff5500&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false`;
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
   }
 
   return "";
@@ -2001,24 +1995,42 @@
         ? `<div class="player-description">${escapeHtml(pin.description)}</div>`
         : "";
 
-      if (embed) {
+     if (embed) {
   const isSoundcloud = (pin.source_type || "").toString().trim().toLowerCase() === "soundcloud";
 
-  playerEmbedAreaEl.className = "player-embed-wrap";
-  playerEmbedAreaEl.innerHTML = `
-    <iframe
-      src="${embed}"
-      width="100%"
-      height="${isSoundcloud ? 120 : 195}"
-      scrolling="no"
-      frameborder="no"
-      allow="autoplay; encrypted-media; fullscreen"
-      loading="lazy"
-      referrerpolicy="strict-origin-when-cross-origin"
-      style="border:0; width:100%; border-radius:${isSoundcloud ? 16 : 22}px; background:#000;"
-    ></iframe>
-    ${descriptionBlock}
-  `;
+  playerEmbedAreaEl.className = isSoundcloud
+    ? "player-embed-wrap soundcloud-wrap"
+    : "player-embed-wrap";
+
+  playerEmbedAreaEl.innerHTML = isSoundcloud
+    ? `
+      <div class="soundcloud-shell">
+        <iframe
+          src="${embed}"
+          width="100%"
+          height="110"
+          scrolling="no"
+          frameborder="no"
+          allow="autoplay"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+      ${descriptionBlock}
+    `
+    : `
+      <iframe
+        src="${embed}"
+        width="100%"
+        height="195"
+        scrolling="no"
+        frameborder="no"
+        allow="autoplay; encrypted-media; fullscreen"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+      ${descriptionBlock}
+    `;
 } else {
         playerEmbedAreaEl.className = "player-placeholder";
         playerEmbedAreaEl.innerHTML = `
