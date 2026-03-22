@@ -971,6 +971,55 @@
       .submit-form-grid { grid-template-columns: 1fr; }
       .map-picker-row { grid-template-columns: 1fr; }
     }
+        .player-hero-image {
+      width: 100%;
+      height: 190px;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(135deg, rgba(56,189,248,0.10), rgba(168,85,247,0.10)),
+        rgba(255,255,255,0.03);
+      position: relative;
+    }
+
+    .player-hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .player-description {
+      margin-top: 12px;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .popup-cover {
+      width: 100%;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(135deg, rgba(56,189,248,0.12), rgba(168,85,247,0.12)),
+        rgba(255,255,255,0.04);
+    }
+
+    .popup-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -1188,6 +1237,43 @@
   <script>
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
+
+        const DEFAULT_IMAGE_BUCKET = "soundmap";
+    const DEFAULT_IMAGE_FOLDER = "defaults";
+
+    const DEFAULT_IMAGES_BY_ENV = {
+      deniz: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/deniz.jpg`,
+      gol: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/gol.jpg`,
+      nehir: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/nehir.jpg`,
+      sahil: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/sahil.jpg`,
+      orman: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/orman.jpg`,
+      kirsal: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/kirsal.jpg`,
+      sehir: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/sehir.jpg`,
+      liman: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/liman.jpg`,
+      pazar: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/pazar.jpg`,
+      muze: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/muze.jpg`,
+      tarih: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/tarih.jpg`,
+      tapinak: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/tapinak.jpg`,
+      dag: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/dag.jpg`,
+      magara: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/magara.jpg`,
+      col: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/col.jpg`,
+      default: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/default.jpg`
+    };
+
+    function getFallbackImageByEnvironment(environment) {
+      const envKey = canonicalEnvironment(environment);
+      return DEFAULT_IMAGES_BY_ENV[envKey] || DEFAULT_IMAGES_BY_ENV.default;
+    }
+
+    function getPinImageUrl(pin) {
+      const directImage =
+        cleanUrl(pin.photo_url || "") ||
+        cleanUrl(pin.image_url || "") ||
+        cleanUrl(pin.cover_url || "") ||
+        cleanUrl(pin.thumbnail_url || "");
+
+      return directImage || getFallbackImageByEnvironment(pin.environment);
+    }
 
     const MOODS = [
       { key: "tum", label: "✨ Hepsi", matcher: () => true },
@@ -1630,9 +1716,10 @@
       return "";
     }
 
-    function openFloatingPlayer(pin, autoplay = true) {
+      function openFloatingPlayer(pin, autoplay = true) {
       const embed = buildPlayableEmbed(pin, autoplay);
       const env = getEnvironmentStyle(pin.environment || "");
+      const imageUrl = getPinImageUrl(pin);
 
       playerTitleEl.textContent = pin.title || "İsimsiz mekan";
       playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
@@ -1645,21 +1732,42 @@
         ${pin.lat != null && pin.lng != null ? `<button type="button" id="streetZoomFromPlayer" class="mini-btn">🛣️ Sokağa in</button>` : ""}
       `;
 
+      const imageBlock = `
+        <div class="player-hero-image">
+          <img
+            src="${escapeHtml(imageUrl)}"
+            alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
+          />
+        </div>
+      `;
+
+      const descriptionBlock = pin.description
+        ? `<div class="player-description">${escapeHtml(pin.description)}</div>`
+        : "";
+
       if (embed) {
         playerEmbedAreaEl.className = "player-embed-wrap";
         playerEmbedAreaEl.innerHTML = `
+          ${imageBlock}
           <iframe
             src="${embed}"
             allow="autoplay; encrypted-media; fullscreen"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"
           ></iframe>
+          ${descriptionBlock}
         `;
       } else {
         playerEmbedAreaEl.className = "player-placeholder";
         playerEmbedAreaEl.innerHTML = `
-          Bu lokasyon için henüz aktif bir ses kaydı bulunmuyor.
-          Diğer durakları keşfetmeye ne dersin?
+          ${imageBlock}
+          <div>
+            Bu lokasyon için henüz aktif bir ses kaydı bulunmuyor.
+            Diğer durakları keşfetmeye ne dersin?
+          </div>
+          ${descriptionBlock}
         `;
       }
 
@@ -1672,7 +1780,6 @@
         });
       }
     }
-
     function closeFloatingPlayer() {
       floatingPlayerEl.classList.remove("show");
       setTimeout(() => {
@@ -1962,16 +2069,32 @@ marker.on("mouseout", () => {
 
         const env = getEnvironmentStyle(pin.environment || "");
 
+              const imageUrl = getPinImageUrl(pin);
+
         marker.bindPopup(`
           <div style="min-width:210px;font-family:sans-serif;">
+            <div class="popup-cover">
+              <img
+                src="${escapeHtml(imageUrl)}"
+                alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
+              />
+            </div>
+
             <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
+
             <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
               ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
             </div>
+
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
               ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
               ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
             </div>
+
+            ${pin.description ? `<div style="font-size:12px;color:#cbd5e1;margin-top:8px;line-height:1.55;">${escapeHtml(pin.description)}</div>` : ""}
+
             <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
 
             <button
@@ -2074,10 +2197,13 @@ marker.on("mouseout", () => {
       startLivingMap();
     }
 
-    function preparePinRow(pin) {
+       function preparePinRow(pin) {
       return {
         ...pin,
         photo_url: cleanUrl(pin.photo_url || ""),
+        image_url: cleanUrl(pin.image_url || ""),
+        cover_url: cleanUrl(pin.cover_url || ""),
+        thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
         shopify_url: cleanUrl(pin.shopify_url || ""),
         embed_url: cleanUrl(pin.embed_url || ""),
         lat: pin.lat != null ? Number(pin.lat) : null,
