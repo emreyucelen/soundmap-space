@@ -196,7 +196,8 @@
     }
 
     .discover-pills,
-    .player-meta-row {
+    .player-meta-row,
+    .player-link-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -232,17 +233,6 @@
       height: 100vh;
       width: 100%;
       background: #07111f;
-    }
-
-    .leaflet-popup-content-wrapper {
-      background: #020617;
-      color: white;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .leaflet-popup-tip {
-      background: #020617;
     }
 
     .leaflet-control-layers {
@@ -360,6 +350,109 @@
       min-height: 220px;
     }
 
+    .player-hero {
+      width: 100%;
+      height: 180px;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      background: #0f172a;
+    }
+
+    .player-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .player-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.10) 45%, transparent 70%);
+    }
+
+    .player-hero-badge {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(2,6,23,.58);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #e0f2fe;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      backdrop-filter: blur(8px);
+    }
+
+    .player-hero-text {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+    }
+
+    .player-hero-title {
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .player-hero-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #dbeafe;
+      text-shadow: 0 1px 6px rgba(0,0,0,.3);
+    }
+
+    .player-section-title {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 700;
+    }
+
+    .player-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .player-link-row a {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .street-btn {
+      width: 100%;
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg,#22d3ee,#3b82f6);
+      color: #03131c;
+      margin-bottom: 14px;
+    }
+
     @media (max-width: 980px) {
       .page { grid-template-columns: 1fr; }
       .sidebar {
@@ -385,7 +478,7 @@
       <div class="hero">
         <div class="hero-kicker">Emre Yücelen Selection</div>
         <h1>Dünyayı sesle keşfet</h1>
-        <p>Fotoğraflı, linkli, stabil popup sürümü.</p>
+        <p>Bilgiler sağdaki kartta açılır. Harita klasik görünüme döndü.</p>
 
         <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
 
@@ -615,7 +708,7 @@
       return fallbackImages.city;
     }
 
-    function popupLinkButton(label, url, bg = "rgba(255,255,255,.06)", color = "#e5e7eb", border = "rgba(255,255,255,.12)") {
+    function actionButton(label, url, bg = "rgba(255,255,255,.06)", color = "#e5e7eb", border = "rgba(255,255,255,.12)") {
       const safeUrl = normalizeExternalUrl(url);
       if (!safeUrl) return "";
 
@@ -625,14 +718,6 @@
           target="_blank"
           rel="noopener noreferrer"
           style="
-            text-decoration:none;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            padding:8px 10px;
-            border-radius:10px;
-            font-size:11px;
-            font-weight:700;
             background:${bg};
             color:${color};
             border:1px solid ${border};
@@ -669,7 +754,7 @@
       }).setView([39.0, 35.0], 6);
 
       const layers = createMainBaseLayers();
-      layers.Light.addTo(map);
+      layers.Classic.addTo(map);
 
       L.control.layers(layers, null, {
         collapsed: false,
@@ -684,8 +769,7 @@
         className: "",
         html: `<div class="ey-pin"></div>`,
         iconSize: [34, 34],
-        iconAnchor: [15, 32],
-        popupAnchor: [0, -28]
+        iconAnchor: [15, 32]
       });
     }
 
@@ -725,6 +809,9 @@
     function openFloatingPlayer(pin) {
       const env = getEnvironmentStyle(pin.environment || "");
       const embed = buildPlayableEmbed(pin);
+      const cardPhoto = pin.photo_url && pin.photo_url.trim()
+        ? pin.photo_url.trim()
+        : getFallbackPhoto(pin);
 
       playerTitleEl.textContent = pin.title || "İsimsiz durak";
       playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
@@ -735,21 +822,77 @@
         ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
       `;
 
-      if (embed) {
-        playerEmbedAreaEl.className = "player-embed-wrap";
-        playerEmbedAreaEl.innerHTML = `
-          <iframe
-            src="${embed}"
-            allow="autoplay; encrypted-media; fullscreen"
-            loading="lazy"
-          ></iframe>
-        `;
-      } else {
-        playerEmbedAreaEl.className = "player-placeholder";
-        playerEmbedAreaEl.innerHTML = "Bu kayıt için oynatıcı linki çözümlenemedi.";
-      }
+      playerEmbedAreaEl.className = "player-placeholder";
+      playerEmbedAreaEl.innerHTML = `
+        <div class="player-hero">
+          <img
+            src="${escapeHtml(cardPhoto)}"
+            alt="${escapeHtml(pin.title || "Kayıt")}"
+          />
+          <div class="player-hero-overlay"></div>
+
+          <div class="player-hero-badge">
+            🎙️ Emre Yücelen Selection
+          </div>
+
+          <div class="player-hero-text">
+            <div class="player-hero-title">
+              ${escapeHtml(pin.title || "Kayıt")}
+            </div>
+
+            <div class="player-hero-sub">
+              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
+            </div>
+          </div>
+        </div>
+
+        ${pin.description ? `
+          <div class="player-desc">
+            ${escapeHtml(pin.description)}
+          </div>
+        ` : ""}
+
+        <div class="player-section-title">Dinle / Keşfet</div>
+
+        <div class="player-link-row" style="margin-bottom:14px;">
+          ${actionButton("Spotify", pin.spotify_url, "rgba(34,197,94,.12)", "#dcfce7", "rgba(34,197,94,.28)")}
+          ${actionButton("Apple", pin.apple_url, "rgba(255,255,255,.08)", "#f8fafc", "rgba(255,255,255,.16)")}
+          ${actionButton("Deezer", pin.deezer_url, "rgba(168,85,247,.12)", "#f3e8ff", "rgba(168,85,247,.28)")}
+          ${actionButton("YouTube", pin.youtube_url || pin.embed_url, "rgba(239,68,68,.12)", "#fee2e2", "rgba(239,68,68,.28)")}
+          ${actionButton("Shopify", pin.shopify_url, "rgba(56,189,248,.12)", "#e0f2fe", "rgba(56,189,248,.28)")}
+        </div>
+
+        <button type="button" id="streetZoomInPlayer" class="street-btn">
+          🛣️ Sokağa in
+        </button>
+
+        ${embed ? `
+          <div class="player-embed-wrap">
+            <iframe
+              src="${embed}"
+              allow="autoplay; encrypted-media; fullscreen"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+          </div>
+        ` : `
+          <div class="player-placeholder">
+            Bu kayıt için oynatıcı linki çözümlenemedi.
+          </div>
+        `}
+      `;
 
       floatingPlayerEl.classList.add("show");
+
+      const streetBtn = document.getElementById("streetZoomInPlayer");
+      if (streetBtn && pin.lat != null && pin.lng != null) {
+        streetBtn.addEventListener("click", () => {
+          map.flyTo([Number(pin.lat), Number(pin.lng)], 18, {
+            animate: true,
+            duration: 1.8
+          });
+        });
+      }
     }
 
     function closeFloatingPlayer() {
@@ -766,162 +909,11 @@
           icon: makePinIcon()
         }).addTo(map);
 
-        const env = getEnvironmentStyle(pin.environment || "");
-        const cardPhoto = pin.photo_url && pin.photo_url.trim()
-          ? pin.photo_url.trim()
-          : getFallbackPhoto(pin);
-
-        marker.bindPopup(`
-          <div style="min-width:240px;font-family:sans-serif;">
-
-            <div style="
-              width:100%;
-              height:132px;
-              border-radius:14px;
-              overflow:hidden;
-              margin-bottom:10px;
-              position:relative;
-              background:#0f172a;
-            ">
-              <img
-                src="${escapeHtml(cardPhoto)}"
-                alt="${escapeHtml(pin.title || "Kayıt")}"
-                style="width:100%;height:100%;object-fit:cover;display:block;"
-              />
-
-              <div style="
-                position:absolute;
-                inset:0;
-                background:linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,.12) 45%, transparent 70%);
-              "></div>
-
-              <div style="
-                position:absolute;
-                left:10px;
-                top:10px;
-                display:inline-flex;
-                align-items:center;
-                gap:6px;
-                padding:5px 9px;
-                border-radius:999px;
-                background:rgba(2,6,23,.58);
-                border:1px solid rgba(255,255,255,.16);
-                color:#e0f2fe;
-                font-size:10px;
-                font-weight:700;
-                letter-spacing:.04em;
-                backdrop-filter:blur(8px);
-              ">
-                🎙️ Emre Yücelen Selection
-              </div>
-
-              <div style="
-                position:absolute;
-                left:10px;
-                right:10px;
-                bottom:10px;
-              ">
-                <div style="
-                  font-size:15px;
-                  line-height:1.2;
-                  font-weight:800;
-                  color:#ffffff;
-                  text-shadow:0 2px 10px rgba(0,0,0,.35);
-                ">
-                  ${escapeHtml(pin.title || "Kayıt")}
-                </div>
-
-                <div style="
-                  margin-top:4px;
-                  font-size:11px;
-                  color:#dbeafe;
-                  text-shadow:0 1px 6px rgba(0,0,0,.3);
-                ">
-                  ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-                </div>
-              </div>
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
-              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-              ${pin.vibe ? `<div style="font-size:11px;background:rgba(125,211,252,.10);color:#dbeafe;padding:4px 7px;border-radius:999px;border:1px solid rgba(125,211,252,.18);">${escapeHtml(pin.vibe)}</div>` : ""}
-            </div>
-
-            ${pin.description ? `
-              <div style="
-                font-size:12px;
-                color:#cbd5e1;
-                line-height:1.5;
-                margin-bottom:10px;
-              ">
-                ${escapeHtml(pin.description)}
-              </div>
-            ` : ""}
-
-            <div style="
-              font-size:11px;
-              color:#94a3b8;
-              margin-bottom:8px;
-              text-transform:uppercase;
-              letter-spacing:.08em;
-              font-weight:700;
-            ">
-              Dinle / Keşfet
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-              ${popupLinkButton("Spotify", pin.spotify_url, "rgba(34,197,94,.12)", "#dcfce7", "rgba(34,197,94,.28)")}
-              ${popupLinkButton("Apple", pin.apple_url, "rgba(255,255,255,.08)", "#f8fafc", "rgba(255,255,255,.16)")}
-              ${popupLinkButton("Deezer", pin.deezer_url, "rgba(168,85,247,.12)", "#f3e8ff", "rgba(168,85,247,.28)")}
-              ${popupLinkButton("YouTube", pin.youtube_url || pin.embed_url, "rgba(239,68,68,.12)", "#fee2e2", "rgba(239,68,68,.28)")}
-              ${popupLinkButton("Shopify", pin.shopify_url, "rgba(56,189,248,.12)", "#e0f2fe", "rgba(56,189,248,.28)")}
-            </div>
-
-            <button
-              type="button"
-              class="street-zoom-btn"
-              data-lat="${Number(pin.lat)}"
-              data-lng="${Number(pin.lng)}"
-              style="
-                width:100%;
-                border:0;
-                cursor:pointer;
-                font-weight:700;
-                font-size:12px;
-                padding:10px 12px;
-                border-radius:12px;
-                background:linear-gradient(135deg,#22d3ee,#3b82f6);
-                color:#03131c;
-              "
-            >
-              🛣️ Sokağa in
-            </button>
-          </div>
-        `);
-
         marker.on("click", () => {
           openFloatingPlayer(pin);
           map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
             animate: true,
             duration: 1.6
-          });
-        });
-
-        marker.on("popupopen", (e) => {
-          const popupEl = e.popup.getElement();
-          if (!popupEl) return;
-
-          const streetBtn = popupEl.querySelector(".street-zoom-btn");
-          if (!streetBtn) return;
-
-          streetBtn.addEventListener("click", () => {
-            const lat = Number(streetBtn.dataset.lat);
-            const lng = Number(streetBtn.dataset.lng);
-            map.flyTo([lat, lng], 18, {
-              animate: true,
-              duration: 1.8
-            });
           });
         });
 
