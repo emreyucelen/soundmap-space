@@ -2010,6 +2010,11 @@ const cardPhoto = pin.photo_url && pin.photo_url.trim()
   ? pin.photo_url.trim()
   : getFallbackPhoto(pin);
 
+const env = getEnvironmentStyle(pin.environment || "");
+const cardPhoto = pin.photo_url && pin.photo_url.trim()
+  ? pin.photo_url.trim()
+  : getFallbackPhoto(pin);
+
 marker.bindPopup(`
   <div style="min-width:240px;font-family:sans-serif;">
 
