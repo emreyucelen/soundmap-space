@@ -971,37 +971,6 @@
       .submit-form-grid { grid-template-columns: 1fr; }
       .map-picker-row { grid-template-columns: 1fr; }
     }
-
-    /* Sağdaki Player için Fotoğraf Alanı */
-.player-hero-img {
-  width: 100%;
-  height: 200px;
-  background-size: cover;
-  background-position: center;
-  background-color: #1a202c;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  display: none; /* Başlangıçta gizli, fotoğraf varsa açılacak */
-}
-
-/* İkonlu Pinlerin Tasarımı */
-.ey-pin-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px; /* İkon boyutu */
-  color: white;
-}
-
-/* Cam Efekti (Görseldeki gibi beyaz kart tasarımı istiyorsan player'ı güncelle) */
-.floating-player {
-  background: rgba(255, 255, 255, 0.95) !important; /* Beyaz cam efekti */
-  color: #1a202c !important; /* Yazılar koyu olsun */
-  border: 1px solid rgba(0,0,0,0.1) !important;
-}
-
-.floating-player .player-title { color: #0f172a; }
-.floating-player .player-sub { color: #64748b; }
-.floating-player .player-kicker { color: #3b82f6; }
   </style>
 </head>
 <body>
@@ -1072,8 +1041,6 @@
   </div>
 
   <div id="floatingPlayer" class="floating-player">
-    <div id="floatingPlayer" class="floating-player">
-    <div id="playerHeroImage" class="player-hero-img"></div> <div class="player-head"> ...
     <div class="player-head">
       <div>
         <div class="player-kicker">Dinleniyor</div>
@@ -1491,26 +1458,22 @@
       return "core-default";
     }
 
-   function makePinIcon(environment, isActive = false, isFeatured = false, isSpotlight = false, isHovered = false) {
-  const env = getEnvironmentStyle(environment);
-  const icon = env.symbol; // Senin getEnvironmentStyle fonksiyonundaki emojiyi kullanır (🌲, 🌊 vs.)
-  const color = isActive ? "#ef4444" : env.color;
-  const size = isActive ? 42 : 36;
+    function makePinIcon(environment, isActive = false, isFeatured = false, isSpotlight = false, isHovered = false) {
+      const env = getEnvironmentStyle(environment);
+      const color = isActive ? "#ef4444" : env.color;
+      const size = isActive ? 40 : (isSpotlight ? 38 : 34);
+      const innerSize = isActive ? 18 : 16;
+      const border = isActive ? 4 : 3;
 
-  return L.divIcon({
-    className: "",
-    html: `
-      <div class="ey-pin ${isActive ? "is-active" : ""}" 
-           style="width:${size}px; height:${size}px; background:${color}; border:3px solid white; border-radius:50% 50% 50% 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <div style="transform: rotate(45deg); display:flex; align-items:center; justify-content:center; width:100%; height:100%; font-size:16px;">
-          ${icon}
-        </div>
-      </div>
-    `,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size]
-  });
-}
+      let glow = `0 8px 18px rgba(0,0,0,.22)`;
+
+      if (isActive) {
+        glow = `0 0 0 10px ${color}26, 0 12px 26px rgba(0,0,0,.28)`;
+      } else if (isSpotlight) {
+        glow = `0 0 0 8px ${color}20, 0 12px 26px rgba(0,0,0,.24)`;
+      } else if (isFeatured) {
+        glow = `0 0 0 6px ${color}18, 0 10px 22px rgba(0,0,0,.22)`;
+      }
 
       return L.divIcon({
         className: "",
@@ -1667,20 +1630,11 @@
       return "";
     }
 
-   function openFloatingPlayer(pin, autoplay = true) {
-  const embed = buildPlayableEmbed(pin, autoplay);
-  const heroImg = document.getElementById("playerHeroImage");
+    function openFloatingPlayer(pin, autoplay = true) {
+      const embed = buildPlayableEmbed(pin, autoplay);
+      const env = getEnvironmentStyle(pin.environment || "");
 
-  // FOTOĞRAF KONTROLÜ
-  if (pin.photo_url) {
-    heroImg.style.backgroundImage = `url('${pin.photo_url}')`;
-    heroImg.style.display = "block";
-  } else {
-    heroImg.style.display = "none";
-  }
-
-  playerTitleEl.textContent = pin.title || "İsimsiz mekan";
-  // ... (fonksiyonun geri kalan alt kısmı aynı kalabilir)
+      playerTitleEl.textContent = pin.title || "İsimsiz mekan";
       playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
 
       playerMetaRowEl.innerHTML = `
