@@ -8,6 +8,260 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
+
+    .player-head {
+  padding: 0;
+  display: block;
+  border-bottom: 0;
+}
+
+.player-hero {
+  position: relative;
+  min-height: 210px;
+  padding: 18px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.14), transparent 28%),
+    linear-gradient(135deg, rgba(56,189,248,0.16), rgba(168,85,247,0.14)),
+    rgba(255,255,255,0.03);
+}
+
+.player-hero-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.player-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.03);
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.player-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to top, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.46) 42%, rgba(2,6,23,0.16) 68%, rgba(2,6,23,0.08) 100%),
+    linear-gradient(to right, rgba(2,6,23,0.28), rgba(2,6,23,0.05));
+}
+
+.player-hero-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.player-hero-copy {
+  position: relative;
+  z-index: 2;
+  margin-top: 58px;
+  max-width: calc(100% - 8px);
+}
+
+.player-kicker {
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 8px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+
+.player-title {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+  text-shadow: 0 8px 30px rgba(0,0,0,0.38);
+}
+
+.player-sub {
+  margin-top: 6px;
+  color: rgba(226,232,240,0.92);
+  font-size: 13px;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.28);
+}
+
+.player-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+  z-index: 3;
+}
+
+.player-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(15,23,42,0.34);
+  backdrop-filter: blur(10px);
+  color: white;
+  cursor: pointer;
+  font-size: 17px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+}
+
+.player-icon-btn:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+.player-hero-badges {
+  position: relative;
+  z-index: 2;
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.player-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f8fafc;
+  background: rgba(15,23,42,0.42);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+}
+
+.player-body {
+  padding: 14px 16px 18px;
+}
+
+.player-placeholder {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #cbd5e1;
+  line-height: 1.6;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.player-embed-wrap iframe {
+  width: 100%;
+  border: 0;
+  border-radius: 24px;
+  background: #000;
+  min-height: 220px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.24);
+}
+
+.player-description {
+  margin-top: 12px;
+  color: #dbe4f0;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 13px 15px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 8px 24px rgba(0,0,0,0.18);
+}
+
+.player-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.player-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.player-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 11px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #f8fafc;
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+  transition: .18s ease;
+}
+
+.player-link-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.10);
+}
+
+.player-link-btn.primary {
+  background: linear-gradient(135deg, #22d3ee, #3b82f6);
+  color: #03131c;
+  border-color: transparent;
+}
+
+.player-link-btn.buy {
+  background: linear-gradient(135deg, rgba(250,204,21,0.95), rgba(251,146,60,0.95));
+  color: #1f1300;
+  border-color: transparent;
+}
+
+.player-link-btn.apple {
+  background: rgba(255,255,255,0.12);
+}
+
+.player-link-btn.spotify {
+  background: rgba(30,215,96,0.16);
+}
+
+@media (max-width: 640px) {
+  .player-hero {
+    min-height: 188px;
+    padding: 16px 16px 14px;
+  }
+
+  .player-hero-copy {
+    margin-top: 54px;
+  }
+
+  .player-title {
+    font-size: 18px;
+  }
+
+  .player-link-row {
+    gap: 8px;
+  }
+
+  .player-link-btn {
+    width: 100%;
+  }
+}
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     body {
@@ -1145,27 +1399,39 @@ border-radius: 20px;
     </main>
   </div>
 
-  <div id="floatingPlayer" class="floating-player">
-    <div class="player-head">
-      <div>
+ <div id="floatingPlayer" class="floating-player">
+  <div class="player-head">
+    <div class="player-hero">
+      <div id="playerHeroImage" class="player-hero-image"></div>
+      <div class="player-hero-overlay"></div>
+
+      <div class="player-hero-top">
+        <div></div>
+
+        <div class="player-actions">
+          <button id="playerMinBtn" class="player-icon-btn" title="Küçült">—</button>
+          <button id="playerCloseBtn" class="player-icon-btn" title="Kapat">✕</button>
+        </div>
+      </div>
+
+      <div class="player-hero-copy">
         <div class="player-kicker">Dinleniyor</div>
         <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
         <div id="playerSub" class="player-sub">Haritadaki noktalara tıklayarak ses yolculuğuna başlayın.</div>
       </div>
 
-      <div class="player-actions">
-        <button id="playerMinBtn" class="player-icon-btn" title="Küçült">—</button>
-        <button id="playerCloseBtn" class="player-icon-btn" title="Kapat">✕</button>
-      </div>
-    </div>
-
-    <div class="player-body">
-      <div id="playerEmbedArea" class="player-placeholder">
-        Oynatıcıyı başlatmak için haritadan bir kayıt seçin.
-      </div>
-      <div id="playerMetaRow" class="player-meta-row"></div>
+      <div id="playerHeroBadges" class="player-hero-badges"></div>
     </div>
   </div>
+
+  <div class="player-body">
+    <div id="playerEmbedArea" class="player-placeholder">
+      Oynatıcıyı başlatmak için haritadan bir kayıt seçin.
+    </div>
+    <div id="playerMetaRow" class="player-meta-row"></div>
+    <div id="playerLinkRow" class="player-link-row"></div>
+  </div>
+</div>
 
   <div id="travelNotice" class="travel-notice">Yeni durağa gidiliyor…</div>
 
@@ -1386,6 +1652,9 @@ border-radius: 20px;
     const playerSubEl = document.getElementById("playerSub");
     const playerEmbedAreaEl = document.getElementById("playerEmbedArea");
     const playerMetaRowEl = document.getElementById("playerMetaRow");
+    const playerHeroImageEl = document.getElementById("playerHeroImage");
+const playerHeroBadgesEl = document.getElementById("playerHeroBadges");
+const playerLinkRowEl = document.getElementById("playerLinkRow");
     const playerMinBtn = document.getElementById("playerMinBtn");
     const playerCloseBtn = document.getElementById("playerCloseBtn");
 
@@ -1462,7 +1731,50 @@ border-radius: 20px;
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
+function safeExternalUrl(value) {
+  const raw = cleanUrl(value || "");
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return "";
+}
 
+function getPinImageUrl(pin) {
+  return cleanUrl(pin.photo_url || "") || "";
+}
+
+function buildPlayerLinkButtons(pin) {
+  const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
+  const appleMusicUrl = safeExternalUrl(pin.apple_music_url || "");
+  const buyUrl = safeExternalUrl(pin.buy_url || pin.album_url || pin.shopify_url || "");
+
+  const items = [];
+
+  if (spotifyUrl) {
+    items.push(`
+      <a class="player-link-btn spotify" href="${escapeHtml(spotifyUrl)}" target="_blank" rel="noopener noreferrer">
+        🎵 Spotify
+      </a>
+    `);
+  }
+
+  if (appleMusicUrl) {
+    items.push(`
+      <a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">
+         Apple Music
+      </a>
+    `);
+  }
+
+  if (buyUrl) {
+    items.push(`
+      <a class="player-link-btn buy" href="${escapeHtml(buyUrl)}" target="_blank" rel="noopener noreferrer">
+        🛒 Albümü Satın Al
+      </a>
+    `);
+  }
+
+  return items.join("");
+}
     function showError(message) {
       errorBox.style.display = "block";
       errorBox.textContent = message;
@@ -2256,19 +2568,20 @@ marker.on("mouseout", () => {
       startLivingMap();
     }
 
-       function preparePinRow(pin) {
-      return {
-        ...pin,
-        photo_url: cleanUrl(pin.photo_url || ""),
-        image_url: cleanUrl(pin.image_url || ""),
-        cover_url: cleanUrl(pin.cover_url || ""),
-        thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
-        shopify_url: cleanUrl(pin.shopify_url || ""),
-        embed_url: cleanUrl(pin.embed_url || ""),
-        lat: pin.lat != null ? Number(pin.lat) : null,
-        lng: pin.lng != null ? Number(pin.lng) : null
-      };
-    }
+      function preparePinRow(pin) {
+  return {
+    ...pin,
+    photo_url: cleanUrl(pin.photo_url || ""),
+    shopify_url: cleanUrl(pin.shopify_url || ""),
+    embed_url: cleanUrl(pin.embed_url || ""),
+    spotify_url: cleanUrl(pin.spotify_url || ""),
+    apple_music_url: cleanUrl(pin.apple_music_url || ""),
+    buy_url: cleanUrl(pin.buy_url || ""),
+    album_url: cleanUrl(pin.album_url || ""),
+    lat: pin.lat != null ? Number(pin.lat) : null,
+    lng: pin.lng != null ? Number(pin.lng) : null
+  };
+}
 
     async function loadPins() {
       try {
