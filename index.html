@@ -1188,7 +1188,61 @@
   <script>
     const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
+const fallbackImages = {
+  sea: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+  city: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80",
+  forest: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
+  history: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f40?auto=format&fit=crop&w=1200&q=80",
+  mountain: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+};
 
+function getFallbackPhoto(pin) {
+  const env = canonicalEnvironment(pin.environment);
+
+  if (["deniz", "sahil", "gol", "nehir"].includes(env)) return fallbackImages.sea;
+  if (["sehir", "liman", "pazar"].includes(env)) return fallbackImages.city;
+  if (["orman", "kirsal"].includes(env)) return fallbackImages.forest;
+  if (["muze", "tarih", "tapinak"].includes(env)) return fallbackImages.history;
+  if (["dag", "magara", "col"].includes(env)) return fallbackImages.mountain;
+
+  return fallbackImages.city;
+}
+
+function normalizeExternalUrl(url) {
+  const raw = (url || "").toString().trim();
+  if (!raw) return "";
+  if (raw.startsWith("//")) return "https:" + raw;
+  if (raw.startsWith("www.")) return "https://" + raw;
+  return raw;
+}
+
+function popupLinkButton(label, url, bg = "rgba(255,255,255,.06)", color = "#e5e7eb", border = "rgba(255,255,255,.12)") {
+  const safeUrl = normalizeExternalUrl(url);
+  if (!safeUrl) return "";
+
+  return `
+    <a
+      href="${escapeHtml(safeUrl)}"
+      target="_blank"
+      rel="noopener noreferrer"
+      style="
+        text-decoration:none;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:8px 10px;
+        border-radius:10px;
+        font-size:11px;
+        font-weight:700;
+        background:${bg};
+        color:${color};
+        border:1px solid ${border};
+      "
+    >
+      ${label}
+    </a>
+  `;
+}
     const MOODS = [
       { key: "tum", label: "✨ Hepsi", matcher: () => true },
       { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin", "huzurlu"].includes(normalize(pin.vibe)) || ["deniz", "sahil", "gol"].includes(canonicalEnvironment(pin.environment)) },
