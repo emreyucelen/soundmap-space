@@ -1,212 +1,1570 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Soundmap Space</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundmap Space</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<style>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.10), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.10), transparent 30%),
+        linear-gradient(180deg, #07111f 0%, #0b1528 100%);
+      color: white;
+    }
 
-/* ============ GENEL ============ */
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#07111f;
-  color:white;
-}
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+    }
 
-.page {
-  display:grid;
-  grid-template-columns:360px 1fr;
-  height:100vh;
-}
+    .sidebar {
+      position: relative;
+      padding: 16px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at top left, rgba(34,211,238,0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(168,85,247,0.08), transparent 35%),
+        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(9,19,35,0.88));
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+      max-height: 100vh;
+    }
 
-/* ============ SIDEBAR ============ */
-.sidebar {
-  padding:16px;
-  background:#0b1528;
-}
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e0f2fe;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
 
-.brand {
-  font-weight:700;
-  margin-bottom:12px;
-}
+    .hero {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 30%);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+    }
 
-.search {
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #333;
-  background:#111;
-  color:white;
-}
+    .hero-kicker {
+      color: #7dd3fc;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
 
-/* ============ BUTON ============ */
-.btn {
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:none;
-  cursor:pointer;
-  font-weight:700;
-  margin-top:10px;
-}
+    .hero h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
 
-/* 🔥 ANA BUTON */
-.btn-primary {
-  background:linear-gradient(135deg,#22d3ee,#3b82f6);
-  color:black;
-  animation:breathe 3s ease-in-out infinite;
-}
+    .hero p {
+      margin: 10px 0 0;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.55;
+    }
 
-/* 🫧 SOFT BUTON */
-.btn-secondary {
-  background:#1e293b;
-  color:white;
-  animation:breatheSoft 4s ease-in-out infinite;
-}
+    .search,
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .map-search-input {
+      width: 100%;
+      padding: 13px 15px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      font-size: 14px;
+      transition: .2s ease;
+    }
 
-/* 💫 ANİMASYON */
-@keyframes breathe {
-  0%,100% {transform:scale(1);box-shadow:0 0 0 rgba(0,0,0,0);}
-  50% {transform:scale(1.03);box-shadow:0 10px 30px rgba(59,130,246,0.4);}
-}
+    .search {
+      margin-top: 14px;
+    }
 
-@keyframes breatheSoft {
-  0%,100% {transform:scale(1);}
-  50% {transform:scale(1.015);}
-}
+    .search:focus,
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus,
+    .map-search-input:focus {
+      border-color: rgba(56,189,248,0.35);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.10);
+    }
 
-/* ============ MAP ============ */
-#map { height:100vh; }
+    .search::placeholder,
+    .form-input::placeholder,
+    .form-textarea::placeholder,
+    .map-search-input::placeholder {
+      color: #94a3b8;
+    }
 
-/* ============ PLAYER ============ */
-.player {
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:400px;
-  background:#020617;
-  border-radius:20px;
-  padding:14px;
-  display:none;
-}
+    .hero-actions {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
 
-.player.show { display:block; }
+    .random-journey-btn,
+    .submit-sound-btn,
+    .form-btn,
+    .map-search-btn,
+    .more-btn {
+      width: 100%;
+      border: 0;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 13px 16px;
+      border-radius: 16px;
+      transition: .2s ease;
+    }
 
-.player img {
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:14px;
-}
+    .random-journey-btn,
+    .form-btn.primary,
+    .map-search-btn.primary {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #03131c;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+    }
 
-.links a {
-  display:inline-block;
-  margin:4px;
-  padding:6px 10px;
-  border-radius:10px;
-  background:#111;
-  color:white;
-  text-decoration:none;
-  font-size:12px;
-}
+    .submit-sound-btn,
+    .form-btn.secondary,
+    .map-search-btn.secondary,
+    .more-btn {
+      background: rgba(255,255,255,0.08);
+      color: #e0f2fe;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+    }
 
-</style>
+    .section {
+      margin-top: 14px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .filters-shell,
+    .discovery-panel {
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      overflow: hidden;
+    }
+
+    .filters-toggle,
+    .mini-btn {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .filters-toggle {
+      width: 100%;
+      border-radius: 0;
+      background: transparent;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+      border: 0;
+    }
+
+    .filters-body {
+      display: none;
+      padding: 0 14px 14px;
+    }
+
+    .filters-body.show {
+      display: block;
+    }
+
+    .moods,
+    .categories,
+    .environments,
+    .player-meta-row,
+    .discover-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mood-btn,
+    .cat-btn,
+    .env-btn,
+    .pill {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .mood-btn.active,
+    .cat-btn.active,
+    .env-btn.active {
+      background: rgba(34,211,238,0.14);
+      border-color: rgba(34,211,238,0.35);
+      color: #ecfeff;
+    }
+
+    .discovery-panel {
+      padding: 14px;
+      border-radius: 22px;
+    }
+
+    .discovery-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .discovery-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .discovery-sub {
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .discovery-list {
+      display: grid;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .discover-card {
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .discover-card:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .discover-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .discover-meta {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      padding: 6px 9px;
+      font-size: 11px;
+      cursor: default;
+    }
+
+    .status-line {
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+      padding-bottom: 8px;
+    }
+
+    .error {
+      color: #fecaca;
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100%;
+      background: #07111f;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: #020617;
+      color: white;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .leaflet-popup-tip {
+      background: #020617;
+    }
+
+    .leaflet-control-layers {
+      border-radius: 14px !important;
+      background: rgba(2,6,23,0.88) !important;
+      color: white !important;
+      border: 1px solid rgba(255,255,255,.08) !important;
+    }
+
+    .leaflet-control-layers label {
+      color: white !important;
+    }
+
+    .ey-pin {
+      width: 34px;
+      height: 34px;
+      background: #38bdf8;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid white;
+      box-shadow: 0 8px 18px rgba(0,0,0,.22);
+    }
+
+    .floating-player {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: min(460px, calc(100vw - 24px));
+      z-index: 9999;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(180deg, rgba(8,17,31,0.92), rgba(13,22,38,0.92)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: .35s ease;
+    }
+
+    .floating-player.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .player-head {
+      padding: 14px 16px 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .player-kicker {
+      font-size: 11px;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .player-title {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .player-sub {
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .player-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .player-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .player-body {
+      padding: 14px 16px 18px;
+    }
+
+    .player-placeholder {
+      padding: 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(255,255,255,0.10);
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .player-embed-wrap iframe {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      background: #000;
+      min-height: 220px;
+    }
+
+    .submit-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(2,6,23,0.70);
+      backdrop-filter: blur(10px);
+    }
+
+    .submit-modal.show {
+      display: flex;
+    }
+
+    .submit-modal-card {
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(180deg, rgba(8,17,31,0.96), rgba(13,22,38,0.96)),
+        radial-gradient(circle at top right, rgba(56,189,248,0.10), transparent 30%);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+      padding: 18px;
+    }
+
+    .submit-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .submit-modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .submit-modal-sub {
+      margin-top: 6px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .submit-close-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .submit-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: #cbd5e1;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .form-textarea {
+      min-height: 110px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .form-help {
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .form-status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .form-status.show { display: block; }
+
+    .form-status.success {
+      background: rgba(20, 83, 45, 0.45);
+      border: 1px solid rgba(74, 222, 128, 0.24);
+      color: #dcfce7;
+    }
+
+    .form-status.error {
+      background: rgba(127,29,29,.35);
+      border: 1px solid rgba(248,113,113,.25);
+      color: #fecaca;
+    }
+
+    .map-picker-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .map-picker-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    #pickerMap {
+      width: 100%;
+      height: 280px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #07111f;
+    }
+
+    .coords-note {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .page { grid-template-columns: 1fr; }
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        max-height: none;
+      }
+      #map { height: 62vh; }
+      .floating-player {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 12px;
+      }
+      .submit-form-grid { grid-template-columns: 1fr; }
+      .map-picker-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">🌍 Soundmap Space</div>
 
-<div class="page">
+      <div class="hero">
+        <div class="hero-kicker">Ses Keşif Rehberi</div>
+        <h1>Dünyayı sesle keşfet</h1>
+        <p>Stabil sürüme geri döndük.</p>
 
-<div class="sidebar">
-  <div class="brand">🌍 Soundmap</div>
+        <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
 
-  <input id="search" class="search" placeholder="Ara...">
+        <div class="hero-actions">
+          <button id="randomJourneyBtn" class="random-journey-btn">🎲 Bugün ne dinlemeliyim?</button>
+          <button id="openSubmitModalBtn" class="submit-sound-btn">➕ Ses öner</button>
+        </div>
+      </div>
 
-  <button id="randomBtn" class="btn btn-primary">
-    🎲 Bugün ne dinlemeliyim?
-  </button>
+      <div class="filters-shell">
+        <button id="toggleFiltersBtn" class="filters-toggle">
+          <span>Filtreler</span>
+          <span id="toggleFiltersIcon">+</span>
+        </button>
 
-  <button id="refreshBtn" class="btn btn-secondary">
-    Yenile
-  </button>
-</div>
+        <div id="filtersBody" class="filters-body">
+          <div class="section">
+            <div class="section-title">Mod</div>
+            <div id="moods" class="moods"></div>
+          </div>
 
-<div id="map"></div>
+          <div class="section">
+            <div class="section-title">Kategori</div>
+            <div id="categories" class="categories"></div>
+          </div>
 
-</div>
+          <div class="section">
+            <div class="section-title">Atmosfer</div>
+            <div id="environments" class="environments"></div>
+          </div>
+        </div>
+      </div>
 
-<div id="player" class="player">
-  <img id="playerImg">
-  <h3 id="playerTitle"></h3>
-  <p id="playerLocation"></p>
+      <div class="discovery-panel">
+        <div class="discovery-head">
+          <div class="discovery-title">Ses Durakları</div>
+          <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
+        </div>
 
-  <div class="links" id="links"></div>
-</div>
+        <div id="discoverySub" class="discovery-sub">
+          Seçtiğin moda göre sana özel öneriler burada.
+        </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <div id="discoveryList" class="discovery-list"></div>
+        <button id="toggleDiscoveryBtn" class="more-btn" style="display:none;">Daha fazlasını göster</button>
+      </div>
 
-<script>
+      <div id="resultCount" class="status-line"></div>
+      <div id="errorBox" class="error"></div>
+    </aside>
 
-/* DEMO DATA */
-const pins = [
-  {
-    title:"Foça Sahil",
-    city:"İzmir",
-    lat:38.67,
-    lng:26.75,
-    photo:"",
-    youtube:"https://www.youtube.com/watch?v=jfKfPfyJRdk"
-  }
-];
+    <main>
+      <div id="map"></div>
+    </main>
+  </div>
 
-/* MAP */
-const map = L.map("map").setView([39,35],6);
+  <div id="floatingPlayer" class="floating-player">
+    <div class="player-head">
+      <div>
+        <div class="player-kicker">Dinleniyor</div>
+        <div id="playerTitle" class="player-title">Bir ses durağı seçin</div>
+        <div id="playerSub" class="player-sub">Haritadaki pinlere tıklayın.</div>
+      </div>
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+      <div class="player-actions">
+        <button id="playerCloseBtn" class="player-icon-btn">✕</button>
+      </div>
+    </div>
 
-/* FALLBACK FOTO */
-function getPhoto(pin){
-  return pin.photo || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e";
-}
+    <div class="player-body">
+      <div id="playerEmbedArea" class="player-placeholder">
+        Oynatıcı burada açılacak.
+      </div>
+      <div id="playerMetaRow" class="player-meta-row"></div>
+    </div>
+  </div>
 
-/* MARKERS */
-pins.forEach(p=>{
-  const m = L.marker([p.lat,p.lng]).addTo(map);
+  <div id="submitModal" class="submit-modal">
+    <div class="submit-modal-card">
+      <div class="submit-modal-head">
+        <div>
+          <div class="submit-modal-title">Yeni ses öner</div>
+          <div class="submit-modal-sub">
+            Haritada nokta seçebilir veya yer arayabilirsin. Öneri pending gider.
+          </div>
+        </div>
+        <button id="closeSubmitModalBtn" class="submit-close-btn" type="button">✕</button>
+      </div>
 
-  m.on("click",()=>{
-    openPlayer(p);
-  });
-});
+      <form id="submitPinForm">
+        <div class="submit-form-grid">
+          <div class="form-group">
+            <label class="form-label" for="pinTitle">Başlık</label>
+            <input id="pinTitle" name="title" class="form-input" type="text" required />
+          </div>
 
-/* PLAYER */
-function openPlayer(p){
-  document.getElementById("player").classList.add("show");
+          <div class="form-group">
+            <label class="form-label" for="pinCategory">Kategori</label>
+            <input id="pinCategory" name="category" class="form-input" type="text" />
+          </div>
 
-  document.getElementById("playerImg").src = getPhoto(p);
-  document.getElementById("playerTitle").innerText = p.title;
-  document.getElementById("playerLocation").innerText = p.city;
+          <div class="form-group">
+            <label class="form-label" for="pinCity">Şehir</label>
+            <input id="pinCity" name="city" class="form-input" type="text" required />
+          </div>
 
-  let html="";
+          <div class="form-group">
+            <label class="form-label" for="pinCountry">Ülke</label>
+            <input id="pinCountry" name="country" class="form-input" type="text" required />
+          </div>
 
-  if(p.youtube){
-    html += `<a href="${p.youtube}" target="_blank">YouTube</a>`;
-  }
+          <div class="form-group">
+            <label class="form-label" for="pinLat">Latitude</label>
+            <input id="pinLat" name="lat" class="form-input" type="number" step="any" required />
+          </div>
 
-  document.getElementById("links").innerHTML = html;
-}
+          <div class="form-group">
+            <label class="form-label" for="pinLng">Longitude</label>
+            <input id="pinLng" name="lng" class="form-input" type="number" step="any" required />
+          </div>
 
-/* RANDOM */
-document.getElementById("randomBtn").onclick=()=>{
-  const p = pins[Math.floor(Math.random()*pins.length)];
-  openPlayer(p);
-  map.flyTo([p.lat,p.lng],13);
-};
+          <div class="form-group">
+            <label class="form-label" for="pinEnvironment">Atmosfer</label>
+            <select id="pinEnvironment" name="environment" class="form-select">
+              <option value="deniz">Deniz</option>
+              <option value="gol">Göl</option>
+              <option value="nehir">Nehir</option>
+              <option value="sahil">Sahil</option>
+              <option value="orman">Orman</option>
+              <option value="kirsal">Kırsal</option>
+              <option value="sehir">Şehir</option>
+              <option value="liman">Liman</option>
+              <option value="pazar">Pazar</option>
+              <option value="muze">Müze</option>
+              <option value="tarih">Tarih</option>
+              <option value="tapinak">Tapınak</option>
+              <option value="dag">Dağ</option>
+              <option value="magara">Mağara</option>
+              <option value="col">Çöl</option>
+            </select>
+          </div>
 
-</script>
+          <div class="form-group">
+            <label class="form-label" for="pinVibe">Vibe</label>
+            <input id="pinVibe" name="vibe" class="form-input" type="text" />
+          </div>
 
+          <div class="form-group">
+            <label class="form-label" for="pinSourceType">Kaynak tipi</label>
+            <select id="pinSourceType" name="source_type" class="form-select">
+              <option value="youtube">YouTube</option>
+              <option value="soundcloud">SoundCloud</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="pinEmbedUrl">Link</label>
+            <input id="pinEmbedUrl" name="embed_url" class="form-input" type="url" required />
+            <div class="form-help">YouTube veya SoundCloud linki gir.</div>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="pinDescription">Açıklama</label>
+            <textarea id="pinDescription" name="description" class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="map-picker-box">
+          <div class="section-title">Haritada konum seç</div>
+
+          <div class="map-picker-row">
+            <input id="pickerSearchInput" class="map-search-input" type="text" placeholder="İzmir Kordon, Mardin, Kapadokya..." />
+            <button id="pickerSearchBtn" type="button" class="map-search-btn primary">Ara</button>
+            <button id="useMapCenterBtn" type="button" class="map-search-btn secondary">Merkezi kullan</button>
+          </div>
+
+          <div id="pickerMap"></div>
+          <div class="coords-note">Mini haritada noktaya tıkla, lat/lng otomatik dolsun.</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="form-btn primary">Öneriyi gönder</button>
+          <button type="button" id="cancelSubmitBtn" class="form-btn secondary">Vazgeç</button>
+        </div>
+
+        <div id="submitFormStatus" class="form-status"></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://bfwugfrerjprlbbxgacj.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vQA_C-e7I5QjCNLwp6pT5Q_Pz_vhGBe";
+
+    const DEMO_PINS = [
+      {
+        id: 1,
+        title: "Yoros Kalesi",
+        city: "İstanbul",
+        country: "Turkey",
+        lat: 41.18,
+        lng: 29.09,
+        category: "Kültür",
+        environment: "muze",
+        vibe: "mistik",
+        source_type: "youtube",
+        embed_url: "https://www.youtube.com/watch?v=gwFg8AlN9zk",
+        description: "Boğaza bakan tarihi atmosfer."
+      },
+      {
+        id: 2,
+        title: "Foça Sahili",
+        city: "İzmir",
+        country: "Turkey",
+        lat: 38.67,
+        lng: 26.75,
+        category: "Doğa",
+        environment: "sahil",
+        vibe: "sakin",
+        source_type: "youtube",
+        embed_url: "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+        description: "Deniz ve rüzgar hissi."
+      }
+    ];
+
+    const MOODS = [
+      { key: "tum", label: "✨ Hepsi", matcher: () => true },
+      { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin","huzurlu"].includes(normalize(pin.vibe)) || ["deniz","sahil","gol"].includes(canonicalEnvironment(pin.environment)) },
+      { key: "derin", label: "🌲 Derin", matcher: pin => ["derin","mistik"].includes(normalize(pin.vibe)) || ["orman","muze","tapinak"].includes(canonicalEnvironment(pin.environment)) },
+      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir","liman","pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "sehir" }
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const discoveryListEl = document.getElementById("discoveryList");
+    const discoverySubEl = document.getElementById("discoverySub");
+    const toggleDiscoveryBtn = document.getElementById("toggleDiscoveryBtn");
+    const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
+    const resultCountEl = document.getElementById("resultCount");
+    const errorBox = document.getElementById("errorBox");
+
+    const moodsEl = document.getElementById("moods");
+    const categoriesEl = document.getElementById("categories");
+    const environmentsEl = document.getElementById("environments");
+    const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+    const filtersBody = document.getElementById("filtersBody");
+    const toggleFiltersIcon = document.getElementById("toggleFiltersIcon");
+
+    const randomJourneyBtn = document.getElementById("randomJourneyBtn");
+
+    const floatingPlayerEl = document.getElementById("floatingPlayer");
+    const playerTitleEl = document.getElementById("playerTitle");
+    const playerSubEl = document.getElementById("playerSub");
+    const playerEmbedAreaEl = document.getElementById("playerEmbedArea");
+    const playerMetaRowEl = document.getElementById("playerMetaRow");
+    const playerCloseBtn = document.getElementById("playerCloseBtn");
+
+    const submitModal = document.getElementById("submitModal");
+    const openSubmitModalBtn = document.getElementById("openSubmitModalBtn");
+    const closeSubmitModalBtn = document.getElementById("closeSubmitModalBtn");
+    const cancelSubmitBtn = document.getElementById("cancelSubmitBtn");
+    const submitPinForm = document.getElementById("submitPinForm");
+    const submitFormStatus = document.getElementById("submitFormStatus");
+
+    const pinLatInput = document.getElementById("pinLat");
+    const pinLngInput = document.getElementById("pinLng");
+    const pickerSearchInput = document.getElementById("pickerSearchInput");
+    const pickerSearchBtn = document.getElementById("pickerSearchBtn");
+    const useMapCenterBtn = document.getElementById("useMapCenterBtn");
+
+    let map = null;
+    let pickerMap = null;
+    let pickerMarker = null;
+    let supabaseClient = null;
+
+    let allPins = [];
+    let visiblePins = [];
+    let markers = [];
+    let discoveryExpanded = false;
+
+    let activeMood = "tum";
+    let activeCategory = "Tümü";
+    let activeEnvironment = "Tümü";
+
+    function normalize(value) {
+      return (value || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/ı/g, "i")
+        .replace(/İ/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u");
+    }
+
+    function cleanUrl(value) {
+      const raw = (value || "").toString().trim();
+      if (!raw) return "";
+      if (raw.startsWith("//")) return "https:" + raw;
+      if (raw.startsWith("www.")) return "https://" + raw;
+      return raw;
+    }
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+    }
+
+    function hideError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    function showFormStatus(message, type = "success") {
+      submitFormStatus.className = `form-status show ${type}`;
+      submitFormStatus.textContent = message;
+    }
+
+    function clearFormStatus() {
+      submitFormStatus.className = "form-status";
+      submitFormStatus.textContent = "";
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function canonicalEnvironment(environment) {
+      const key = normalize(environment);
+      const aliases = {
+        deniz: "deniz", sea: "deniz", ocean: "deniz",
+        gol: "gol", lake: "gol",
+        nehir: "nehir", river: "nehir",
+        sahil: "sahil", coast: "sahil",
+        orman: "orman", forest: "orman",
+        kirsal: "kirsal", rural: "kirsal",
+        sehir: "sehir", city: "sehir", urban: "sehir",
+        liman: "liman", port: "liman",
+        pazar: "pazar", market: "pazar",
+        muze: "muze", museum: "muze",
+        tarih: "tarih", history: "tarih",
+        tapinak: "tapinak", temple: "tapinak",
+        dag: "dag", mountain: "dag",
+        magara: "magara", cave: "magara",
+        col: "col", desert: "col"
+      };
+      return aliases[key] || key;
+    }
+
+    function getEnvironmentStyle(environment) {
+      const key = canonicalEnvironment(environment);
+      const map = {
+        deniz: { symbol: "🌊", label: "Deniz" },
+        gol: { symbol: "💧", label: "Göl" },
+        nehir: { symbol: "💦", label: "Nehir" },
+        sahil: { symbol: "🐚", label: "Sahil" },
+        orman: { symbol: "🌲", label: "Orman" },
+        kirsal: { symbol: "🌾", label: "Kırsal" },
+        sehir: { symbol: "🏙️", label: "Şehir" },
+        liman: { symbol: "⚓", label: "Liman" },
+        pazar: { symbol: "🧺", label: "Pazar" },
+        muze: { symbol: "🏛️", label: "Müze" },
+        tarih: { symbol: "🕰️", label: "Tarih" },
+        tapinak: { symbol: "🕌", label: "Tapınak" },
+        dag: { symbol: "⛰️", label: "Dağ" },
+        magara: { symbol: "🪨", label: "Mağara" },
+        col: { symbol: "🏜️", label: "Çöl" }
+      };
+      return map[key] || { symbol: "🎧", label: "Kayıt" };
+    }
+
+    function createMainBaseLayers() {
+      const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
+      });
+
+      const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
+      });
+
+      const classic = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 20
+      });
+
+      return { Light: light, Dark: dark, Classic: classic };
+    }
+
+    function initMap() {
+      map = L.map("map", {
+        zoomControl: true,
+        maxZoom: 20
+      }).setView([39.0, 35.0], 6);
+
+      const layers = createMainBaseLayers();
+      layers.Light.addTo(map);
+
+      L.control.layers(layers, null, {
+        collapsed: false,
+        position: "topright"
+      }).addTo(map);
+
+      setTimeout(() => map.invalidateSize(), 300);
+    }
+
+    function makePinIcon() {
+      return L.divIcon({
+        className: "",
+        html: `<div class="ey-pin"></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [15, 32],
+        popupAnchor: [0, -28]
+      });
+    }
+
+    function getCategories(pins) {
+      const set = new Set(["Tümü"]);
+      pins.forEach(pin => { if (pin.category) set.add(pin.category); });
+      return [...set];
+    }
+
+    function getEnvironmentButtons(pins) {
+      const seen = new Set();
+      const items = [{ key: "Tümü", label: "Tümü", symbol: "✨" }];
+      pins.forEach(pin => {
+        const envKey = canonicalEnvironment(pin.environment);
+        if (!envKey || seen.has(envKey)) return;
+        seen.add(envKey);
+        const env = getEnvironmentStyle(envKey);
+        items.push({ key: envKey, label: env.label, symbol: env.symbol });
+      });
+      return items;
+    }
+
+    function renderMoods() {
+      moodsEl.innerHTML = "";
+      MOODS.forEach(mood => {
+        const btn = document.createElement("button");
+        btn.className = "mood-btn" + (mood.key === activeMood ? " active" : "");
+        btn.textContent = mood.label;
+        btn.addEventListener("click", () => {
+          activeMood = mood.key;
+          discoveryExpanded = false;
+          renderMoods();
+          applyFilters();
+        });
+        moodsEl.appendChild(btn);
+      });
+    }
+
+    function renderCategories() {
+      categoriesEl.innerHTML = "";
+      getCategories(allPins).forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "cat-btn" + (cat === activeCategory ? " active" : "");
+        btn.textContent = cat;
+        btn.addEventListener("click", () => {
+          activeCategory = cat;
+          renderCategories();
+          applyFilters();
+        });
+        categoriesEl.appendChild(btn);
+      });
+    }
+
+    function renderEnvironments() {
+      environmentsEl.innerHTML = "";
+      getEnvironmentButtons(allPins).forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "env-btn" + (item.key === activeEnvironment ? " active" : "");
+        btn.textContent = `${item.symbol} ${item.label}`;
+        btn.addEventListener("click", () => {
+          activeEnvironment = item.key;
+          renderEnvironments();
+          applyFilters();
+        });
+        environmentsEl.appendChild(btn);
+      });
+    }
+
+    function buildSearchText(pin) {
+      return normalize([
+        pin.title,
+        pin.city,
+        pin.country,
+        pin.category,
+        pin.environment,
+        pin.description,
+        pin.vibe
+      ].filter(Boolean).join(" "));
+    }
+
+    function filterPins() {
+      const q = normalize(searchInput.value);
+      const moodObj = MOODS.find(m => m.key === activeMood);
+      const moodMatcher = moodObj ? moodObj.matcher : (() => true);
+
+      return allPins.filter(pin => {
+        const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+        const envKey = canonicalEnvironment(pin.environment);
+        const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
+        const searchOk = !q || buildSearchText(pin).includes(q);
+        return categoryOk && environmentOk && moodMatcher(pin) && searchOk;
+      });
+    }
+
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+
+    function buildPlayableEmbed(pin) {
+      const sourceType = normalize(pin.source_type);
+      const raw = cleanUrl(pin.embed_url || "");
+      if (!raw) return "";
+
+      if (sourceType === "youtube") {
+        if (raw.includes("youtube.com/embed/")) {
+          return raw + (raw.includes("?") ? "&" : "?") + "autoplay=1&rel=0";
+        }
+        if (raw.includes("youtu.be/")) {
+          const id = raw.split("youtu.be/")[1].split("?")[0];
+          return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+        }
+        if (raw.includes("watch?v=")) {
+          const id = raw.split("watch?v=")[1].split("&")[0];
+          return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+        }
+        return "";
+      }
+
+      if (sourceType === "soundcloud") {
+        return raw.includes("w.soundcloud.com")
+          ? raw
+          : `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&auto_play=true&visual=true`;
+      }
+
+      return "";
+    }
+
+    function openFloatingPlayer(pin) {
+      const env = getEnvironmentStyle(pin.environment || "");
+      const embed = buildPlayableEmbed(pin);
+
+      playerTitleEl.textContent = pin.title || "İsimsiz durak";
+      playerSubEl.textContent = `${pin.city || ""}${pin.country ? ", " + pin.country : ""}`.replace(/^,\s*/, "");
+
+      playerMetaRowEl.innerHTML = `
+        ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
+        ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
+        ${pin.vibe ? `<div class="pill">${pin.vibe}</div>` : ""}
+      `;
+
+      if (embed) {
+        playerEmbedAreaEl.className = "player-embed-wrap";
+        playerEmbedAreaEl.innerHTML = `
+          <iframe
+            src="${embed}"
+            allow="autoplay; encrypted-media; fullscreen"
+            loading="lazy"
+          ></iframe>
+        `;
+      } else {
+        playerEmbedAreaEl.className = "player-placeholder";
+        playerEmbedAreaEl.innerHTML = "Bu kayıt için oynatıcı linki çözümlenemedi.";
+      }
+
+      floatingPlayerEl.classList.add("show");
+    }
+
+    function closeFloatingPlayer() {
+      floatingPlayerEl.classList.remove("show");
+    }
+
+    function renderMarkers() {
+      clearMarkers();
+
+      visiblePins.forEach(pin => {
+        if (pin.lat == null || pin.lng == null) return;
+
+        const marker = L.marker([Number(pin.lat), Number(pin.lng)], {
+          icon: makePinIcon()
+        }).addTo(map);
+
+        marker.bindPopup(`
+          <div style="min-width:200px;">
+            <div style="font-weight:700;margin-bottom:6px;">${pin.title || "Kayıt"}</div>
+            <div style="font-size:12px;color:#94a3b8;">
+              ${pin.city || ""}${pin.country ? ", " + pin.country : ""}
+            </div>
+          </div>
+        `);
+
+        marker.on("click", () => {
+          openFloatingPlayer(pin);
+          map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
+            animate: true,
+            duration: 1.6
+          });
+        });
+
+        markers.push(marker);
+      });
+
+      if (visiblePins.length) {
+        const bounds = L.latLngBounds(
+          visiblePins
+            .filter(pin => pin.lat != null && pin.lng != null)
+            .map(pin => [Number(pin.lat), Number(pin.lng)])
+        );
+
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [40, 40] });
+        }
+      }
+
+      resultCountEl.textContent = `${visiblePins.length} lokasyon`;
+    }
+
+    function renderDiscovery() {
+      const moodObj = MOODS.find(m => m.key === activeMood);
+      discoverySubEl.textContent = moodObj && moodObj.key !== "tum"
+        ? `${moodObj.label} ruh haline uygun seçkiler burada.`
+        : "Bugün için seçilen ses durakları.";
+
+      const pickedAll = shuffleArray(visiblePins).slice(0, 10);
+      if (!pickedAll.length) {
+        discoveryListEl.innerHTML = `<div class="discover-card">Kayıt bulunamadı.</div>`;
+        toggleDiscoveryBtn.style.display = "none";
+        return;
+      }
+
+      const list = discoveryExpanded ? pickedAll : pickedAll.slice(0, 5);
+
+      discoveryListEl.innerHTML = list.map(pin => {
+        const env = getEnvironmentStyle(pin.environment || "");
+        return `
+          <div class="discover-card" data-id="${pin.id}">
+            <div class="discover-title">${pin.title || "İsimsiz durak"}</div>
+            <div class="discover-meta">${pin.city || ""}${pin.country ? ", " + pin.country : ""}</div>
+            <div class="discover-pills">
+              ${pin.category ? `<div class="pill">${pin.category}</div>` : ""}
+              ${pin.environment ? `<div class="pill">${env.symbol} ${env.label}</div>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      toggleDiscoveryBtn.style.display = pickedAll.length > 5 ? "block" : "none";
+      toggleDiscoveryBtn.textContent = discoveryExpanded ? "Daha az göster" : "Daha fazlasını göster";
+
+      discoveryListEl.querySelectorAll("[data-id]").forEach(card => {
+        card.addEventListener("click", () => {
+          const pin = visiblePins.find(p => String(p.id) === String(card.dataset.id));
+          if (!pin) return;
+          openFloatingPlayer(pin);
+          map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
+            animate: true,
+            duration: 1.6
+          });
+        });
+      });
+    }
+
+    function applyFilters() {
+      visiblePins = filterPins();
+      renderMarkers();
+      renderDiscovery();
+    }
+
+    function randomJourney() {
+      if (!visiblePins.length) return;
+      const pin = visiblePins[Math.floor(Math.random() * visiblePins.length)];
+      openFloatingPlayer(pin);
+      map.flyTo([Number(pin.lat), Number(pin.lng)], 13, {
+        animate: true,
+        duration: 1.8
+      });
+    }
+
+    async function loadPins() {
+      allPins = DEMO_PINS.map(pin => ({
+        ...pin,
+        lat: Number(pin.lat),
+        lng: Number(pin.lng)
+      }));
+
+      applyFilters();
+
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const { data, error } = await supabaseClient
+          .from("soundmap_pins")
+          .select("*")
+          .eq("status", "approved")
+          .order("title", { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length) {
+          allPins = data.map(pin => ({
+            ...pin,
+            lat: pin.lat != null ? Number(pin.lat) : null,
+            lng: pin.lng != null ? Number(pin.lng) : null
+          }));
+          hideError();
+          renderCategories();
+          renderEnvironments();
+          applyFilters();
+        }
+      } catch (err) {
+        showError("Supabase verisi alınamadı. Demo verilerle devam ediliyor.\n\n" + (err?.message || err));
+      }
+    }
+
+    function initPickerMap() {
+      if (pickerMap) {
+        setTimeout(() => pickerMap.invalidateSize(), 150);
+        return;
+      }
+
+      pickerMap = L.map("pickerMap", { zoomControl: true }).setView([39.0, 35.0], 5);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 20
+      }).addTo(pickerMap);
+
+      pickerMap.on("click", (e) => {
+        const { lat, lng } = e.latlng;
+        setPickerCoords(lat, lng);
+      });
+
+      setTimeout(() => pickerMap.invalidateSize(), 200);
+    }
+
+    function setPickerCoords(lat, lng) {
+      pinLatInput.value = Number(lat).toFixed(6);
+      pinLngInput.value = Number(lng).toFixed(6);
+
+      if (!pickerMarker) {
+        pickerMarker = L.marker([lat, lng]).addTo(pickerMap);
+      } else {
+        pickerMarker.setLatLng([lat, lng]);
+      }
+    }
+
+    async function searchLocationOnPicker() {
+      const query = (pickerSearchInput.value || "").trim();
+      if (!query) {
+        showFormStatus("Bir yer adı yaz.", "error");
+        return;
+      }
+
+      try {
+        showFormStatus("Konum aranıyor...", "success");
+
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}&limit=1`, {
+          headers: { "Accept-Language": "tr,en;q=0.8" }
+        });
+
+        if (!res.ok) throw new Error("Konum servisi cevap vermedi.");
+
+        const data = await res.json();
+        if (!data || !data.length) {
+          showFormStatus("Konum bulunamadı.", "error");
+          return;
+        }
+
+        const hit = data[0];
+        const lat = Number(hit.lat);
+        const lng = Number(hit.lon);
+
+        pickerMap.flyTo([lat, lng], 15, { animate: true, duration: 1.8 });
+        setPickerCoords(lat, lng);
+        showFormStatus("Konum bulundu.", "success");
+      } catch (err) {
+        showFormStatus("Konum aranamadı.\n\n" + (err?.message || err), "error");
+      }
+    }
+
+    function usePickerMapCenter() {
+      if (!pickerMap) return;
+      const center = pickerMap.getCenter();
+      setPickerCoords(center.lat, center.lng);
+      showFormStatus("Harita merkezi koordinat olarak alındı.", "success");
+    }
+
+    function openSubmitModal() {
+      clearFormStatus();
+      submitModal.classList.add("show");
+      initPickerMap();
+      setTimeout(() => pickerMap.invalidateSize(), 180);
+    }
+
+    function closeSubmitModal() {
+      submitModal.classList.remove("show");
+      clearFormStatus();
+    }
+
+    async function submitNewPin(event) {
+      event.preventDefault();
+      clearFormStatus();
+
+      const formData = new FormData(submitPinForm);
+      const payload = {
+        title: (formData.get("title") || "").toString().trim(),
+        category: (formData.get("category") || "").toString().trim(),
+        city: (formData.get("city") || "").toString().trim(),
+        country: (formData.get("country") || "").toString().trim(),
+        lat: Number(formData.get("lat")),
+        lng: Number(formData.get("lng")),
+        environment: (formData.get("environment") || "").toString().trim(),
+        vibe: (formData.get("vibe") || "").toString().trim(),
+        source_type: (formData.get("source_type") || "").toString().trim(),
+        embed_url: cleanUrl((formData.get("embed_url") || "").toString().trim()),
+        description: (formData.get("description") || "").toString().trim(),
+        status: "pending",
+        submitted_at: new Date().toISOString()
+      };
+
+      if (!payload.title || !payload.city || !payload.country || !payload.embed_url || Number.isNaN(payload.lat) || Number.isNaN(payload.lng)) {
+        showFormStatus("Başlık, şehir, ülke, koordinat ve link gerekli.", "error");
+        return;
+      }
+
+      try {
+        if (!supabaseClient) {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        const { error } = await supabaseClient
+          .from("soundmap_pins")
+          .insert([payload]);
+
+        if (error) throw error;
+
+        showFormStatus("Önerin alındı. İnceleme sonrası yayına alınacaktır.", "success");
+        submitPinForm.reset();
+
+        if (pickerMarker) {
+          pickerMap.removeLayer(pickerMarker);
+          pickerMarker = null;
+        }
+
+        setTimeout(closeSubmitModal, 900);
+      } catch (err) {
+        showFormStatus("Kayıt gönderilemedi.\n\n" + (err?.message || err), "error");
+      }
+    }
+
+    toggleFiltersBtn.addEventListener("click", () => {
+      filtersBody.classList.toggle("show");
+      toggleFiltersIcon.textContent = filtersBody.classList.contains("show") ? "−" : "+";
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+    refreshDiscoveryBtn.addEventListener("click", renderDiscovery);
+    toggleDiscoveryBtn.addEventListener("click", () => {
+      discoveryExpanded = !discoveryExpanded;
+      renderDiscovery();
+    });
+    randomJourneyBtn.addEventListener("click", randomJourney);
+    playerCloseBtn.addEventListener("click", closeFloatingPlayer);
+
+    openSubmitModalBtn.addEventListener("click", openSubmitModal);
+    closeSubmitModalBtn.addEventListener("click", closeSubmitModal);
+    cancelSubmitBtn.addEventListener("click", closeSubmitModal);
+    submitPinForm.addEventListener("submit", submitNewPin);
+    pickerSearchBtn.addEventListener("click", searchLocationOnPicker);
+    useMapCenterBtn.addEventListener("click", usePickerMapCenter);
+
+    pickerSearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchLocationOnPicker();
+      }
+    });
+
+    submitModal.addEventListener("click", (e) => {
+      if (e.target === submitModal) closeSubmitModal();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && submitModal.classList.contains("show")) {
+        closeSubmitModal();
+      }
+    });
+
+    window.addEventListener("load", async () => {
+      try {
+        initMap();
+        renderMoods();
+        await loadPins();
+        renderCategories();
+        renderEnvironments();
+        applyFilters();
+      } catch (err) {
+        showError("Sayfa başlatılırken hata oldu:\n\n" + (err?.message || err));
+      }
+    });
+  </script>
 </body>
 </html>
