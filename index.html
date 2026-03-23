@@ -2179,60 +2179,70 @@ if (isActive) {
       travelNoticeEl.classList.remove("show");
     }
 
-    function cinematicFlyTo(lat, lng) {
-      if (!map) return;
+   function cinematicFlyTo(lat, lng) {
+  const latNum = Number(lat);
+  const lngNum = Number(lng);
 
-      showTravelNotice("Yeni durağa gidiliyor…");
+  if (
+    !Number.isFinite(latNum) ||
+    !Number.isFinite(lngNum) ||
+    latNum < -90 || latNum > 90 ||
+    lngNum < -180 || lngNum > 180 ||
+    (Math.abs(latNum) < 0.0001 && Math.abs(lngNum) < 0.0001)
+  ) {
+    return;
+  }
 
-      const currentCenter = map.getCenter();
-      const currentZoom = map.getZoom();
-      const target = L.latLng(Number(lat), Number(lng));
-      const distanceKm = currentCenter.distanceTo(target) / 1000;
+  showTravelNotice("Yeni durağa gidiliyor…");
 
-      let zoomOutLevel = Math.max(6.2, currentZoom - 1.2);
-      let firstDuration = 1.2;
-      let secondDuration = 2.6;
-      let delay = 1100;
-      const finalZoom = 15;
+  const currentCenter = map.getCenter();
+  const currentZoom = map.getZoom();
+  const target = L.latLng(latNum, lngNum);
+  const distanceKm = currentCenter.distanceTo(target) / 1000;
 
-      if (distanceKm > 150) {
-        zoomOutLevel = Math.max(5.9, currentZoom - 1.5);
-        firstDuration = 1.5;
-        secondDuration = 3.0;
-        delay = 1300;
-      }
+  let zoomOutLevel = Math.max(6.2, currentZoom - 1.2);
+  let firstDuration = 1.2;
+  let secondDuration = 2.6;
+  let delay = 1100;
+  const finalZoom = 15;
 
-      if (distanceKm > 400) {
-        zoomOutLevel = Math.max(5.6, currentZoom - 1.8);
-        firstDuration = 1.8;
-        secondDuration = 3.5;
-        delay = 1500;
-      }
+  if (distanceKm > 150) {
+    zoomOutLevel = Math.max(5.9, currentZoom - 1.5);
+    firstDuration = 1.5;
+    secondDuration = 3.0;
+    delay = 1300;
+  }
 
-      if (distanceKm > 800) {
-        zoomOutLevel = Math.max(5.3, currentZoom - 2.0);
-        firstDuration = 2.0;
-        secondDuration = 4.0;
-        delay = 1700;
-      }
+  if (distanceKm > 400) {
+    zoomOutLevel = Math.max(5.6, currentZoom - 1.8);
+    firstDuration = 1.8;
+    secondDuration = 3.5;
+    delay = 1500;
+  }
 
-      map.flyTo(currentCenter, zoomOutLevel, {
-        animate: true,
-        duration: firstDuration
-      });
+  if (distanceKm > 800) {
+    zoomOutLevel = Math.max(5.3, currentZoom - 2.0);
+    firstDuration = 2.0;
+    secondDuration = 4.0;
+    delay = 1700;
+  }
 
-      setTimeout(() => {
-        map.flyTo([Number(lat), Number(lng)], finalZoom, {
-          animate: true,
-          duration: secondDuration
-        });
-      }, delay);
+  map.flyTo(currentCenter, zoomOutLevel, {
+    animate: true,
+    duration: firstDuration
+  });
 
-      setTimeout(() => {
-        hideTravelNotice();
-      }, delay + (secondDuration * 1000) + 300);
-    }
+  setTimeout(() => {
+    map.flyTo([latNum, lngNum], finalZoom, {
+      animate: true,
+      duration: secondDuration
+    });
+  }, delay);
 
+  setTimeout(() => {
+    hideTravelNotice();
+  }, delay + (secondDuration * 1000) + 300);
+}
     function zoomToStreetLevel(lat, lng) {
       if (!map) return;
 
@@ -2292,32 +2302,45 @@ if (isActive) {
     }
 
    function goToPin(pin, cinematic = true) {
-  if (!pin || !isValidPin(pin) || !isSafeCoordinate(pin.lat, pin.lng)) {
-    alert("Bu lokasyonun koordinatları hatalı görünüyor.");
+  if (!pin) {
+    alert("Kayıt bulunamadı.");
     return;
   }
 
-      activePinId = pin.id;
-      renderMarkers();
-      openFloatingPlayer(pin, true);
-      triggerPinLife(pin.id);
-      focusMarkerAndPopup(pin.id);
+  const lat = Number(String(pin.lat ?? "").replace(",", "."));
+  const lng = Number(String(pin.lng ?? "").replace(",", "."));
 
-      setTimeout(() => {
-        renderMarkers();
-        focusMarkerAndPopup(pin.id);
-      }, 180);
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng) ||
+    lat < -90 || lat > 90 ||
+    lng < -180 || lng > 180 ||
+    (Math.abs(lat) < 0.0001 && Math.abs(lng) < 0.0001)
+  ) {
+    alert(`"${pin.title || "Bu kayıt"}" için koordinat hatalı görünüyor.`);
+    return;
+  }
 
-      if (cinematic) {
-        cinematicFlyTo(pin.lat, pin.lng);
-      } else {
-        map.flyTo([Number(pin.lat), Number(pin.lng)], 17, {
-          animate: true,
-          duration: 2.2
-        });
-      }
-    }
+  activePinId = pin.id;
+  renderMarkers();
+  openFloatingPlayer({ ...pin, lat, lng }, true);
+  triggerPinLife(pin.id);
+  focusMarkerAndPopup(pin.id);
 
+  setTimeout(() => {
+    renderMarkers();
+    focusMarkerAndPopup(pin.id);
+  }, 180);
+
+  if (cinematic) {
+    cinematicFlyTo(lat, lng);
+  } else {
+    map.flyTo([lat, lng], 17, {
+      animate: true,
+      duration: 2.2
+    });
+  }
+}
     function smartRandomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(isValidPin);
@@ -2378,18 +2401,32 @@ if (isActive) {
         toggleDiscoveryBtn.style.display = "none";
       }
 
-     discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
+    discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
   el.addEventListener("click", () => {
     const id = String(el.getAttribute("data-discover-id"));
     const pin = allPins.find(p => String(p.id) === id);
 
-    if (!pin || !isValidPin(pin) || !isSafeCoordinate(pin.lat, pin.lng)) {
-      alert("Bu kayıt için geçerli konum bilgisi bulunamadı.");
+    if (!pin) {
+      alert("Kayıt bulunamadı.");
+      return;
+    }
+
+    const lat = Number(String(pin.lat ?? "").replace(",", "."));
+    const lng = Number(String(pin.lng ?? "").replace(",", "."));
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 || lat > 90 ||
+      lng < -180 || lng > 180 ||
+      (Math.abs(lat) < 0.0001 && Math.abs(lng) < 0.0001)
+    ) {
+      alert(`"${pin.title || "Bu kayıt"}" için koordinat hatalı görünüyor.`);
       return;
     }
 
     triggerPinLife(pin.id);
-    goToPin(pin, true);
+    goToPin({ ...pin, lat, lng }, true);
   });
 });
 
