@@ -1432,6 +1432,7 @@
     let lastRandomCity = "";
     let searchDebounceTimer = null;
     let hasInitiallyFitted = false;
+    let markersHiddenForTravel = false;
     let hoverTooltip = null;
     let currentDiscoveryCountry = "";
 
@@ -2074,6 +2075,16 @@
       travelNoticeEl.classList.remove("show");
     }
 
+    function beginMarkerTransition() {
+      markersHiddenForTravel = true;
+      clearMarkers();
+    }
+
+    function endMarkerTransition() {
+      markersHiddenForTravel = false;
+      renderMarkers();
+    }
+
     function cinematicFlyTo(lat, lng) {
       const latNum = Number(lat);
       const lngNum = Number(lng);
@@ -2081,6 +2092,7 @@
       if (!isSafeCoordinate(latNum, lngNum)) return;
 
       showTravelNotice("Yeni durağa gidiliyor…");
+      beginMarkerTransition();
 
       const currentCenter = map.getCenter();
       const currentZoom = map.getZoom();
@@ -2126,20 +2138,28 @@
         });
       }, delay);
 
-      setTimeout(() => hideTravelNotice(), delay + (secondDuration * 1000) + 300);
+      const totalDuration = delay + (secondDuration * 1000) + 120;
+      setTimeout(() => {
+        hideTravelNotice();
+        endMarkerTransition();
+      }, totalDuration);
     }
 
     function zoomToStreetLevel(lat, lng) {
       if (!map || !isSafeCoordinate(lat, lng)) return;
 
       showTravelNotice("Sokak seviyesine iniliyor…");
+      beginMarkerTransition();
 
       map.flyTo([Number(lat), Number(lng)], 18, {
         animate: true,
         duration: 2.4
       });
 
-      setTimeout(() => hideTravelNotice(), 2600);
+      map.once("moveend", () => {
+        hideTravelNotice();
+        endMarkerTransition();
+      });
     }
 
     function clearMarkers() {
@@ -2194,12 +2214,15 @@
       if (currentZoom < 7) {
         const countryBounds = getCountryBoundsByName(pin.country);
 
+        beginMarkerTransition();
+
         if (countryBounds) {
           updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
           map.fitBounds(countryBounds, {
             padding: [40, 40],
             maxZoom: 7
           });
+          map.once("moveend", () => endMarkerTransition());
           resultCountEl.textContent = `🌍 ${pin.country || "Bölge"} görünümüne yaklaşıldı`;
           triggerPinLife(pin.id);
           return;
@@ -2209,6 +2232,7 @@
           animate: true,
           duration: 1.4
         });
+        map.once("moveend", () => endMarkerTransition());
         resultCountEl.textContent = `📍 ${pin.city || pin.title || "Bölge"} görünümüne yaklaşıldı`;
         triggerPinLife(pin.id);
         return;
@@ -2216,10 +2240,12 @@
 
       if (currentZoom >= 7 && currentZoom < 10) {
         updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
+        beginMarkerTransition();
         map.flyTo([lat, lng], 10, {
           animate: true,
           duration: 1.2
         });
+        map.once("moveend", () => endMarkerTransition());
         resultCountEl.textContent = `📌 ${pin.city || pin.title || "Kayıt"} detay görünümüne yaklaşıldı`;
         triggerPinLife(pin.id);
         return;
@@ -2231,10 +2257,12 @@
       openFloatingPlayer({ ...pin, lat, lng }, true);
       triggerPinLife(pin.id);
 
+      beginMarkerTransition();
       map.flyTo([lat, lng], 17, {
         animate: true,
         duration: 2.0
       });
+      map.once("moveend", () => endMarkerTransition());
     }
 
     function goToPin(pin, cinematic = true) {
@@ -2260,10 +2288,12 @@
       if (cinematic) {
         cinematicFlyTo(lat, lng);
       } else {
+        beginMarkerTransition();
         map.flyTo([lat, lng], 17, {
           animate: true,
           duration: 2.2
         });
+        map.once("moveend", () => endMarkerTransition());
       }
     }
 
@@ -2348,6 +2378,10 @@
 
     function renderMarkers() {
       clearMarkers();
+
+      if (markersHiddenForTravel) {
+        return;
+      }
 
       const validVisiblePins = visiblePins.filter(isValidPin);
 
