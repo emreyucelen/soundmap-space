@@ -1565,21 +1565,102 @@
     let mainBaseLayers = {};
 
     function normalize(value) {
-      return (value || "")
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .trim()
-        .replace(/ı/g, "i")
-        .replace(/İ/g, "i")
-        .replace(/ç/g, "c")
-        .replace(/ğ/g, "g")
-        .replace(/ö/g, "o")
-        .replace(/ş/g, "s")
-        .replace(/ü/g, "u");
-    }
+  return (value || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/İ/g, "i")
+    .replace(/I/g, "i")
+    .replace(/ı/g, "i")
+    .replace(/ç/g, "c")
+    .replace(/Ç/g, "c")
+    .replace(/ğ/g, "g")
+    .replace(/Ğ/g, "g")
+    .replace(/ö/g, "o")
+    .replace(/Ö/g, "o")
+    .replace(/ş/g, "s")
+    .replace(/Ş/g, "s")
+    .replace(/ü/g, "u")
+    .replace(/Ü/g, "u")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+}
+function safeNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
 
+function isValidPin(pin) {
+  return safeNumber(pin.lat) !== null && safeNumber(pin.lng) !== null;
+}
+
+function tokenizeSearch(text) {
+  return normalize(text)
+    .split(" ")
+    .map(t => t.trim())
+    .filter(Boolean);
+}
+
+function buildPinSearchIndex(pin) {
+  const fields = [
+    pin.title,
+    pin.city,
+    pin.country,
+    pin.category,
+    pin.environment,
+    pin.description,
+    pin.vibe,
+    pin.source_type
+  ].filter(Boolean);
+
+  const fullText = normalize(fields.join(" "));
+  const title = normalize(pin.title || "");
+  const city = normalize(pin.city || "");
+  const country = normalize(pin.country || "");
+  const category = normalize(pin.category || "");
+  const environment = normalize(pin.environment || "");
+  const vibe = normalize(pin.vibe || "");
+
+  return {
+    fullText,
+    title,
+    city,
+    country,
+    category,
+    environment,
+    vibe
+  };
+}
+
+function scorePinMatch(pin, query) {
+  const q = normalize(query);
+  if (!q) return 1;
+
+  const tokens = tokenizeSearch(q);
+  const idx = buildPinSearchIndex(pin);
+
+  let score = 0;
+
+  for (const token of tokens) {
+    if (idx.title.startsWith(token)) score += 120;
+    else if (idx.title.includes(token)) score += 70;
+
+    if (idx.city.startsWith(token)) score += 80;
+    else if (idx.city.includes(token)) score += 45;
+
+    if (idx.country.startsWith(token)) score += 55;
+    else if (idx.country.includes(token)) score += 28;
+
+    if (idx.category.includes(token)) score += 25;
+    if (idx.environment.includes(token)) score += 22;
+    if (idx.vibe.includes(token)) score += 18;
+
+    if (idx.fullText.includes(token)) score += 10;
+  }
+
+  return score;
+}
     function cleanUrl(value) {
       const raw = (value || "").toString().trim();
       if (!raw) return "";
@@ -2505,22 +2586,34 @@
     }
 
     function preparePinRow(pin) {
-      return {
-        ...pin,
-        photo_url: cleanUrl(pin.photo_url || ""),
-        image_url: cleanUrl(pin.image_url || ""),
-        cover_url: cleanUrl(pin.cover_url || ""),
-        thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
-        shopify_url: cleanUrl(pin.shopify_url || ""),
-        embed_url: (pin.embed_url || "").toString().trim(),
-        spotify_url: cleanUrl(pin.spotify_url || ""),
-        apple_music_url: cleanUrl(pin.apple_music_url || ""),
-        buy_url: cleanUrl(pin.buy_url || ""),
-        album_url: cleanUrl(pin.album_url || ""),
-        lat: pin.lat != null ? Number(pin.lat) : null,
-        lng: pin.lng != null ? Number(pin.lng) : null
-      };
-    }
+  return {
+    ...pin,
+    id: pin.id ?? `${pin.title || "pin"}-${pin.city || "city"}-${Math.random().toString(36).slice(2, 7)}`,
+    title: (pin.title || "").toString().trim(),
+    city: (pin.city || "").toString().trim(),
+    country: (pin.country || "").toString().trim(),
+    category: (pin.category || "").toString().trim(),
+    environment: (pin.environment || "").toString().trim(),
+    vibe: (pin.vibe || "").toString().trim(),
+    source_type: (pin.source_type || "").toString().trim().toLowerCase(),
+    description: (pin.description || "").toString().trim(),
+
+    photo_url: cleanUrl(pin.photo_url || ""),
+    image_url: cleanUrl(pin.image_url || ""),
+    cover_url: cleanUrl(pin.cover_url || ""),
+    thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
+    shopify_url: cleanUrl(pin.shopify_url || ""),
+    spotify_url: cleanUrl(pin.spotify_url || ""),
+    apple_music_url: cleanUrl(pin.apple_music_url || ""),
+    buy_url: cleanUrl(pin.buy_url || ""),
+    album_url: cleanUrl(pin.album_url || ""),
+
+    embed_url: (pin.embed_url || "").toString().trim(),
+
+    lat: safeNumber(pin.lat),
+    lng: safeNumber(pin.lng)
+  };
+}
 
     async function loadPins() {
       try {
