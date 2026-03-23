@@ -1553,7 +1553,19 @@
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/\s+/g, " ");
     }
+function isSafeCoordinate(lat, lng) {
+  const latNum = Number(lat);
+  const lngNum = Number(lng);
 
+  if (!Number.isFinite(latNum) || !Number.isFinite(lngNum)) return false;
+  if (latNum < -90 || latNum > 90) return false;
+  if (lngNum < -180 || lngNum > 180) return false;
+
+  // 0,0 ve yakınındaki bozuk kayıtları ele
+  if (Math.abs(latNum) < 0.0001 && Math.abs(lngNum) < 0.0001) return false;
+
+  return true;
+}
     function cleanUrl(value) {
       const raw = (value || "").toString().trim();
       if (!raw) return "";
@@ -2279,8 +2291,11 @@ if (isActive) {
       }, 120);
     }
 
-    function goToPin(pin, cinematic = true) {
-      if (!pin || !isValidPin(pin)) return;
+   function goToPin(pin, cinematic = true) {
+  if (!pin || !isValidPin(pin) || !isSafeCoordinate(pin.lat, pin.lng)) {
+    alert("Bu lokasyonun koordinatları hatalı görünüyor.");
+    return;
+  }
 
       activePinId = pin.id;
       renderMarkers();
@@ -2324,7 +2339,9 @@ if (isActive) {
     function renderDiscovery() {
       const moodMatcher = getMoodMatcher();
       const base = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
-      const pickedAll = shuffleArray(base).filter(isValidPin).slice(0, 6);
+      const pickedAll = shuffleArray(base)
+  .filter(pin => isValidPin(pin) && isSafeCoordinate(pin.lat, pin.lng))
+  .slice(0, 6);
 
       const mood = MOODS.find(m => m.key === activeMood);
       discoverySubEl.textContent = mood && mood.key !== "tum"
@@ -2361,17 +2378,20 @@ if (isActive) {
         toggleDiscoveryBtn.style.display = "none";
       }
 
-      discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
-        el.addEventListener("click", () => {
-          const id = String(el.getAttribute("data-discover-id"));
-          const pin = allPins.find(p => String(p.id) === id);
-          if (!pin || !isValidPin(pin)) return;
+     discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
+  el.addEventListener("click", () => {
+    const id = String(el.getAttribute("data-discover-id"));
+    const pin = allPins.find(p => String(p.id) === id);
 
-          triggerPinLife(pin.id);
-          goToPin(pin, true);
-        });
-      });
+    if (!pin || !isValidPin(pin) || !isSafeCoordinate(pin.lat, pin.lng)) {
+      alert("Bu kayıt için geçerli konum bilgisi bulunamadı.");
+      return;
     }
+
+    triggerPinLife(pin.id);
+    goToPin(pin, true);
+  });
+});
 
     function renderMarkers() {
       clearMarkers();
@@ -2562,8 +2582,8 @@ if (isActive) {
 
         embed_url: (pin.embed_url || "").toString().trim(),
 
-        lat: safeNumber(pin.lat),
-        lng: safeNumber(pin.lng)
+        lat: safeNumber(String(pin.lat ?? "").replace(",", ".")),
+lng: safeNumber(String(pin.lng ?? "").replace(",", "."))
       };
     }
 
