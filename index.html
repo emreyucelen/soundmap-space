@@ -2076,14 +2076,31 @@
     }
 
     function beginMarkerTransition() {
-      markersHiddenForTravel = true;
-      clearMarkers();
-    }
+  markersHiddenForTravel = false;
 
-    function endMarkerTransition() {
-      markersHiddenForTravel = false;
-      renderMarkers();
+  markers.forEach(marker => {
+    const el = marker.getElement && marker.getElement();
+    if (el) {
+      el.style.opacity = "0.45";
+      el.style.transition = "opacity 0.25s ease";
+      el.style.pointerEvents = "none";
     }
+  });
+}
+
+function endMarkerTransition() {
+  markersHiddenForTravel = false;
+
+  markers.forEach(marker => {
+    const el = marker.getElement && marker.getElement();
+    if (el) {
+      el.style.opacity = "1";
+      el.style.pointerEvents = "";
+    }
+  });
+
+  renderMarkers();
+}
 
     function cinematicFlyTo(lat, lng) {
       const latNum = Number(lat);
@@ -2383,9 +2400,7 @@
     function renderMarkers() {
       clearMarkers();
 
-      if (markersHiddenForTravel) {
-        return;
-      }
+     
 
       const validVisiblePins = visiblePins.filter(isValidPin);
 
