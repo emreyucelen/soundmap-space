@@ -1243,7 +1243,20 @@
               YouTube linki, SoundCloud linki, direkt SoundCloud player src linki veya SoundCloud iframe kodunun tamamı olabilir.
             </div>
           </div>
+<div class="form-group">
+  <label class="form-label" for="pinSpotifyUrl">Spotify linki</label>
+  <input id="pinSpotifyUrl" name="spotify_url" class="form-input" type="text" placeholder="https://open.spotify.com/..." />
+</div>
 
+<div class="form-group">
+  <label class="form-label" for="pinAppleMusicUrl">Apple Music linki</label>
+  <input id="pinAppleMusicUrl" name="apple_music_url" class="form-input" type="text" placeholder="https://music.apple.com/..." />
+</div>
+
+<div class="form-group">
+  <label class="form-label" for="pinDeezerUrl">Deezer linki</label>
+  <input id="pinDeezerUrl" name="deezer_url" class="form-input" type="text" placeholder="https://www.deezer.com/..." />
+</div>
           <div class="form-group full">
             <label class="form-label" for="pinDescription">Açıklama</label>
             <textarea id="pinDescription" name="description" class="form-textarea" placeholder="Bu ses durağını özel yapan şey ne?"></textarea>
@@ -2220,9 +2233,13 @@
         const isFeatured = featuredPinIds.includes(String(pin.id));
         const isHovered = false;
 
-        const marker = L.marker([pin.lat, pin.lng], {
-          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isHovered)
-        }).addTo(map);
+       const marker = L.marker([pin.lat, pin.lng], {
+  icon: makePinIcon(pin.environment)
+});
+
+marker.on("click", () => {
+  openFloatingPlayer(pin);
+});
 
         marker.on("mouseover", () => {
           syncDiscoveryHighlight(pin.id);
