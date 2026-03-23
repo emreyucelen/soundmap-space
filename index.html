@@ -792,7 +792,6 @@
 
     .player-link-btn.apple { background: rgba(255,255,255,0.12); }
     .player-link-btn.spotify { background: rgba(30,215,96,0.16); }
-    .player-link-btn.deezer { background: rgba(168,85,247,0.16); }
 
     .travel-notice {
       position: fixed;
@@ -1104,7 +1103,7 @@
 
       <div class="discovery-panel">
         <div class="discovery-head">
-          <div id="discoveryTitle" class="discovery-title">Günün Ses Durakları</div>
+          <div class="discovery-title">Günün Ses Durakları</div>
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
 
@@ -1244,20 +1243,7 @@
               YouTube linki, SoundCloud linki, direkt SoundCloud player src linki veya SoundCloud iframe kodunun tamamı olabilir.
             </div>
           </div>
-<div class="form-group">
-  <label class="form-label" for="pinSpotifyUrl">Spotify linki</label>
-  <input id="pinSpotifyUrl" name="spotify_url" class="form-input" type="text" placeholder="https://open.spotify.com/..." />
-</div>
 
-<div class="form-group">
-  <label class="form-label" for="pinAppleMusicUrl">Apple Music linki</label>
-  <input id="pinAppleMusicUrl" name="apple_music_url" class="form-input" type="text" placeholder="https://music.apple.com/..." />
-</div>
-
-<div class="form-group">
-  <label class="form-label" for="pinDeezerUrl">Deezer linki</label>
-  <input id="pinDeezerUrl" name="deezer_url" class="form-input" type="text" placeholder="https://www.deezer.com/..." />
-</div>
           <div class="form-group full">
             <label class="form-label" for="pinDescription">Açıklama</label>
             <textarea id="pinDescription" name="description" class="form-textarea" placeholder="Bu ses durağını özel yapan şey ne?"></textarea>
@@ -1361,7 +1347,6 @@
     const errorBox = document.getElementById("errorBox");
 
     const discoveryListEl = document.getElementById("discoveryList");
-    const discoveryTitleEl = document.getElementById("discoveryTitle");
     const discoverySubEl = document.getElementById("discoverySub");
     const toggleDiscoveryBtn = document.getElementById("toggleDiscoveryBtn");
     const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
@@ -1415,7 +1400,6 @@
     let lastRandomCity = "";
     let searchDebounceTimer = null;
     let hasInitiallyFitted = false;
-    let currentCityMode = null;
 
     function normalize(value) {
       return (value || "")
@@ -1433,45 +1417,6 @@
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/\s+/g, " ");
-    }
-
-    const CITY_BOUNDS = {
-      izmir: [[38.26, 26.92], [38.54, 27.33]],
-      istanbul: [[40.80, 28.52], [41.30, 29.58]],
-      ankara: [[39.78, 32.53], [40.10, 33.05]],
-      mardin: [[37.26, 40.68], [37.36, 40.80]],
-      foca: [[38.62, 26.70], [38.76, 26.86]],
-      "eski foca": [[38.65, 26.72], [38.72, 26.80]],
-      burgazada: [[40.86, 29.04], [40.89, 29.09]],
-      kadikoy: [[40.96, 29.00], [41.03, 29.08]],
-      karakoy: [[41.01, 28.96], [41.04, 29.00]],
-      kapadokya: [[38.54, 34.72], [38.72, 34.96]]
-    };
-
-    function getCityBoundsByName(cityName) {
-      return CITY_BOUNDS[normalize(cityName)] || null;
-    }
-
-    function setCityMode(cityName) {
-      currentCityMode = (cityName || "").toString().trim() || null;
-      updateContextLayer();
-    }
-
-    function updateContextLayer() {
-      if (!discoveryTitleEl || !discoverySubEl) return;
-
-      if (currentCityMode) {
-        discoveryTitleEl.textContent = `📍 ${currentCityMode} Ses Haritası`;
-        discoverySubEl.textContent = `${currentCityMode} için öne çıkan sesler ve yakın keşif noktaları.`;
-        return;
-      }
-
-      discoveryTitleEl.textContent = "Günün Ses Durakları";
-
-      const mood = MOODS.find(m => m.key === activeMood);
-      discoverySubEl.textContent = mood && mood.key !== "tum"
-        ? `${mood.label} ruh haline uygun seçkiler burada.`
-        : "Bugün için senin için seçtiğimiz ses yolculukları.";
     }
 
     function cleanUrl(value) {
@@ -1596,7 +1541,6 @@
     function buildPlayerLinkButtons(pin) {
       const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
       const appleMusicUrl = safeExternalUrl(pin.apple_music_url || "");
-      const deezerUrl = safeExternalUrl(pin.deezer_url || "");
       const buyUrl = safeExternalUrl(pin.buy_url || pin.album_url || pin.shopify_url || "");
       const items = [];
 
@@ -1606,10 +1550,6 @@
 
       if (appleMusicUrl) {
         items.push(`<a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">Apple Music</a>`);
-      }
-
-      if (deezerUrl) {
-        items.push(`<a class="player-link-btn deezer" href="${escapeHtml(deezerUrl)}" target="_blank" rel="noopener noreferrer">Deezer</a>`);
       }
 
       if (buyUrl) {
@@ -2163,8 +2103,46 @@
 
       const latLng = marker.getLatLng();
       if (latLng) {
-        map.panTo(latLng, { animate: true, duration: 1.2 });
+        map.panTo(latLng, { animate: true, duration: 1.1 });
       }
+    }
+
+    function smartOpenPin(pin) {
+      if (!map || !pin || !isSafeCoordinate(pin.lat, pin.lng)) return;
+
+      const currentZoom = map.getZoom();
+      const lat = Number(String(pin.lat).replace(",", "."));
+      const lng = Number(String(pin.lng).replace(",", "."));
+      const countryBounds = getCountryBoundsByName(pin.country);
+      const cityBounds = getCityBoundsByName(pin.city);
+
+      if (currentZoom < 6 && countryBounds) {
+        map.fitBounds(countryBounds, {
+          padding: [40, 40],
+          maxZoom: 6
+        });
+        triggerPinLife(pin.id);
+        return;
+      }
+
+      if (currentZoom >= 6 && currentZoom < 9 && cityBounds) {
+        map.fitBounds(cityBounds, {
+          padding: [36, 36],
+          maxZoom: 9
+        });
+        triggerPinLife(pin.id);
+        return;
+      }
+
+      activePinId = pin.id;
+      renderMarkers();
+      openFloatingPlayer({ ...pin, lat, lng }, true);
+      triggerPinLife(pin.id);
+
+      map.flyTo([lat, lng], Math.max(11, currentZoom), {
+        animate: true,
+        duration: 1.2
+      });
     }
 
     function goToPin(pin, cinematic = true) {
@@ -2173,11 +2151,15 @@
         return;
       }
 
+      if (map && map.getZoom() < 9) {
+        smartOpenPin(pin);
+        return;
+      }
+
       const lat = Number(String(pin.lat).replace(",", "."));
       const lng = Number(String(pin.lng).replace(",", "."));
 
       activePinId = pin.id;
-      if (pin.city) setCityMode(pin.city);
       renderMarkers();
       openFloatingPlayer({ ...pin, lat, lng }, true);
       triggerPinLife(pin.id);
@@ -2186,14 +2168,15 @@
       if (cinematic) {
         cinematicFlyTo(lat, lng);
       } else {
-        map.flyTo([lat, lng], 17, {
+        map.flyTo([lat, lng], Math.max(11, map.getZoom()), {
           animate: true,
-          duration: 2.2
+          duration: 1.6
         });
       }
     }
 
     function smartRandomJourney() {
+
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(isValidPin);
       if (!valid.length) return;
@@ -2212,14 +2195,17 @@
     }
 
     function renderDiscovery() {
-      updateContextLayer();
-
       const moodMatcher = getMoodMatcher();
       const base = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
       const pickedAll = shuffleArray(base)
         .filter(isValidPin)
         .filter(pin => isSafeCoordinate(pin.lat, pin.lng))
         .slice(0, 6);
+
+      const mood = MOODS.find(m => m.key === activeMood);
+      discoverySubEl.textContent = mood && mood.key !== "tum"
+        ? `${mood.label} ruh haline uygun seçkiler burada.`
+        : "Bugün için senin için seçtiğimiz ses yolculukları.";
 
       if (!pickedAll.length) {
         discoveryListEl.innerHTML = `<div class="empty">Şu an bu modda öneri bulunmuyor.</div>`;
@@ -2275,9 +2261,10 @@
       validVisiblePins.forEach(pin => {
         const isActive = String(pin.id) === String(activePinId);
         const isFeatured = featuredPinIds.includes(String(pin.id));
+        const isHovered = false;
 
         const marker = L.marker([pin.lat, pin.lng], {
-          icon: makePinIcon(pin.environment, isActive, isFeatured, false)
+          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isHovered)
         }).addTo(map);
 
         marker.on("mouseover", () => {
@@ -2289,15 +2276,8 @@
         });
 
         marker.on("click", () => {
-          activePinId = pin.id;
-          renderMarkers();
-          openFloatingPlayer(pin, true);
           triggerPinLife(pin.id);
-
-          map.flyTo([pin.lat, pin.lng], 17, {
-            animate: true,
-            duration: 2.2
-          });
+          smartOpenPin(pin);
         });
 
         markers.push(marker);
@@ -2326,6 +2306,7 @@
     }
 
     function startLivingMap() {
+
       if (featuredPinsInterval) clearInterval(featuredPinsInterval);
 
       featuredPinsInterval = setInterval(() => {
@@ -2380,7 +2361,6 @@
         shopify_url: cleanUrl(pin.shopify_url || ""),
         spotify_url: cleanUrl(pin.spotify_url || ""),
         apple_music_url: cleanUrl(pin.apple_music_url || ""),
-        deezer_url: cleanUrl(pin.deezer_url || ""),
         buy_url: cleanUrl(pin.buy_url || ""),
         album_url: cleanUrl(pin.album_url || ""),
         embed_url: (pin.embed_url || "").toString().trim(),
@@ -2409,14 +2389,12 @@
         renderMoods();
         renderCategories();
         renderEnvironments();
-        updateContextLayer();
         applyFilters();
       } catch (err) {
         allPins = DEMO.map(preparePinRow);
         renderMoods();
         renderCategories();
         renderEnvironments();
-        updateContextLayer();
         applyFilters();
         showError("Bağlantı sorunu yaşandı. Demo veriler yükleniyor.\n\n" + (err?.message || err));
       }
@@ -2424,37 +2402,37 @@
 
     function createMainBaseLayers() {
       const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors"
+        attribution: "&copy; OpenStreetMap",
+        maxZoom: 20
       });
 
       const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
       });
 
       const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
       });
 
       const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenTopoMap"
+        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap",
+        maxZoom: 17
       });
 
       const hot = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors, HOT"
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 20
       });
 
-      const satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        attribution: "&copy; Esri & contributors"
-      });
-
-     return {
-  "Standart": standard,
-  "Uydu": satellite,
-  "Hafif": light,
-  "Koyu": dark,
-  "OpenTopo": topo,
-  "Detaylı": hot
-};
+      return {
+        "Standart": standard,
+        "Hafif": light,
+        "Koyu": dark,
+        "OpenTopo": topo,
+        "Detaylı": hot
+      };
     }
 
     function initMap() {
@@ -2576,9 +2554,6 @@
         vibe: (formData.get("vibe") || "").toString().trim(),
         source_type: (formData.get("source_type") || "").toString().trim(),
         embed_url: (formData.get("embed_url") || "").toString().trim(),
-        spotify_url: cleanUrl((formData.get("spotify_url") || "").toString().trim()),
-        apple_music_url: cleanUrl((formData.get("apple_music_url") || "").toString().trim()),
-        deezer_url: cleanUrl((formData.get("deezer_url") || "").toString().trim()),
         description: (formData.get("description") || "").toString().trim(),
         status: "pending",
         submitted_at: new Date().toISOString()
@@ -2651,31 +2626,7 @@
     searchInput.addEventListener("input", () => {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
-        const rawQuery = (searchInput.value || "").trim();
-        const cityBounds = getCityBoundsByName(rawQuery);
-
         discoveryExpanded = false;
-
-        if (!rawQuery) {
-          setCityMode(null);
-          applyFilters();
-          return;
-        }
-
-        if (cityBounds) {
-          setCityMode(rawQuery);
-          applyFilters();
-
-          if (map) {
-            map.fitBounds(cityBounds, {
-              padding: [36, 36],
-              maxZoom: 11
-            });
-          }
-          return;
-        }
-
-        setCityMode(null);
         applyFilters();
       }, 180);
     });
@@ -2702,7 +2653,6 @@
 
     window.addEventListener("load", () => {
       initMap();
-      updateContextLayer();
       loadPins();
     });
   </script>
