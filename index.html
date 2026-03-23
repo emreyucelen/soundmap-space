@@ -792,6 +792,7 @@
 
     .player-link-btn.apple { background: rgba(255,255,255,0.12); }
     .player-link-btn.spotify { background: rgba(30,215,96,0.16); }
+    .player-link-btn.deezer { background: rgba(168,85,247,0.16); }
 
     .travel-notice {
       position: fixed;
@@ -1554,6 +1555,7 @@
     function buildPlayerLinkButtons(pin) {
       const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
       const appleMusicUrl = safeExternalUrl(pin.apple_music_url || "");
+      const deezerUrl = safeExternalUrl(pin.deezer_url || "");
       const buyUrl = safeExternalUrl(pin.buy_url || pin.album_url || pin.shopify_url || "");
       const items = [];
 
@@ -1563,6 +1565,10 @@
 
       if (appleMusicUrl) {
         items.push(`<a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">Apple Music</a>`);
+      }
+
+      if (deezerUrl) {
+        items.push(`<a class="player-link-btn deezer" href="${escapeHtml(deezerUrl)}" target="_blank" rel="noopener noreferrer">Deezer</a>`);
       }
 
       if (buyUrl) {
@@ -2233,7 +2239,7 @@
         const isFeatured = featuredPinIds.includes(String(pin.id));
         const isHovered = false;
 
-       const marker = L.marker([pin.lat, pin.lng], {
+        const marker = L.marker([pin.lat, pin.lng], {
   icon: makePinIcon(pin.environment)
 });
 
@@ -2408,6 +2414,7 @@ marker.on("click", () => {
         shopify_url: cleanUrl(pin.shopify_url || ""),
         spotify_url: cleanUrl(pin.spotify_url || ""),
         apple_music_url: cleanUrl(pin.apple_music_url || ""),
+        deezer_url: cleanUrl(pin.deezer_url || ""),
         buy_url: cleanUrl(pin.buy_url || ""),
         album_url: cleanUrl(pin.album_url || ""),
         embed_url: (pin.embed_url || "").toString().trim(),
@@ -2601,6 +2608,9 @@ marker.on("click", () => {
         vibe: (formData.get("vibe") || "").toString().trim(),
         source_type: (formData.get("source_type") || "").toString().trim(),
         embed_url: (formData.get("embed_url") || "").toString().trim(),
+        spotify_url: cleanUrl((formData.get("spotify_url") || "").toString().trim()),
+        apple_music_url: cleanUrl((formData.get("apple_music_url") || "").toString().trim()),
+        deezer_url: cleanUrl((formData.get("deezer_url") || "").toString().trim()),
         description: (formData.get("description") || "").toString().trim(),
         status: "pending",
         submitted_at: new Date().toISOString()
