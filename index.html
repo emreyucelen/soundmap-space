@@ -2603,12 +2603,20 @@ function scorePinMatch(pin, query) {
     }
 
     function applyFilters() {
-      visiblePins = filterPins();
-      pickFeaturedPins();
-      renderMarkers();
-      renderDiscovery();
-      startLivingMap();
-    }
+  visiblePins = filterPins();
+
+  if (!visiblePins.length) {
+    featuredPinIds = [];
+    renderMarkers();
+    renderDiscovery();
+    return;
+  }
+
+  pickFeaturedPins();
+  renderMarkers();
+  renderDiscovery();
+  startLivingMap();
+}
 
     function preparePinRow(pin) {
   return {
