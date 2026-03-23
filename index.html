@@ -7884,25 +7884,47 @@ emre yucelen <emreyucelen@gmail.com>, 23 Mar 2026 Pzt, 16:09 tarihinde şunu yaz
     }
 
     function initPickerMap() {
-      if (pickerMap) {
-        setTimeout(() => pickerMap.invalidateSize(), 150);
-        return;
-      }
+  if (pickerMap) {
+    setTimeout(() => pickerMap.invalidateSize(), 150);
+    return;
+  }
 
-      pickerMap = L.map("pickerMap", { zoomControl: true }).setView([39.0, 35.0], 5);
+  pickerMap = L.map("pickerMap", {
+    zoomControl: true,
+    maxZoom: 20
+  }).setView([39.0, 35.0], 5);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-        maxZoom: 20
-      }).addTo(pickerMap);
+  const pickerStandard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap",
+    maxZoom: 20
+  });
 
-      pickerMap.on("click", (e) => {
-        const { lat, lng } = e.latlng;
-        setPickerCoords(lat, lng);
-      });
-
-      setTimeout(() => pickerMap.invalidateSize(), 200);
+  const pickerSatellite = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution: "&copy; Esri & contributors",
+      maxZoom: 20
     }
+  );
+
+  pickerStandard.addTo(pickerMap);
+
+  L.control.layers(
+    {
+      "Standart": pickerStandard,
+      "Uydu": pickerSatellite
+    },
+    null,
+    { collapsed: false }
+  ).addTo(pickerMap);
+
+  pickerMap.on("click", (e) => {
+    const { lat, lng } = e.latlng;
+    setPickerCoords(lat, lng);
+  });
+
+  setTimeout(() => pickerMap.invalidateSize(), 200);
+}
 
     async function searchLocationOnPicker() {
       const query = (pickerSearchInput.value || "").trim();
