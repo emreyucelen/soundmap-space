@@ -2301,7 +2301,8 @@ function scorePinMatch(pin, query) {
     }
 
     function setSpotlightPins(ids = []) {
-      spotlightPinIds = ids.map(String);
+  spotlightPinIds = [];
+}
 
       if (spotlightTimeout) clearTimeout(spotlightTimeout);
 
@@ -2462,7 +2463,7 @@ function scorePinMatch(pin, query) {
   validVisiblePins.forEach(pin => {
     const isActive = String(pin.id) === String(activePinId);
     const isFeatured = featuredPinIds.includes(String(pin.id));
-    const isSpotlight = spotlightPinIds.includes(String(pin.id));
+    const isSpotlight = false;
     const isHovered = false;
 
     const marker = L.marker([pin.lat, pin.lng], {
