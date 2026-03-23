@@ -2267,49 +2267,53 @@
       });
     }
 
-    function renderMarkers() {
-      clearMarkers();
+    const zoom = map.getZoom();
 
-      const validVisiblePins = visiblePins.filter(isValidPin);
+// 🌍 WORLD MODE → PIN YOK, COUNTRY HOTSPOT VAR
+if (zoom < 6) {
+  const countryGroups = {};
 
-      validVisiblePins.forEach(pin => {
-        const isActive = String(pin.id) === String(activePinId);
-        const isFeatured = featuredPinIds.includes(String(pin.id));
+  // pinleri ülkeye göre grupla
+  pins.forEach(pin => {
+    const key = normalize(pin.country || "other");
+    if (!countryGroups[key]) {
+      countryGroups[key] = [];
+    }
+    countryGroups[key].push(pin);
+  });
 
-        const marker = L.marker([pin.lat, pin.lng], {
-          icon: makePinIcon(pin.environment, isActive, isFeatured, false)
-        }).addTo(map);
+  // her ülke için tek marker
+  Object.keys(countryGroups).forEach(countryKey => {
+    const group = countryGroups[countryKey];
 
-        marker.on("mouseover", () => {
-          syncDiscoveryHighlight(pin.id);
+    const avgLat =
+      group.reduce((sum, p) => sum + Number(p.lat), 0) / group.length;
+    const avgLng =
+      group.reduce((sum, p) => sum + Number(p.lng), 0) / group.length;
+
+    const el = document.createElement("div");
+    el.className = "country-marker";
+    el.innerText = "🌍";
+
+    const marker = new maplibregl.Marker(el)
+      .setLngLat([avgLng, avgLat])
+      .addTo(map);
+
+    el.addEventListener("click", () => {
+      const bounds = getCountryBoundsByName(group[0].country);
+      if (bounds) {
+        map.fitBounds(bounds, {
+          padding: [40, 40],
+          maxZoom: 6
         });
-
-        marker.on("mouseout", () => {
-          syncDiscoveryHighlight(null);
-        });
-
-        marker.on("click", () => {
-          activePinId = pin.id;
-          renderMarkers();
-          openFloatingPlayer(pin, true);
-          triggerPinLife(pin.id);
-
-          map.flyTo([pin.lat, pin.lng], 17, {
-            animate: true,
-            duration: 2.2
-          });
-        });
-
-        markers.push(marker);
-        markersById[String(pin.id)] = marker;
-      });
-
-      renderStatusLine();
-
-      if (!validVisiblePins.length) {
-        activePinId = null;
-        return;
       }
+    });
+
+    markers.push(marker);
+  });
+
+  return; // 🔥 çok önemli
+}
 
       const currentVisibleActive = validVisiblePins.find(p => String(p.id) === String(activePinId));
       if (!currentVisibleActive) {
