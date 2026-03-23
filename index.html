@@ -2267,7 +2267,49 @@
       });
     }
 
-  
+    function renderMarkers() {
+      clearMarkers();
+
+      const validVisiblePins = visiblePins.filter(isValidPin);
+
+      validVisiblePins.forEach(pin => {
+        const isActive = String(pin.id) === String(activePinId);
+        const isFeatured = featuredPinIds.includes(String(pin.id));
+
+        const marker = L.marker([pin.lat, pin.lng], {
+          icon: makePinIcon(pin.environment, isActive, isFeatured, false)
+        }).addTo(map);
+
+        marker.on("mouseover", () => {
+          syncDiscoveryHighlight(pin.id);
+        });
+
+        marker.on("mouseout", () => {
+          syncDiscoveryHighlight(null);
+        });
+
+        marker.on("click", () => {
+          activePinId = pin.id;
+          renderMarkers();
+          openFloatingPlayer(pin, true);
+          triggerPinLife(pin.id);
+
+          map.flyTo([pin.lat, pin.lng], 17, {
+            animate: true,
+            duration: 2.2
+          });
+        });
+
+        markers.push(marker);
+        markersById[String(pin.id)] = marker;
+      });
+
+      renderStatusLine();
+
+      if (!validVisiblePins.length) {
+        activePinId = null;
+        return;
+      }
 
       const currentVisibleActive = validVisiblePins.find(p => String(p.id) === String(activePinId));
       if (!currentVisibleActive) {
