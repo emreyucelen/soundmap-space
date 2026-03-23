@@ -428,31 +428,18 @@
     .ey-pin.is-featured { animation: featuredPinFloat 3.8s ease-in-out infinite; }
 
     .ey-pin.is-featured::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50% 50% 50% 0;
-  border: 1px solid rgba(255,255,255,.16);
-  animation: ringPulse 2.4s ease-out infinite;
-  pointer-events: none;
-}
-
-    .ey-pin.is-featured .ey-pin-inner {
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.30), 0 0 18px rgba(255,255,255,.10);
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 50% 50% 50% 0;
+      border: 1px solid rgba(255,255,255,.12);
+      animation: ringPulse 2.4s ease-out infinite;
+      pointer-events: none;
     }
 
-    .ey-pin.is-spotlight { animation: spotlightFloat 2.4s ease-in-out infinite; }
-
-    .ey-pin.is-spotlight::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50% 50% 50% 0;
-  background: radial-gradient(circle, rgba(255,255,255,.10), rgba(255,255,255,0) 68%);
-  opacity: .35;
-  animation: spotlightGlow 2s ease-in-out infinite;
-  pointer-events: none;
-}
+    .ey-pin.is-featured .ey-pin-inner {
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.24), 0 0 10px rgba(255,255,255,.06);
+    }
 
     .ey-pin.is-hovered { filter: brightness(1.12) saturate(1.08); }
 
@@ -585,7 +572,7 @@
     }
 
     .ey-pin.is-active .ey-pin-inner {
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 0 16px rgba(255,255,255,.12);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 0 12px rgba(255,255,255,.08);
     }
 
     @keyframes waveMove {
@@ -629,26 +616,10 @@
       }
     }
 
-   @keyframes ringPulse {
-  0% { opacity: .32; transform: scale(.97); }
-  100% { opacity: 0; transform: scale(1.08); }
-}
-
-    @keyframes spotlightFloat {
-      0%, 100% { transform: rotate(-45deg) translateY(0) scale(1); }
-      50% { transform: rotate(-45deg) translateY(-4px) scale(1.03); }
+    @keyframes ringPulse {
+      0% { opacity: .22; transform: scale(.98); }
+      100% { opacity: 0; transform: scale(1.05); }
     }
-
-    @keyframes spotlightGlow {
-  0%, 100% {
-    opacity: .18;
-    transform: scale(.96);
-  }
-  50% {
-    opacity: .38;
-    transform: scale(1.02);
-  }
-}
 
     .floating-player {
       position: fixed;
@@ -827,34 +798,34 @@
       margin-top: 2px;
     }
 
-  .soundcloud-shell {
-  padding: 10px 12px;
-  border-radius: 20px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 10px 30px rgba(0,0,0,0.16);
-}
+    .soundcloud-shell {
+      padding: 10px 12px;
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 10px 30px rgba(0,0,0,0.16);
+    }
 
-.soundcloud-shell-mini {
-  padding: 12px 14px;
-}
+    .soundcloud-shell-mini {
+      padding: 12px 14px;
+    }
 
-.soundcloud-shell iframe {
-  display: block;
-  width: 100%;
-  border: 0;
-  border-radius: 12px;
-  background: #0b1220;
-  box-shadow: none;
-}
+    .soundcloud-shell iframe {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: #0b1220;
+      box-shadow: none;
+    }
 
-.soundcloud-shell-mini iframe {
-  height: 20px;
-  border-radius: 8px;
-}
+    .soundcloud-shell-mini iframe {
+      height: 20px;
+      border-radius: 8px;
+    }
 
     .player-placeholder {
       padding: 18px;
@@ -1231,7 +1202,7 @@
         <p>Hangi atmosferi özledin? Bir mod seç, önerilere tıkla ve haritada yeni bir ses durağına bağlan.</p>
 
         <div class="search-wrap">
-          <input id="searchInput" class="search" type="text" placeholder="Şehir, ülke veya mekan ara..." />
+          <input id="searchInput" class="search" type="text" placeholder="İzmir, İstanbul, Yoros, müze, deniz, mistik..." />
         </div>
 
         <div class="hero-actions">
@@ -1557,116 +1528,38 @@
     let activeEnvironment = "Tümü";
     let activeMood = "tum";
     let activePinId = null;
-    let hasFittedBounds = false;
     let discoveryExpanded = false;
     let featuredPinIds = [];
     let featuredPinsInterval = null;
     let lastRandomCity = "";
-
-    let lastFeaturedPinIds = [];
-    let spotlightPinIds = [];
-    let spotlightTimeout = null;
     let hoverPinId = null;
-
+    let searchDebounceTimer = null;
     let mainBaseLayers = {};
+    let hasInitiallyFitted = false;
 
     function normalize(value) {
-  return (value || "")
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/İ/g, "i")
-    .replace(/I/g, "i")
-    .replace(/ı/g, "i")
-    .replace(/ç/g, "c")
-    .replace(/Ç/g, "c")
-    .replace(/ğ/g, "g")
-    .replace(/Ğ/g, "g")
-    .replace(/ö/g, "o")
-    .replace(/Ö/g, "o")
-    .replace(/ş/g, "s")
-    .replace(/Ş/g, "s")
-    .replace(/ü/g, "u")
-    .replace(/Ü/g, "u")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ");
-}
-function safeNumber(value) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-}
+      return (value || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/İ/g, "i")
+        .replace(/I/g, "i")
+        .replace(/ı/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/Ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/Ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/Ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/Ş/g, "s")
+        .replace(/ü/g, "u")
+        .replace(/Ü/g, "u")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+    }
 
-function isValidPin(pin) {
-  return safeNumber(pin.lat) !== null && safeNumber(pin.lng) !== null;
-}
-
-function tokenizeSearch(text) {
-  return normalize(text)
-    .split(" ")
-    .map(t => t.trim())
-    .filter(Boolean);
-}
-
-function buildPinSearchIndex(pin) {
-  const fields = [
-    pin.title,
-    pin.city,
-    pin.country,
-    pin.category,
-    pin.environment,
-    pin.description,
-    pin.vibe,
-    pin.source_type
-  ].filter(Boolean);
-
-  const fullText = normalize(fields.join(" "));
-  const title = normalize(pin.title || "");
-  const city = normalize(pin.city || "");
-  const country = normalize(pin.country || "");
-  const category = normalize(pin.category || "");
-  const environment = normalize(pin.environment || "");
-  const vibe = normalize(pin.vibe || "");
-
-  return {
-    fullText,
-    title,
-    city,
-    country,
-    category,
-    environment,
-    vibe
-  };
-}
-
-function scorePinMatch(pin, query) {
-  const q = normalize(query);
-  if (!q) return 1;
-
-  const tokens = tokenizeSearch(q);
-  const idx = buildPinSearchIndex(pin);
-
-  let score = 0;
-
-  for (const token of tokens) {
-    if (idx.title.startsWith(token)) score += 120;
-    else if (idx.title.includes(token)) score += 70;
-
-    if (idx.city.startsWith(token)) score += 80;
-    else if (idx.city.includes(token)) score += 45;
-
-    if (idx.country.startsWith(token)) score += 55;
-    else if (idx.country.includes(token)) score += 28;
-
-    if (idx.category.includes(token)) score += 25;
-    if (idx.environment.includes(token)) score += 22;
-    if (idx.vibe.includes(token)) score += 18;
-
-    if (idx.fullText.includes(token)) score += 10;
-  }
-
-  return score;
-}
     function cleanUrl(value) {
       const raw = (value || "").toString().trim();
       if (!raw) return "";
@@ -1694,6 +1587,82 @@ function scorePinMatch(pin, query) {
     function extractIframeSrc(htmlString) {
       const match = (htmlString || "").match(/src\s*=\s*"([^"]+)"/i) || (htmlString || "").match(/src\s*=\s*'([^']+)'/i);
       return match ? match[1] : "";
+    }
+
+    function safeNumber(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function isValidPin(pin) {
+      return safeNumber(pin.lat) !== null && safeNumber(pin.lng) !== null;
+    }
+
+    function tokenizeSearch(text) {
+      return normalize(text)
+        .split(" ")
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+
+    function buildPinSearchIndex(pin) {
+      const fields = [
+        pin.title,
+        pin.city,
+        pin.country,
+        pin.category,
+        pin.environment,
+        pin.description,
+        pin.vibe,
+        pin.source_type
+      ].filter(Boolean);
+
+      const fullText = normalize(fields.join(" "));
+      const title = normalize(pin.title || "");
+      const city = normalize(pin.city || "");
+      const country = normalize(pin.country || "");
+      const category = normalize(pin.category || "");
+      const environment = normalize(pin.environment || "");
+      const vibe = normalize(pin.vibe || "");
+
+      return {
+        fullText,
+        title,
+        city,
+        country,
+        category,
+        environment,
+        vibe
+      };
+    }
+
+    function scorePinMatch(pin, query) {
+      const q = normalize(query);
+      if (!q) return 1;
+
+      const tokens = tokenizeSearch(q);
+      const idx = buildPinSearchIndex(pin);
+
+      let score = 0;
+
+      for (const token of tokens) {
+        if (idx.title.startsWith(token)) score += 120;
+        else if (idx.title.includes(token)) score += 70;
+
+        if (idx.city.startsWith(token)) score += 80;
+        else if (idx.city.includes(token)) score += 45;
+
+        if (idx.country.startsWith(token)) score += 55;
+        else if (idx.country.includes(token)) score += 28;
+
+        if (idx.category.includes(token)) score += 25;
+        if (idx.environment.includes(token)) score += 22;
+        if (idx.vibe.includes(token)) score += 18;
+
+        if (idx.fullText.includes(token)) score += 10;
+      }
+
+      return score;
     }
 
     function getFallbackImageByEnvironment(environment) {
@@ -1882,28 +1851,26 @@ function scorePinMatch(pin, query) {
       return "core-default";
     }
 
-    function makePinIcon(environment, isActive = false, isFeatured = false, isSpotlight = false, isHovered = false) {
+    function makePinIcon(environment, isActive = false, isFeatured = false, isHovered = false) {
       const env = getEnvironmentStyle(environment);
       const color = isActive ? "#ef4444" : env.color;
-      const size = isActive ? 40 : (isSpotlight ? 38 : 34);
+      const size = isActive ? 38 : 34;
       const innerSize = isActive ? 18 : 16;
       const border = isActive ? 4 : 3;
 
       let glow = `0 8px 18px rgba(0,0,0,.22)`;
 
-    if (isActive) {
-  glow = `0 0 0 4px ${color}18, 0 8px 18px rgba(0,0,0,.22)`;
-} else if (isSpotlight) {
-  glow = `0 0 0 3px ${color}14, 0 8px 18px rgba(0,0,0,.18)`;
-} else if (isFeatured) {
-  glow = `0 0 0 2px ${color}12, 0 8px 18px rgba(0,0,0,.18)`;
-}
+      if (isActive) {
+        glow = `0 0 0 4px ${color}18, 0 8px 18px rgba(0,0,0,.22)`;
+      } else if (isFeatured) {
+        glow = `0 0 0 2px ${color}12, 0 8px 18px rgba(0,0,0,.18)`;
+      }
 
       return L.divIcon({
         className: "",
         html: `
           <div
-            class="ey-pin ${isActive ? "is-active" : ""} ${isFeatured ? "is-featured" : ""} ${isSpotlight ? "is-spotlight" : ""} ${isHovered ? "is-hovered" : ""}"
+            class="ey-pin ${isActive ? "is-active" : ""} ${isFeatured ? "is-featured" : ""} ${isHovered ? "is-hovered" : ""}"
             style="
               width:${size}px;
               height:${size}px;
@@ -1951,7 +1918,6 @@ function scorePinMatch(pin, query) {
         btn.addEventListener("click", () => {
           activeCategory = cat;
           renderCategories();
-          hasFittedBounds = false;
           applyFilters();
         });
         categoriesEl.appendChild(btn);
@@ -1969,87 +1935,67 @@ function scorePinMatch(pin, query) {
         btn.addEventListener("click", () => {
           activeEnvironment = item.key;
           renderEnvironments();
-          hasFittedBounds = false;
           applyFilters();
         });
         environmentsEl.appendChild(btn);
       });
     }
 
-    function buildSearchText(pin) {
-      const raw = [
-        pin.title,
-        pin.city,
-        pin.country,
-        pin.category,
-        pin.environment,
-        pin.description,
-        pin.vibe
-      ].filter(Boolean).join(" ");
+    function filterPins() {
+      const q = (searchInput.value || "").trim();
+      const moodMatcher = getMoodMatcher();
 
-      return {
-        normalized: normalize(raw),
-        lower: raw.toLowerCase()
-      };
+      const filtered = allPins.filter(pin => {
+        const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
+        const envKey = canonicalEnvironment(pin.environment);
+        const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
+        const moodOk = moodMatcher(pin);
+
+        if (!categoryOk || !environmentOk || !moodOk) return false;
+        if (!q) return true;
+        return scorePinMatch(pin, q) > 0;
+      });
+
+      filtered.sort((a, b) => {
+        const scoreDiff = scorePinMatch(b, q) - scorePinMatch(a, q);
+        if (scoreDiff !== 0) return scoreDiff;
+
+        const aTitle = normalize(a.title || "");
+        const bTitle = normalize(b.title || "");
+        return aTitle.localeCompare(bTitle, "tr");
+      });
+
+      return filtered;
     }
 
-    function filterPins() {
-  const q = (searchInput.value || "").trim();
-  const moodMatcher = getMoodMatcher();
+    function renderStatusLine() {
+      const validCount = visiblePins.filter(isValidPin).length;
+      const invalidCount = visiblePins.length - validCount;
 
-  const filtered = allPins.filter(pin => {
-    const categoryOk = activeCategory === "Tümü" ? true : pin.category === activeCategory;
-    const envKey = canonicalEnvironment(pin.environment);
-    const environmentOk = activeEnvironment === "Tümü" ? true : envKey === activeEnvironment;
-    const moodOk = moodMatcher(pin);
+      const parts = [`${visiblePins.length} sonuç`];
 
-    if (!categoryOk || !environmentOk || !moodOk) return false;
+      if (validCount !== visiblePins.length) {
+        parts.push(`${validCount} pin gösteriliyor`);
+      }
 
-    if (!q) return true;
+      if (invalidCount > 0) {
+        parts.push(`${invalidCount} kayıt koordinatsız`);
+      }
 
-    return scorePinMatch(pin, q) > 0;
-  });
+      if (activeCategory !== "Tümü") parts.push(`kategori: ${activeCategory}`);
+      if (activeEnvironment !== "Tümü") parts.push(`ortam: ${getEnvironmentStyle(activeEnvironment).label}`);
 
-  filtered.sort((a, b) => {
-    const scoreDiff = scorePinMatch(b, q) - scorePinMatch(a, q);
-    if (scoreDiff !== 0) return scoreDiff;
+      if (activeMood !== "tum") {
+        const mood = MOODS.find(m => m.key === activeMood);
+        if (mood) parts.push(`mod: ${mood.label}`);
+      }
 
-    const aTitle = normalize(a.title || "");
-    const bTitle = normalize(b.title || "");
-    return aTitle.localeCompare(bTitle, "tr");
-  });
+      if ((searchInput.value || "").trim()) {
+        parts.push(`arama: "${searchInput.value.trim()}"`);
+      }
 
-  return filtered;
-}
-
-   function renderStatusLine() {
-  const validCount = visiblePins.filter(isValidPin).length;
-  const invalidCount = visiblePins.length - validCount;
-
-  const parts = [`${visiblePins.length} sonuç`];
-
-  if (validCount !== visiblePins.length) {
-    parts.push(`${validCount} pin gösteriliyor`);
-  }
-
-  if (invalidCount > 0) {
-    parts.push(`${invalidCount} kayıt koordinatsız`);
-  }
-
-  if (activeCategory !== "Tümü") parts.push(`kategori: ${activeCategory}`);
-  if (activeEnvironment !== "Tümü") parts.push(`ortam: ${getEnvironmentStyle(activeEnvironment).label}`);
-
-  if (activeMood !== "tum") {
-    const mood = MOODS.find(m => m.key === activeMood);
-    if (mood) parts.push(`mod: ${mood.label}`);
-  }
-
-  if ((searchInput.value || "").trim()) {
-    parts.push(`arama: "${searchInput.value.trim()}"`);
-  }
-
-  resultCountEl.textContent = parts.join(" • ");
-}
+      resultCountEl.textContent = parts.join(" • ");
+    }
 
     function buildPlayableEmbed(pin, autoplay = false) {
       const sourceType = (pin.source_type || "")
@@ -2082,28 +2028,28 @@ function scorePinMatch(pin, query) {
         return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&rel=0`;
       }
 
-     if (sourceType === "soundcloud") {
-  const iframeSrc = extractIframeSrc(raw);
-  if (iframeSrc) {
-    let fixedSrc = iframeSrc.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
-    if (!/auto_play=/i.test(fixedSrc)) {
-      fixedSrc += (fixedSrc.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
-    }
-    return fixedSrc;
-  }
+      if (sourceType === "soundcloud") {
+        const iframeSrc = extractIframeSrc(raw);
+        if (iframeSrc) {
+          let fixedSrc = iframeSrc.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
+          if (!/auto_play=/i.test(fixedSrc)) {
+            fixedSrc += (fixedSrc.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
+          }
+          return fixedSrc;
+        }
 
-  if (raw.includes("w.soundcloud.com/player/")) {
-    let fixedRaw = raw.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
-    if (!/auto_play=/i.test(fixedRaw)) {
-      fixedRaw += (fixedRaw.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
-    }
-    return fixedRaw;
-  }
+        if (raw.includes("w.soundcloud.com/player/")) {
+          let fixedRaw = raw.replace(/auto_play=false/gi, `auto_play=${autoplay ? "true" : "false"}`);
+          if (!/auto_play=/i.test(fixedRaw)) {
+            fixedRaw += (fixedRaw.includes("?") ? "&" : "?") + `auto_play=${autoplay ? "true" : "false"}`;
+          }
+          return fixedRaw;
+        }
 
-  const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
+        const cleanSoundcloudUrl = raw.includes("on.soundcloud.com/") ? raw : raw.split("?")[0];
 
-  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
-}
+        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanSoundcloudUrl)}&color=%23ff6a00&inverse=true&auto_play=${autoplay ? "true" : "false"}&show_user=true&visual=false&buying=false&sharing=false&download=false&show_artwork=false&hide_related=true&show_comments=false&show_teaser=false`;
+      }
 
       return "";
     }
@@ -2156,11 +2102,11 @@ function scorePinMatch(pin, query) {
 
         playerEmbedAreaEl.innerHTML = isSoundcloud
           ? `
-          <div class="soundcloud-shell soundcloud-shell-mini">
-  <iframe
-    src="${embed}"
-    width="100%"
-    height="20"
+            <div class="soundcloud-shell soundcloud-shell-mini">
+              <iframe
+                src="${embed}"
+                width="100%"
+                height="20"
                 scrolling="no"
                 frameborder="no"
                 allow="autoplay"
@@ -2228,6 +2174,8 @@ function scorePinMatch(pin, query) {
     }
 
     function cinematicFlyTo(lat, lng) {
+      if (!map) return;
+
       showTravelNotice("Yeni durağa gidiliyor…");
 
       const currentCenter = map.getCenter();
@@ -2300,56 +2248,32 @@ function scorePinMatch(pin, query) {
       markersById = {};
     }
 
-    function setSpotlightPins(ids = []) {
-  spotlightPinIds = [];
-}
-
-      if (spotlightTimeout) clearTimeout(spotlightTimeout);
-
-      spotlightTimeout = setTimeout(() => {
-        spotlightPinIds = [];
-        renderMarkers();
-      }, 3200);
-    }
-
     function syncDiscoveryHighlight(pinId) {
       document.querySelectorAll(".discover-card").forEach(card => {
         card.classList.toggle(
           "is-linked",
-          String(card.getAttribute("data-discover-id")) === String(pinId)
+          pinId != null && String(card.getAttribute("data-discover-id")) === String(pinId)
         );
       });
     }
 
     function triggerPinLife(pinId) {
-      setSpotlightPins([pinId]);
       syncDiscoveryHighlight(pinId);
-      renderMarkers();
-
       setTimeout(() => {
         syncDiscoveryHighlight(null);
-      }, 2600);
+      }, 1600);
     }
 
     function pickFeaturedPins() {
-      const candidates = visiblePins.length ? visiblePins : allPins;
-      const valid = candidates.filter(pin => pin.lat != null && pin.lng != null);
-
-      if (!valid.length) {
+      const candidates = (visiblePins.length ? visiblePins : allPins).filter(isValidPin);
+      if (!candidates.length) {
         featuredPinIds = [];
         return;
       }
 
-      lastFeaturedPinIds = [...featuredPinIds];
-
-      featuredPinIds = shuffleArray(valid)
-        .slice(0, Math.min(3, valid.length))
+      featuredPinIds = shuffleArray(candidates)
+        .slice(0, Math.min(3, candidates.length))
         .map(pin => String(pin.id));
-
-      const freshOnes = featuredPinIds.filter(id => !lastFeaturedPinIds.includes(id));
-      if (freshOnes.length) {
-        setSpotlightPins(freshOnes.slice(0, 2));
-      }
     }
 
     function focusMarkerAndPopup(pinId) {
@@ -2362,7 +2286,7 @@ function scorePinMatch(pin, query) {
     }
 
     function goToPin(pin, cinematic = true) {
-      if (!pin || pin.lat == null || pin.lng == null) return;
+      if (!pin || !isValidPin(pin)) return;
 
       activePinId = pin.id;
       renderMarkers();
@@ -2387,7 +2311,7 @@ function scorePinMatch(pin, query) {
 
     function smartRandomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
-      const valid = source.filter(pin => pin.lat != null && pin.lng != null);
+      const valid = source.filter(isValidPin);
       if (!valid.length) return;
 
       const moodMatcher = getMoodMatcher();
@@ -2406,7 +2330,7 @@ function scorePinMatch(pin, query) {
     function renderDiscovery() {
       const moodMatcher = getMoodMatcher();
       const base = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
-      const pickedAll = shuffleArray(base).filter(pin => pin.lat != null && pin.lng != null).slice(0, 6);
+      const pickedAll = shuffleArray(base).filter(isValidPin).slice(0, 6);
 
       const mood = MOODS.find(m => m.key === activeMood);
       discoverySubEl.textContent = mood && mood.key !== "tum"
@@ -2447,7 +2371,7 @@ function scorePinMatch(pin, query) {
         el.addEventListener("click", () => {
           const id = String(el.getAttribute("data-discover-id"));
           const pin = allPins.find(p => String(p.id) === id);
-          if (!pin || pin.lat == null || pin.lng == null) return;
+          if (!pin || !isValidPin(pin)) return;
 
           triggerPinLife(pin.id);
           goToPin(pin, true);
@@ -2455,205 +2379,199 @@ function scorePinMatch(pin, query) {
       });
     }
 
-   function renderMarkers() {
-  clearMarkers();
+    function renderMarkers() {
+      clearMarkers();
 
-  const validVisiblePins = visiblePins.filter(isValidPin);
+      const validVisiblePins = visiblePins.filter(isValidPin);
 
-  validVisiblePins.forEach(pin => {
-    const isActive = String(pin.id) === String(activePinId);
-    const isFeatured = featuredPinIds.includes(String(pin.id));
-    const isSpotlight = false;
-    const isHovered = false;
+      validVisiblePins.forEach(pin => {
+        const isActive = String(pin.id) === String(activePinId);
+        const isFeatured = featuredPinIds.includes(String(pin.id));
+        const isHovered = false;
 
-    const marker = L.marker([pin.lat, pin.lng], {
-      icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isSpotlight, isHovered)
-    }).addTo(map);
+        const marker = L.marker([pin.lat, pin.lng], {
+          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isHovered)
+        }).addTo(map);
 
-    marker.on("mouseover", () => {
-      hoverPinId = pin.id;
-      syncDiscoveryHighlight(pin.id);
-    });
+        marker.on("mouseover", () => {
+          hoverPinId = pin.id;
+          syncDiscoveryHighlight(pin.id);
+        });
 
-    marker.on("mouseout", () => {
-      hoverPinId = null;
-      syncDiscoveryHighlight(null);
-    });
+        marker.on("mouseout", () => {
+          hoverPinId = null;
+          syncDiscoveryHighlight(null);
+        });
 
-    marker.on("click", () => {
-      activePinId = pin.id;
-      renderMarkers();
-      marker.openPopup();
-      openFloatingPlayer(pin, true);
-      triggerPinLife(pin.id);
+        marker.on("click", () => {
+          activePinId = pin.id;
+          renderMarkers();
+          marker.openPopup();
+          openFloatingPlayer(pin, true);
+          triggerPinLife(pin.id);
 
-      map.flyTo([pin.lat, pin.lng], 17, {
-        animate: true,
-        duration: 2.2
+          map.flyTo([pin.lat, pin.lng], 17, {
+            animate: true,
+            duration: 2.2
+          });
+        });
+
+        const env = getEnvironmentStyle(pin.environment || "");
+        const imageUrl = getPinImageUrl(pin);
+
+        marker.bindPopup(`
+          <div style="min-width:210px;font-family:sans-serif;">
+            <div class="popup-cover">
+              <img
+                src="${escapeHtml(imageUrl)}"
+                alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
+              />
+            </div>
+
+            <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
+
+            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
+              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
+              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+            </div>
+
+            ${pin.description ? `<div style="font-size:12px;color:#cbd5e1;margin-top:8px;line-height:1.55;">${escapeHtml(pin.description)}</div>` : ""}
+
+            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
+
+            <button
+              type="button"
+              class="street-zoom-btn"
+              data-lat="${pin.lat}"
+              data-lng="${pin.lng}"
+              style="
+                margin-top:10px;
+                width:100%;
+                border:0;
+                cursor:pointer;
+                font-weight:700;
+                font-size:12px;
+                padding:10px 12px;
+                border-radius:12px;
+                background:linear-gradient(135deg,#22d3ee,#3b82f6);
+                color:#03131c;
+              "
+            >
+              🛣️ Sokağa in
+            </button>
+          </div>
+        `);
+
+        marker.on("popupopen", (e) => {
+          const popupEl = e.popup.getElement();
+          if (!popupEl) return;
+
+          const streetBtn = popupEl.querySelector(".street-zoom-btn");
+          if (!streetBtn) return;
+
+          streetBtn.addEventListener("click", () => {
+            const lat = Number(streetBtn.getAttribute("data-lat"));
+            const lng = Number(streetBtn.getAttribute("data-lng"));
+            zoomToStreetLevel(lat, lng);
+          });
+        });
+
+        markers.push(marker);
+        markersById[String(pin.id)] = marker;
       });
-    });
 
-    const env = getEnvironmentStyle(pin.environment || "");
-    const imageUrl = getPinImageUrl(pin);
+      renderStatusLine();
 
-    marker.bindPopup(`
-      <div style="min-width:210px;font-family:sans-serif;">
-        <div class="popup-cover">
-          <img
-            src="${escapeHtml(imageUrl)}"
-            alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
-            loading="lazy"
-            onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
-          />
-        </div>
+      if (!validVisiblePins.length) {
+        activePinId = null;
+        return;
+      }
 
-        <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
+      const currentVisibleActive = validVisiblePins.find(p => String(p.id) === String(activePinId));
+      if (!currentVisibleActive) {
+        activePinId = validVisiblePins[0].id;
+      }
 
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-          ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-        </div>
-
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
-          ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-        </div>
-
-        ${pin.description ? `<div style="font-size:12px;color:#cbd5e1;margin-top:8px;line-height:1.55;">${escapeHtml(pin.description)}</div>` : ""}
-
-        <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
-
-        <button
-          type="button"
-          class="street-zoom-btn"
-          data-lat="${pin.lat}"
-          data-lng="${pin.lng}"
-          style="
-            margin-top:10px;
-            width:100%;
-            border:0;
-            cursor:pointer;
-            font-weight:700;
-            font-size:12px;
-            padding:10px 12px;
-            border-radius:12px;
-            background:linear-gradient(135deg,#22d3ee,#3b82f6);
-            color:#03131c;
-          "
-        >
-          🛣️ Sokağa in
-        </button>
-      </div>
-    `);
-
-    marker.on("popupopen", (e) => {
-      const popupEl = e.popup.getElement();
-      if (!popupEl) return;
-
-      const streetBtn = popupEl.querySelector(".street-zoom-btn");
-      if (!streetBtn) return;
-
-      streetBtn.addEventListener("click", () => {
-        const lat = Number(streetBtn.getAttribute("data-lat"));
-        const lng = Number(streetBtn.getAttribute("data-lng"));
-        zoomToStreetLevel(lat, lng);
-      });
-    });
-
-    markers.push(marker);
-    markersById[String(pin.id)] = marker;
-  });
-
-  renderStatusLine();
-
-  if (!validVisiblePins.length) {
-    activePinId = null;
-    return;
-  }
-
-  const currentVisibleActive = validVisiblePins.find(p => String(p.id) === String(activePinId));
-  if (!currentVisibleActive) {
-    activePinId = validVisiblePins[0].id;
-  }
-
-  if (!hasFittedBounds) {
-    const bounds = L.latLngBounds(validVisiblePins.map(p => [p.lat, p.lng]));
-    if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [50, 50] });
-      hasFittedBounds = true;
+      if (!hasInitiallyFitted && validVisiblePins.length > 1) {
+        const bounds = L.latLngBounds(validVisiblePins.map(p => [p.lat, p.lng]));
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [50, 50] });
+          hasInitiallyFitted = true;
+        }
+      }
     }
-  }
-}
+
     function startLivingMap() {
       if (featuredPinsInterval) clearInterval(featuredPinsInterval);
 
       featuredPinsInterval = setInterval(() => {
         const currentActive = activePinId ? String(activePinId) : null;
         const candidates = (visiblePins.length ? visiblePins : allPins)
-          .filter(pin => pin.lat != null && pin.lng != null)
+          .filter(isValidPin)
           .filter(pin => String(pin.id) !== currentActive);
 
         if (!candidates.length) return;
 
-        lastFeaturedPinIds = [...featuredPinIds];
-
         featuredPinIds = shuffleArray(candidates)
           .slice(0, Math.min(3, candidates.length))
           .map(pin => String(pin.id));
-
-        const freshOnes = featuredPinIds.filter(id => !lastFeaturedPinIds.includes(id));
-        if (freshOnes.length) {
-          setSpotlightPins(freshOnes.slice(0, 2));
-        }
 
         renderMarkers();
       }, 4200);
     }
 
     function applyFilters() {
-  visiblePins = filterPins();
+      visiblePins = filterPins();
 
-  if (!visiblePins.length) {
-    featuredPinIds = [];
-    renderMarkers();
-    renderDiscovery();
-    return;
-  }
+      if (!visiblePins.length) {
+        featuredPinIds = [];
+        clearMarkers();
+        renderStatusLine();
+        renderDiscovery();
+        return;
+      }
 
-  pickFeaturedPins();
-  renderMarkers();
-  renderDiscovery();
-  startLivingMap();
-}
+      pickFeaturedPins();
+      renderMarkers();
+      renderDiscovery();
+      startLivingMap();
+    }
 
     function preparePinRow(pin) {
-  return {
-    ...pin,
-    id: pin.id ?? `${pin.title || "pin"}-${pin.city || "city"}-${Math.random().toString(36).slice(2, 7)}`,
-    title: (pin.title || "").toString().trim(),
-    city: (pin.city || "").toString().trim(),
-    country: (pin.country || "").toString().trim(),
-    category: (pin.category || "").toString().trim(),
-    environment: (pin.environment || "").toString().trim(),
-    vibe: (pin.vibe || "").toString().trim(),
-    source_type: (pin.source_type || "").toString().trim().toLowerCase(),
-    description: (pin.description || "").toString().trim(),
+      return {
+        ...pin,
+        id: pin.id ?? `${pin.title || "pin"}-${pin.city || "city"}-${Math.random().toString(36).slice(2, 7)}`,
+        title: (pin.title || "").toString().trim(),
+        city: (pin.city || "").toString().trim(),
+        country: (pin.country || "").toString().trim(),
+        category: (pin.category || "").toString().trim(),
+        environment: (pin.environment || "").toString().trim(),
+        vibe: (pin.vibe || "").toString().trim(),
+        source_type: (pin.source_type || "").toString().trim().toLowerCase(),
+        description: (pin.description || "").toString().trim(),
 
-    photo_url: cleanUrl(pin.photo_url || ""),
-    image_url: cleanUrl(pin.image_url || ""),
-    cover_url: cleanUrl(pin.cover_url || ""),
-    thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
-    shopify_url: cleanUrl(pin.shopify_url || ""),
-    spotify_url: cleanUrl(pin.spotify_url || ""),
-    apple_music_url: cleanUrl(pin.apple_music_url || ""),
-    buy_url: cleanUrl(pin.buy_url || ""),
-    album_url: cleanUrl(pin.album_url || ""),
+        photo_url: cleanUrl(pin.photo_url || ""),
+        image_url: cleanUrl(pin.image_url || ""),
+        cover_url: cleanUrl(pin.cover_url || ""),
+        thumbnail_url: cleanUrl(pin.thumbnail_url || ""),
+        shopify_url: cleanUrl(pin.shopify_url || ""),
+        spotify_url: cleanUrl(pin.spotify_url || ""),
+        apple_music_url: cleanUrl(pin.apple_music_url || ""),
+        buy_url: cleanUrl(pin.buy_url || ""),
+        album_url: cleanUrl(pin.album_url || ""),
 
-    embed_url: (pin.embed_url || "").toString().trim(),
+        embed_url: (pin.embed_url || "").toString().trim(),
 
-    lat: safeNumber(pin.lat),
-    lng: safeNumber(pin.lng)
-  };
-}
+        lat: safeNumber(pin.lat),
+        lng: safeNumber(pin.lng)
+      };
+    }
 
     async function loadPins() {
       try {
@@ -2894,17 +2812,13 @@ function scorePinMatch(pin, query) {
       }
     }
 
-  let searchDebounceTimer = null;
-
-searchInput.addEventListener("input", () => {
-  clearTimeout(searchDebounceTimer);
-
-  searchDebounceTimer = setTimeout(() => {
-    hasFittedBounds = false;
-    discoveryExpanded = false;
-    applyFilters();
-  }, 180);
-});
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        discoveryExpanded = false;
+        applyFilters();
+      }, 180);
+    });
 
     refreshDiscoveryBtn.addEventListener("click", () => {
       discoveryExpanded = false;
