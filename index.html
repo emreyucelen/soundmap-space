@@ -792,6 +792,7 @@
 
     .player-link-btn.apple { background: rgba(255,255,255,0.12); }
     .player-link-btn.spotify { background: rgba(30,215,96,0.16); }
+    .player-link-btn.deezer { background: rgba(168,85,247,0.16); }
 
     .travel-notice {
       position: fixed;
@@ -988,6 +989,23 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+
+    .country-tooltip {
+      background: rgba(8,17,31,0.85);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e0f2fe;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    }
+
+    .country-tooltip:before {
+      border-top-color: rgba(8,17,31,0.85) !important;
     }
 
     @media (max-width: 980px) {
@@ -1243,7 +1261,20 @@
               YouTube linki, SoundCloud linki, direkt SoundCloud player src linki veya SoundCloud iframe kodunun tamamı olabilir.
             </div>
           </div>
+<div class="form-group">
+  <label class="form-label" for="pinSpotifyUrl">Spotify linki</label>
+  <input id="pinSpotifyUrl" name="spotify_url" class="form-input" type="text" placeholder="https://open.spotify.com/..." />
+</div>
 
+<div class="form-group">
+  <label class="form-label" for="pinAppleMusicUrl">Apple Music linki</label>
+  <input id="pinAppleMusicUrl" name="apple_music_url" class="form-input" type="text" placeholder="https://music.apple.com/..." />
+</div>
+
+<div class="form-group">
+  <label class="form-label" for="pinDeezerUrl">Deezer linki</label>
+  <input id="pinDeezerUrl" name="deezer_url" class="form-input" type="text" placeholder="https://www.deezer.com/..." />
+</div>
           <div class="form-group full">
             <label class="form-label" for="pinDescription">Açıklama</label>
             <textarea id="pinDescription" name="description" class="form-textarea" placeholder="Bu ses durağını özel yapan şey ne?"></textarea>
@@ -1348,6 +1379,7 @@
 
     const discoveryListEl = document.getElementById("discoveryList");
     const discoverySubEl = document.getElementById("discoverySub");
+    const discoveryTitleEl = document.getElementById("discoveryTitle");
     const toggleDiscoveryBtn = document.getElementById("toggleDiscoveryBtn");
     const refreshDiscoveryBtn = document.getElementById("refreshDiscoveryBtn");
 
@@ -1400,6 +1432,27 @@
     let lastRandomCity = "";
     let searchDebounceTimer = null;
     let hasInitiallyFitted = false;
+    let hoverTooltip = null;
+    let currentDiscoveryCountry = "";
+
+    function normalize(value) {
+      return (value || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/İ/g, "i")
+        .replace(/I/g, "i")
+        .replace(/ı/g, "i")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+    }
+
 
     const COUNTRY_BOUNDS = {
       turkiye: [[35.7, 25.5], [42.2, 44.9]],
@@ -1419,22 +1472,23 @@
       finland: [[59.5, 20.0], [70.2, 31.8]]
     };
 
-    function normalize(value) {
-      return (value || "")
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replace(/İ/g, "i")
-        .replace(/I/g, "i")
-        .replace(/ı/g, "i")
-        .replace(/ç/g, "c")
-        .replace(/ğ/g, "g")
-        .replace(/ö/g, "o")
-        .replace(/ş/g, "s")
-        .replace(/ü/g, "u")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, " ");
+    function getCountryBoundsByName(countryName) {
+      return COUNTRY_BOUNDS[normalize(countryName)] || null;
+    }
+
+    function detectCountryFromLatLng(lat, lng) {
+      if (lat >= 35.5 && lat <= 42.5 && lng >= 25 && lng <= 45) return "Türkiye";
+      return null;
+    }
+
+    function updateDiscoveryTitle(country) {
+      currentDiscoveryCountry = country || "";
+      if (!discoveryTitleEl) return;
+      if (country === "Türkiye") {
+        discoveryTitleEl.textContent = "🇹🇷 Türkiye’de öne çıkan sesler";
+      } else {
+        discoveryTitleEl.textContent = "Günün Ses Durakları";
+      }
     }
 
     function cleanUrl(value) {
@@ -1559,6 +1613,7 @@
     function buildPlayerLinkButtons(pin) {
       const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
       const appleMusicUrl = safeExternalUrl(pin.apple_music_url || "");
+      const deezerUrl = safeExternalUrl(pin.deezer_url || "");
       const buyUrl = safeExternalUrl(pin.buy_url || pin.album_url || pin.shopify_url || "");
       const items = [];
 
@@ -1568,6 +1623,10 @@
 
       if (appleMusicUrl) {
         items.push(`<a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">Apple Music</a>`);
+      }
+
+      if (deezerUrl) {
+        items.push(`<a class="player-link-btn deezer" href="${escapeHtml(deezerUrl)}" target="_blank" rel="noopener noreferrer">Deezer</a>`);
       }
 
       if (buyUrl) {
@@ -2115,27 +2174,34 @@
         .map(pin => String(pin.id));
     }
 
-    function getCountryBoundsByName(countryName) {
-      return COUNTRY_BOUNDS[normalize(countryName)] || null;
+    function focusMarkerAndPopup(pinId) {
+      const marker = markersById[String(pinId)];
+      if (!marker || !map) return;
+
+      const latLng = marker.getLatLng();
+      if (latLng) {
+        map.panTo(latLng, { animate: true, duration: 1.2 });
+      }
     }
 
     function smartOpenPin(pin) {
       if (!map || !pin || !isSafeCoordinate(pin.lat, pin.lng)) return;
 
+      const currentZoom = map.getZoom();
       const lat = Number(String(pin.lat).replace(",", "."));
       const lng = Number(String(pin.lng).replace(",", "."));
-      const currentZoom = map.getZoom();
 
       if (currentZoom < 7) {
         const countryBounds = getCountryBoundsByName(pin.country);
 
         if (countryBounds) {
+          updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
           map.fitBounds(countryBounds, {
             padding: [40, 40],
             maxZoom: 7
           });
-
           resultCountEl.textContent = `🌍 ${pin.country || "Bölge"} görünümüne yaklaşıldı`;
+          triggerPinLife(pin.id);
           return;
         }
 
@@ -2143,22 +2209,32 @@
           animate: true,
           duration: 1.4
         });
-
         resultCountEl.textContent = `📍 ${pin.city || pin.title || "Bölge"} görünümüne yaklaşıldı`;
+        triggerPinLife(pin.id);
         return;
       }
 
       if (currentZoom >= 7 && currentZoom < 10) {
+        updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
         map.flyTo([lat, lng], 10, {
           animate: true,
           duration: 1.2
         });
-
         resultCountEl.textContent = `📌 ${pin.city || pin.title || "Kayıt"} detay görünümüne yaklaşıldı`;
+        triggerPinLife(pin.id);
         return;
       }
 
-      goToPin(pin, true);
+      activePinId = pin.id;
+      updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
+      renderMarkers();
+      openFloatingPlayer({ ...pin, lat, lng }, true);
+      triggerPinLife(pin.id);
+
+      map.flyTo([lat, lng], 17, {
+        animate: true,
+        duration: 2.0
+      });
     }
 
     function goToPin(pin, cinematic = true) {
@@ -2167,10 +2243,16 @@
         return;
       }
 
+      if (map && map.getZoom() < 10) {
+        smartOpenPin(pin);
+        return;
+      }
+
       const lat = Number(String(pin.lat).replace(",", "."));
       const lng = Number(String(pin.lng).replace(",", "."));
 
       activePinId = pin.id;
+      updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
       renderMarkers();
       openFloatingPlayer({ ...pin, lat, lng }, true);
       triggerPinLife(pin.id);
@@ -2212,9 +2294,11 @@
         .slice(0, 6);
 
       const mood = MOODS.find(m => m.key === activeMood);
-      discoverySubEl.textContent = mood && mood.key !== "tum"
-        ? `${mood.label} ruh haline uygun seçkiler burada.`
-        : "Bugün için senin için seçtiğimiz ses yolculukları.";
+      discoverySubEl.textContent = currentDiscoveryCountry === "Türkiye"
+        ? "Türkiye odaklı seçkiler burada."
+        : (mood && mood.key !== "tum"
+          ? `${mood.label} ruh haline uygun seçkiler burada.`
+          : "Bugün için senin için seçtiğimiz ses yolculukları.");
 
       if (!pickedAll.length) {
         discoveryListEl.innerHTML = `<div class="empty">Şu an bu modda öneri bulunmuyor.</div>`;
@@ -2257,7 +2341,7 @@
           }
 
           triggerPinLife(pin.id);
-          smartOpenPin(pin);
+          goToPin(pin, true);
         });
       });
     }
@@ -2270,10 +2354,9 @@
       validVisiblePins.forEach(pin => {
         const isActive = String(pin.id) === String(activePinId);
         const isFeatured = featuredPinIds.includes(String(pin.id));
-        const isHovered = false;
 
         const marker = L.marker([pin.lat, pin.lng], {
-          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isHovered)
+          icon: makePinIcon(pin.environment, isActive, isFeatured, false)
         }).addTo(map);
 
         marker.on("mouseover", () => {
@@ -2285,75 +2368,8 @@
         });
 
         marker.on("click", () => {
-          triggerPinLife(pin.id);
           smartOpenPin(pin);
         });
-
-        const env = getEnvironmentStyle(pin.environment || "");
-        const imageUrl = getPinImageUrl(pin);
-
-        /* marker.bindPopup(`
-          <div style="min-width:210px;font-family:sans-serif;">
-            <div class="popup-cover">
-              <img
-                src="${escapeHtml(imageUrl)}"
-                alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
-                loading="lazy"
-                onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
-              />
-            </div>
-
-            <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
-
-            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
-              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-            </div>
-
-            ${pin.description ? `<div style="font-size:12px;color:#cbd5e1;margin-top:8px;line-height:1.55;">${escapeHtml(pin.description)}</div>` : ""}
-
-            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
-
-            <button
-              type="button"
-              class="street-zoom-btn"
-              data-lat="${pin.lat}"
-              data-lng="${pin.lng}"
-              style="
-                margin-top:10px;
-                width:100%;
-                border:0;
-                cursor:pointer;
-                font-weight:700;
-                font-size:12px;
-                padding:10px 12px;
-                border-radius:12px;
-                background:linear-gradient(135deg,#22d3ee,#3b82f6);
-                color:#03131c;
-              "
-            >
-              🛣️ Sokağa in
-            </button>
-          </div>
-        `); */
-
-        /* marker.on("popupopen", (e) => {
-          const popupEl = e.popup.getElement();
-          if (!popupEl) return;
-
-          const streetBtn = popupEl.querySelector(".street-zoom-btn");
-          if (!streetBtn) return;
-
-          streetBtn.addEventListener("click", () => {
-            const lat = Number(streetBtn.getAttribute("data-lat"));
-            const lng = Number(streetBtn.getAttribute("data-lng"));
-            zoomToStreetLevel(lat, lng);
-          });
-        }); */
 
         markers.push(marker);
         markersById[String(pin.id)] = marker;
@@ -2435,6 +2451,7 @@
         shopify_url: cleanUrl(pin.shopify_url || ""),
         spotify_url: cleanUrl(pin.spotify_url || ""),
         apple_music_url: cleanUrl(pin.apple_music_url || ""),
+        deezer_url: cleanUrl(pin.deezer_url || ""),
         buy_url: cleanUrl(pin.buy_url || ""),
         album_url: cleanUrl(pin.album_url || ""),
         embed_url: (pin.embed_url || "").toString().trim(),
@@ -2476,37 +2493,37 @@
 
     function createMainBaseLayers() {
       const standard = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-        maxZoom: 20
+        attribution: "&copy; OpenStreetMap contributors"
       });
 
       const light = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        maxZoom: 20
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
       });
 
       const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        maxZoom: 20
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
       });
 
       const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap &copy; OpenTopoMap",
-        maxZoom: 17
+        attribution: "&copy; OpenTopoMap"
       });
 
       const hot = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-        maxZoom: 20
+        attribution: "&copy; OpenStreetMap contributors, HOT"
       });
 
-      return {
-        "Standart": standard,
-        "Hafif": light,
-        "Koyu": dark,
-        "OpenTopo": topo,
-        "Detaylı": hot
-      };
+      const satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: "&copy; Esri & contributors"
+      });
+
+     return {
+  "Standart": standard,
+  "Uydu": satellite,
+  "Hafif": light,
+  "Koyu": dark,
+  "OpenTopo": topo,
+  "Detaylı": hot
+};
     }
 
     function initMap() {
@@ -2519,6 +2536,41 @@
       mainBaseLayers["Standart"].addTo(map);
 
       L.control.layers(mainBaseLayers, null, { collapsed: false }).addTo(map);
+
+      map.on("mousemove", (e) => {
+        const country = detectCountryFromLatLng(e.latlng.lat, e.latlng.lng);
+
+        if (country) {
+          map.getContainer().style.cursor = "pointer";
+
+          if (!hoverTooltip) {
+            hoverTooltip = L.tooltip({
+              permanent: false,
+              direction: "top",
+              offset: [0, -10],
+              className: "country-tooltip",
+              opacity: 1
+            }).addTo(map);
+          }
+
+          hoverTooltip.setLatLng(e.latlng);
+          hoverTooltip.setContent(`🇹🇷 ${country}`);
+        } else {
+          map.getContainer().style.cursor = "";
+          if (hoverTooltip) {
+            map.removeLayer(hoverTooltip);
+            hoverTooltip = null;
+          }
+        }
+      });
+
+      map.on("mouseout", () => {
+        map.getContainer().style.cursor = "";
+        if (hoverTooltip) {
+          map.removeLayer(hoverTooltip);
+          hoverTooltip = null;
+        }
+      });
 
       setTimeout(() => map.invalidateSize(), 600);
     }
@@ -2628,6 +2680,9 @@
         vibe: (formData.get("vibe") || "").toString().trim(),
         source_type: (formData.get("source_type") || "").toString().trim(),
         embed_url: (formData.get("embed_url") || "").toString().trim(),
+        spotify_url: cleanUrl((formData.get("spotify_url") || "").toString().trim()),
+        apple_music_url: cleanUrl((formData.get("apple_music_url") || "").toString().trim()),
+        deezer_url: cleanUrl((formData.get("deezer_url") || "").toString().trim()),
         description: (formData.get("description") || "").toString().trim(),
         status: "pending",
         submitted_at: new Date().toISOString()
