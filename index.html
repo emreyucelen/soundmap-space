@@ -2267,53 +2267,7 @@
       });
     }
 
-    const zoom = map.getZoom();
-
-// 🌍 WORLD MODE → PIN YOK, COUNTRY HOTSPOT VAR
-if (zoom < 6) {
-  const countryGroups = {};
-
-  // pinleri ülkeye göre grupla
-  pins.forEach(pin => {
-    const key = normalize(pin.country || "other");
-    if (!countryGroups[key]) {
-      countryGroups[key] = [];
-    }
-    countryGroups[key].push(pin);
-  });
-
-  // her ülke için tek marker
-  Object.keys(countryGroups).forEach(countryKey => {
-    const group = countryGroups[countryKey];
-
-    const avgLat =
-      group.reduce((sum, p) => sum + Number(p.lat), 0) / group.length;
-    const avgLng =
-      group.reduce((sum, p) => sum + Number(p.lng), 0) / group.length;
-
-    const el = document.createElement("div");
-    el.className = "country-marker";
-    el.innerText = "🌍";
-
-    const marker = new maplibregl.Marker(el)
-      .setLngLat([avgLng, avgLat])
-      .addTo(map);
-
-    el.addEventListener("click", () => {
-      const bounds = getCountryBoundsByName(group[0].country);
-      if (bounds) {
-        map.fitBounds(bounds, {
-          padding: [40, 40],
-          maxZoom: 6
-        });
-      }
-    });
-
-    markers.push(marker);
-  });
-
-  return; // 🔥 çok önemli
-}
+  
 
       const currentVisibleActive = validVisiblePins.find(p => String(p.id) === String(activePinId));
       if (!currentVisibleActive) {
