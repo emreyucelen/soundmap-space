@@ -792,6 +792,7 @@
 
     .player-link-btn.apple { background: rgba(255,255,255,0.12); }
     .player-link-btn.spotify { background: rgba(30,215,96,0.16); }
+    .player-link-btn.deezer { background: rgba(168,85,247,0.16); }
 
     .travel-notice {
       position: fixed;
@@ -1055,52 +1056,6 @@
 
       .player-link-btn { width: 100%; }
     }
-        body.moon-mode {
-      background:
-        radial-gradient(circle at 20% 20%, rgba(148,163,184,0.12), transparent 28%),
-        radial-gradient(circle at 80% 10%, rgba(99,102,241,0.14), transparent 30%),
-        linear-gradient(180deg, #030712 0%, #0a0f1d 100%);
-    }
-
-    body.moon-mode .sidebar {
-      background:
-        radial-gradient(circle at top left, rgba(148,163,184,0.10), transparent 26%),
-        radial-gradient(circle at bottom left, rgba(99,102,241,0.10), transparent 35%),
-        linear-gradient(180deg, rgba(6,10,20,0.94), rgba(10,14,26,0.92));
-    }
-
-    body.cosmic-transition #map {
-      filter: brightness(0.75) saturate(0.9) blur(1.5px);
-      transform: scale(0.985);
-      transition: filter .8s ease, transform .8s ease;
-    }
-
-    .mode-badge {
-      position: fixed;
-      left: 50%;
-      bottom: 24px;
-      transform: translateX(-50%);
-      z-index: 9998;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(8,17,31,0.82);
-      border: 1px solid rgba(255,255,255,0.10);
-      color: #e0f2fe;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.25);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease, transform .35s ease;
-    }
-
-    .mode-badge.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
   </style>
 </head>
 <body>
@@ -1203,7 +1158,6 @@
   </div>
 
   <div id="travelNotice" class="travel-notice">Yeni durağa gidiliyor…</div>
-    <div id="modeBadge" class="mode-badge">EARTH MODE</div>
 
   <div id="submitModal" class="submit-modal">
     <div class="submit-modal-card">
@@ -1290,7 +1244,20 @@
               YouTube linki, SoundCloud linki, direkt SoundCloud player src linki veya SoundCloud iframe kodunun tamamı olabilir.
             </div>
           </div>
+<div class="form-group">
+  <label class="form-label" for="pinSpotifyUrl">Spotify linki</label>
+  <input id="pinSpotifyUrl" name="spotify_url" class="form-input" type="text" placeholder="https://open.spotify.com/..." />
+</div>
 
+<div class="form-group">
+  <label class="form-label" for="pinAppleMusicUrl">Apple Music linki</label>
+  <input id="pinAppleMusicUrl" name="apple_music_url" class="form-input" type="text" placeholder="https://music.apple.com/..." />
+</div>
+
+<div class="form-group">
+  <label class="form-label" for="pinDeezerUrl">Deezer linki</label>
+  <input id="pinDeezerUrl" name="deezer_url" class="form-input" type="text" placeholder="https://www.deezer.com/..." />
+</div>
           <div class="form-group full">
             <label class="form-label" for="pinDescription">Açıklama</label>
             <textarea id="pinDescription" name="description" class="form-textarea" placeholder="Bu ses durağını özel yapan şey ne?"></textarea>
@@ -1447,203 +1414,6 @@
     let lastRandomCity = "";
     let searchDebounceTimer = null;
     let hasInitiallyFitted = false;
-        let CURRENT_MODE = "earth";
-    let moonOverlay = null;
-    let mainBaseLayers = {};
-    const modeBadgeEl = document.getElementById("modeBadge");
-
-    const COUNTRY_BOUNDS = {
-      turkey: [[35.7, 25.5], [42.2, 44.9]],
-      turkiye: [[35.7, 25.5], [42.2, 44.9]],
-      turkye: [[35.7, 25.5], [42.2, 44.9]],
-      japan: [[30.0, 129.0], [46.5, 146.0]],
-      japonya: [[30.0, 129.0], [46.5, 146.0]],
-      china: [[18.0, 73.0], [53.5, 135.0]],
-      cin: [[18.0, 73.0], [53.5, 135.0]],
-      iran: [[24.0, 44.0], [40.0, 64.0]],
-      azerbaijan: [[38.3, 44.7], [41.9, 50.4]],
-      azerbaycan: [[38.3, 44.7], [41.9, 50.4]],
-      korea: [[33.0, 124.0], [39.8, 131.0]],
-      south korea: [[33.0, 124.0], [39.8, 131.0]],
-      guney kore: [[33.0, 124.0], [39.8, 131.0]],
-      kazakhstan: [[40.5, 46.5], [55.5, 87.5]],
-      kazakistan: [[40.5, 46.5], [55.5, 87.5]]
-    };
-
-    const CITY_VIEWS = {
-      izmir: { center: [38.4237, 27.1428], zoom: 10 },
-      istanbul: { center: [41.0082, 28.9784], zoom: 10 },
-      ankara: { center: [39.9334, 32.8597], zoom: 10 },
-      foca: { center: [38.6703, 26.7566], zoom: 13 },
-      eski foca: { center: [38.6788, 26.7540], zoom: 14 },
-      burgazada: { center: [40.8813, 29.0699], zoom: 15 },
-      mardin: { center: [37.3122, 40.7344], zoom: 12 },
-      kapadokya: { center: [38.6431, 34.8276], zoom: 10 }
-    };
-
-    const MOON_KEYWORDS = ["ay", "moon", "lunar", "luna"];
-
-    function showModeBadge(text) {
-      if (!modeBadgeEl) return;
-      modeBadgeEl.textContent = text;
-      modeBadgeEl.classList.add("show");
-      clearTimeout(showModeBadge._timer);
-      showModeBadge._timer = setTimeout(() => {
-        modeBadgeEl.classList.remove("show");
-      }, 2200);
-    }
-
-    function getMoonOverlay() {
-      if (moonOverlay) return moonOverlay;
-
-      const moonBounds = [[-85, -180], [85, 180]];
-      moonOverlay = L.imageOverlay(
-        "https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg",
-        moonBounds,
-        { opacity: 0.92 }
-      );
-
-      return moonOverlay;
-    }
-
-    function isMoonQuery(query) {
-      const q = normalize(query);
-      return MOON_KEYWORDS.includes(q);
-    }
-
-    function getCountryBounds(query) {
-      const q = normalize(query);
-      return COUNTRY_BOUNDS[q] || null;
-    }
-
-    function getCityView(query) {
-      const q = normalize(query);
-      return CITY_VIEWS[q] || null;
-    }
-
-    function activateMoonMode() {
-      if (!map) return;
-
-      CURRENT_MODE = "moon";
-      document.body.classList.add("cosmic-transition");
-
-      setTimeout(() => {
-        document.body.classList.remove("cosmic-transition");
-        document.body.classList.add("moon-mode");
-
-        Object.values(mainBaseLayers).forEach(layer => {
-          if (map.hasLayer(layer)) map.removeLayer(layer);
-        });
-
-        const overlay = getMoonOverlay();
-        if (!map.hasLayer(overlay)) overlay.addTo(map);
-
-        clearMarkers();
-
-        const moonPins = allPins.filter(pin => normalize(pin.country) === "moon" || normalize(pin.city) === "moon");
-        visiblePins = moonPins;
-
-        renderMarkers();
-
-        map.flyTo([10, 0], 2, {
-          animate: true,
-          duration: 2.4
-        });
-
-        showModeBadge("LUNAR MODE");
-        resultCountEl.textContent = moonPins.length
-          ? `🌕 Ay arşivi açıldı • ${moonPins.length} kayıt`
-          : "🌕 Ay modu açıldı • Henüz lunar kayıt yok";
-      }, 850);
-    }
-
-    function activateEarthMode(silent = false) {
-      if (!map) return;
-
-      CURRENT_MODE = "earth";
-      document.body.classList.remove("moon-mode", "cosmic-transition");
-
-      const overlay = getMoonOverlay();
-      if (map.hasLayer(overlay)) {
-        map.removeLayer(overlay);
-      }
-
-      if (mainBaseLayers["Standart"] && !map.hasLayer(mainBaseLayers["Standart"])) {
-        mainBaseLayers["Standart"].addTo(map);
-      }
-
-      if (!silent) {
-        showModeBadge("EARTH MODE");
-      }
-
-      visiblePins = filterPins();
-      pickFeaturedPins();
-      renderMarkers();
-      renderDiscovery();
-    }
-
-    function handleSmartSearch() {
-      const rawQuery = (searchInput.value || "").trim();
-      const q = normalize(rawQuery);
-
-      if (!q) {
-        if (CURRENT_MODE === "moon") activateEarthMode(true);
-        discoveryExpanded = false;
-        applyFilters();
-        return;
-      }
-
-      if (isMoonQuery(q)) {
-        activateMoonMode();
-        return;
-      }
-
-      if (CURRENT_MODE === "moon") {
-        activateEarthMode(true);
-      }
-
-      const countryBounds = getCountryBounds(q);
-      if (countryBounds) {
-        visiblePins = filterPins();
-        pickFeaturedPins();
-        renderMarkers();
-        renderDiscovery();
-
-        map.fitBounds(countryBounds, {
-          padding: [40, 40],
-          maxZoom: 6
-        });
-
-        resultCountEl.textContent = `🌍 ${rawQuery} ülke görünümünde açıldı`;
-        return;
-      }
-
-      const cityView = getCityView(q);
-      if (cityView) {
-        visiblePins = filterPins();
-        pickFeaturedPins();
-        renderMarkers();
-        renderDiscovery();
-
-        map.flyTo(cityView.center, cityView.zoom, {
-          animate: true,
-          duration: 1.8
-        });
-
-        resultCountEl.textContent = `📍 ${rawQuery} şehir görünümünde açıldı`;
-        return;
-      }
-
-      discoveryExpanded = false;
-      applyFilters();
-
-      const bestPin = visiblePins.find(isValidPin);
-      if (bestPin) {
-        setTimeout(() => {
-          goToPin(bestPin, false);
-        }, 120);
-      }
-    }
 
     function normalize(value) {
       return (value || "")
@@ -1785,6 +1555,7 @@
     function buildPlayerLinkButtons(pin) {
       const spotifyUrl = safeExternalUrl(pin.spotify_url || "");
       const appleMusicUrl = safeExternalUrl(pin.apple_music_url || "");
+      const deezerUrl = safeExternalUrl(pin.deezer_url || "");
       const buyUrl = safeExternalUrl(pin.buy_url || pin.album_url || pin.shopify_url || "");
       const items = [];
 
@@ -1794,6 +1565,10 @@
 
       if (appleMusicUrl) {
         items.push(`<a class="player-link-btn apple" href="${escapeHtml(appleMusicUrl)}" target="_blank" rel="noopener noreferrer">Apple Music</a>`);
+      }
+
+      if (deezerUrl) {
+        items.push(`<a class="player-link-btn deezer" href="${escapeHtml(deezerUrl)}" target="_blank" rel="noopener noreferrer">Deezer</a>`);
       }
 
       if (buyUrl) {
@@ -2343,8 +2118,12 @@
 
     function focusMarkerAndPopup(pinId) {
       const marker = markersById[String(pinId)];
-      if (!marker) return;
-      setTimeout(() => marker.openPopup(), 120);
+      if (!marker || !map) return;
+
+      const latLng = marker.getLatLng();
+      if (latLng) {
+        map.panTo(latLng, { animate: true, duration: 1.2 });
+      }
     }
 
     function goToPin(pin, cinematic = true) {
@@ -2361,11 +2140,6 @@
       openFloatingPlayer({ ...pin, lat, lng }, true);
       triggerPinLife(pin.id);
       focusMarkerAndPopup(pin.id);
-
-      setTimeout(() => {
-        renderMarkers();
-        focusMarkerAndPopup(pin.id);
-      }, 180);
 
       if (cinematic) {
         cinematicFlyTo(lat, lng);
@@ -2462,10 +2236,9 @@
       validVisiblePins.forEach(pin => {
         const isActive = String(pin.id) === String(activePinId);
         const isFeatured = featuredPinIds.includes(String(pin.id));
-        const isHovered = false;
 
         const marker = L.marker([pin.lat, pin.lng], {
-          icon: makePinIcon(pin.environment || pin.category, isActive, isFeatured, isHovered)
+          icon: makePinIcon(pin.environment, isActive, isFeatured, false)
         }).addTo(map);
 
         marker.on("mouseover", () => {
@@ -2479,79 +2252,12 @@
         marker.on("click", () => {
           activePinId = pin.id;
           renderMarkers();
-          marker.openPopup();
           openFloatingPlayer(pin, true);
           triggerPinLife(pin.id);
 
           map.flyTo([pin.lat, pin.lng], 17, {
             animate: true,
             duration: 2.2
-          });
-        });
-
-        const env = getEnvironmentStyle(pin.environment || "");
-        const imageUrl = getPinImageUrl(pin);
-
-        marker.bindPopup(`
-          <div style="min-width:210px;font-family:sans-serif;">
-            <div class="popup-cover">
-              <img
-                src="${escapeHtml(imageUrl)}"
-                alt="${escapeHtml(pin.title || "Lokasyon görseli")}"
-                loading="lazy"
-                onerror="this.onerror=null;this.src='${escapeHtml(getFallbackImageByEnvironment(pin.environment))}';"
-              />
-            </div>
-
-            <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(pin.title || "Kayıt")}</div>
-
-            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">
-              ${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${pin.category ? `<div style="font-size:11px;background:rgba(255,255,255,.06);color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);">${escapeHtml(pin.category)}</div>` : ""}
-              ${pin.environment ? `<div style="font-size:11px;background:${env.color}22;color:#e5e7eb;padding:4px 7px;border-radius:999px;border:1px solid ${env.color}55;">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-            </div>
-
-            ${pin.description ? `<div style="font-size:12px;color:#cbd5e1;margin-top:8px;line-height:1.55;">${escapeHtml(pin.description)}</div>` : ""}
-
-            <div style="font-size:12px;color:#cbd5e1;margin-top:8px;">🎧 Dinlemek için tıkla</div>
-
-            <button
-              type="button"
-              class="street-zoom-btn"
-              data-lat="${pin.lat}"
-              data-lng="${pin.lng}"
-              style="
-                margin-top:10px;
-                width:100%;
-                border:0;
-                cursor:pointer;
-                font-weight:700;
-                font-size:12px;
-                padding:10px 12px;
-                border-radius:12px;
-                background:linear-gradient(135deg,#22d3ee,#3b82f6);
-                color:#03131c;
-              "
-            >
-              🛣️ Sokağa in
-            </button>
-          </div>
-        `);
-
-        marker.on("popupopen", (e) => {
-          const popupEl = e.popup.getElement();
-          if (!popupEl) return;
-
-          const streetBtn = popupEl.querySelector(".street-zoom-btn");
-          if (!streetBtn) return;
-
-          streetBtn.addEventListener("click", () => {
-            const lat = Number(streetBtn.getAttribute("data-lat"));
-            const lng = Number(streetBtn.getAttribute("data-lng"));
-            zoomToStreetLevel(lat, lng);
           });
         });
 
@@ -2599,16 +2305,7 @@
       }, 4200);
     }
 
-       function applyFilters() {
-      if (CURRENT_MODE === "moon") {
-        const moonPins = allPins.filter(pin => normalize(pin.country) === "moon" || normalize(pin.city) === "moon");
-        visiblePins = moonPins;
-        featuredPinIds = [];
-        renderMarkers();
-        renderDiscovery();
-        return;
-      }
-
+    function applyFilters() {
       visiblePins = filterPins();
 
       if (!visiblePins.length) {
@@ -2644,6 +2341,7 @@
         shopify_url: cleanUrl(pin.shopify_url || ""),
         spotify_url: cleanUrl(pin.spotify_url || ""),
         apple_music_url: cleanUrl(pin.apple_music_url || ""),
+        deezer_url: cleanUrl(pin.deezer_url || ""),
         buy_url: cleanUrl(pin.buy_url || ""),
         album_url: cleanUrl(pin.album_url || ""),
         embed_url: (pin.embed_url || "").toString().trim(),
@@ -2718,7 +2416,7 @@
       };
     }
 
-       function initMap() {
+    function initMap() {
       map = L.map("map", {
         zoomControl: true,
         maxZoom: 20
@@ -2837,6 +2535,9 @@
         vibe: (formData.get("vibe") || "").toString().trim(),
         source_type: (formData.get("source_type") || "").toString().trim(),
         embed_url: (formData.get("embed_url") || "").toString().trim(),
+        spotify_url: cleanUrl((formData.get("spotify_url") || "").toString().trim()),
+        apple_music_url: cleanUrl((formData.get("apple_music_url") || "").toString().trim()),
+        deezer_url: cleanUrl((formData.get("deezer_url") || "").toString().trim()),
         description: (formData.get("description") || "").toString().trim(),
         status: "pending",
         submitted_at: new Date().toISOString()
@@ -2906,19 +2607,12 @@
       }
     });
 
-           searchInput.addEventListener("input", () => {
+    searchInput.addEventListener("input", () => {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
-        handleSmartSearch();
-      }, 220);
-    });
-
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        clearTimeout(searchDebounceTimer);
-        handleSmartSearch();
-      }
+        discoveryExpanded = false;
+        applyFilters();
+      }, 180);
     });
 
     refreshDiscoveryBtn.addEventListener("click", () => {
