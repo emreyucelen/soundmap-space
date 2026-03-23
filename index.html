@@ -1121,7 +1121,7 @@
 
       <div class="discovery-panel">
         <div class="discovery-head">
-          <div class="discovery-title">Günün Ses Durakları</div>
+          <div id="discoveryTitle" class="discovery-title">Günün Ses Durakları</div>
           <button id="refreshDiscoveryBtn" class="mini-btn">Yenile</button>
         </div>
 
@@ -1431,7 +1431,7 @@
     let featuredPinsInterval = null;
     let lastRandomCity = "";
     let searchDebounceTimer = null;
-    let hasInitiallyFitted = false;
+    let hasInitiallyFitted = true;
     let markersHiddenForTravel = false;
     let hoverTooltip = null;
     let currentDiscoveryCountry = "";
@@ -2222,8 +2222,12 @@
             padding: [40, 40],
             maxZoom: 7
           });
-          map.once("moveend", () => endMarkerTransition());
-          resultCountEl.textContent = `🌍 ${pin.country || "Bölge"} görünümüne yaklaşıldı`;
+          map.once("moveend", () => {
+            endMarkerTransition();
+            visiblePins = filterPins();
+            renderStatusLine();
+            renderDiscovery();
+          });
           triggerPinLife(pin.id);
           return;
         }
@@ -2232,8 +2236,12 @@
           animate: true,
           duration: 1.4
         });
-        map.once("moveend", () => endMarkerTransition());
-        resultCountEl.textContent = `📍 ${pin.city || pin.title || "Bölge"} görünümüne yaklaşıldı`;
+        map.once("moveend", () => {
+          endMarkerTransition();
+          visiblePins = filterPins();
+          renderStatusLine();
+          renderDiscovery();
+        });
         triggerPinLife(pin.id);
         return;
       }
@@ -2243,76 +2251,24 @@
         beginMarkerTransition();
         map.flyTo([lat, lng], 10, {
           animate: true,
-          duration: 1.2
+          duration: 1.15
         });
-        map.once("moveend", () => endMarkerTransition());
-        resultCountEl.textContent = `📌 ${pin.city || pin.title || "Kayıt"} detay görünümüne yaklaşıldı`;
+        map.once("moveend", () => {
+          endMarkerTransition();
+          visiblePins = filterPins();
+          renderStatusLine();
+          renderDiscovery();
+        });
         triggerPinLife(pin.id);
         return;
       }
 
-      activePinId = pin.id;
       updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
-      renderMarkers();
-      openFloatingPlayer({ ...pin, lat, lng }, true);
-      triggerPinLife(pin.id);
-
-      beginMarkerTransition();
-      map.flyTo([lat, lng], 17, {
-        animate: true,
-        duration: 2.0
-      });
-      map.once("moveend", () => endMarkerTransition());
-    }
-
-    function goToPin(pin, cinematic = true) {
-      if (!pin || !isSafeCoordinate(pin.lat, pin.lng)) {
-        alert("Bu lokasyonun koordinatları hatalı görünüyor.");
-        return;
-      }
-
-      if (map && map.getZoom() < 10) {
-        smartOpenPin(pin);
-        return;
-      }
-
-      const lat = Number(String(pin.lat).replace(",", "."));
-      const lng = Number(String(pin.lng).replace(",", "."));
-
       activePinId = pin.id;
-      updateDiscoveryTitle(pin.country === "Türkiye" ? "Türkiye" : "");
       renderMarkers();
-      openFloatingPlayer({ ...pin, lat, lng }, true);
+      renderDiscovery();
+      openFloatingPlayer(pin, true);
       triggerPinLife(pin.id);
-
-      if (cinematic) {
-        cinematicFlyTo(lat, lng);
-      } else {
-        beginMarkerTransition();
-        map.flyTo([lat, lng], 17, {
-          animate: true,
-          duration: 2.2
-        });
-        map.once("moveend", () => endMarkerTransition());
-      }
-    }
-
-    function smartRandomJourney() {
-      const source = visiblePins.length ? visiblePins : allPins;
-      const valid = source.filter(isValidPin);
-      if (!valid.length) return;
-
-      const moodMatcher = getMoodMatcher();
-      let pool = valid.filter(pin => moodMatcher(pin));
-      if (!pool.length) pool = valid;
-
-      const differentCityPool = pool.filter(pin => normalize(pin.city) !== normalize(lastRandomCity));
-      const finalPool = differentCityPool.length ? differentCityPool : pool;
-
-      const pick = finalPool[Math.floor(Math.random() * finalPool.length)];
-      lastRandomCity = pick.city || "";
-      triggerPinLife(pick.id);
-      goToPin(pick, true);
     }
 
     function renderDiscovery() {
