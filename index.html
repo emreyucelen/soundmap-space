@@ -2266,52 +2266,7 @@
         });
       });
     }
-function smartOpenPin(pin) {
-  if (!map || !pin || !isSafeCoordinate(pin.lat, pin.lng)) return;
 
-  const currentZoom = map.getZoom();
-  const lat = Number(String(pin.lat).replace(",", "."));
-  const lng = Number(String(pin.lng).replace(",", "."));
-
-  const countryBounds = getCountryBoundsByName(pin.country);
-  const cityBounds = getCityBoundsByName(pin.city);
-
-  // 1) Dünya / uzak görünüm: önce ülkeye git
-  if (currentZoom < 6 && countryBounds) {
-    setCityMode(null);
-    triggerPinLife(pin.id);
-
-    map.fitBounds(countryBounds, {
-      padding: [40, 40],
-      maxZoom: 6
-    });
-    return;
-  }
-
-  // 2) Ülke / orta görünüm: sonra şehre git
-  if (currentZoom >= 6 && currentZoom < 9 && cityBounds) {
-    setCityMode(pin.city);
-    triggerPinLife(pin.id);
-
-    map.fitBounds(cityBounds, {
-      padding: [36, 36],
-      maxZoom: 9
-    });
-    return;
-  }
-
-  // 3) Şehir / yakın görünüm: en son pine git
-  setCityMode(pin.city);
-  activePinId = pin.id;
-  renderMarkers();
-  openFloatingPlayer({ ...pin, lat, lng }, true);
-  triggerPinLife(pin.id);
-
-  map.flyTo([lat, lng], Math.max(11, currentZoom), {
-    animate: true,
-    duration: 1.2
-  });
-}
     function renderMarkers() {
       clearMarkers();
 
@@ -2334,11 +2289,9 @@ function smartOpenPin(pin) {
         });
 
         marker.on("click", () => {
-  smartOpenPin(pin);
-}); () => {
           activePinId = pin.id;
           renderMarkers();
-        
+          openFloatingPlayer(pin, true);
           triggerPinLife(pin.id);
 
           map.flyTo([pin.lat, pin.lng], 17, {
