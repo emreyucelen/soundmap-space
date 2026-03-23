@@ -423,9 +423,9 @@
       transition: transform .18s ease, filter .18s ease;
     }
 
-    .ey-pin:hover { filter: brightness(1.08); }
-    .ey-pin.is-active { filter: saturate(1.10) brightness(1.05); }
-    .ey-pin.is-featured { animation: featuredPinFloat 3.8s ease-in-out infinite; }
+   .ey-pin:hover { filter: none; }
+.ey-pin.is-active { filter: none; }
+.ey-pin.is-hovered { filter: none; }
 
     .ey-pin.is-featured::after {
       content: "";
@@ -437,15 +437,9 @@
       pointer-events: none;
     }
 
-    .ey-pin.is-featured .ey-pin-inner {
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.24), 0 0 10px rgba(255,255,255,.06);
-    }
-
-    .ey-pin.is-hovered { filter: brightness(1.12) saturate(1.08); }
-
-    .ey-pin.is-hovered .ey-pin-inner {
-      transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
-    }
+   .ey-pin.is-featured::after {
+  display: none;
+}
 
     .ey-pin-inner {
       position: absolute;
@@ -572,8 +566,8 @@
     }
 
     .ey-pin.is-active .ey-pin-inner {
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 0 12px rgba(255,255,255,.08);
-    }
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
+}
 
     @keyframes waveMove {
       0%, 100% { transform: translateX(-1px); opacity: .55; }
@@ -1858,13 +1852,13 @@
       const innerSize = isActive ? 18 : 16;
       const border = isActive ? 4 : 3;
 
-      let glow = `0 8px 18px rgba(0,0,0,.22)`;
+    let glow = `none`;
 
-      if (isActive) {
-        glow = `0 0 0 4px ${color}18, 0 8px 18px rgba(0,0,0,.22)`;
-      } else if (isFeatured) {
-        glow = `0 0 0 2px ${color}12, 0 8px 18px rgba(0,0,0,.18)`;
-      }
+if (isActive) {
+  glow = `0 0 0 2px ${color}22`;
+} else if (isFeatured) {
+  glow = `0 0 0 1px ${color}18`;
+}
 
       return L.divIcon({
         className: "",
