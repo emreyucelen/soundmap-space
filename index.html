@@ -2113,7 +2113,7 @@
 playerMetaRowEl.innerHTML = `
   ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
   ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type))}</div>` : ""}
   ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
   ${pin.source_type ? `<div class="pill">${escapeHtml(pin.source_type)}</div>` : ""}
 `;
@@ -2425,7 +2425,7 @@ playerMetaRowEl.innerHTML = `
            <div class="discover-pills">
   ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
   ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="pill">${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type))}</div>` : ""} || pin.vehicle_type)}</div>` : ""}
   ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
 </div>
           </div>
