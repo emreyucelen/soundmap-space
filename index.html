@@ -2441,20 +2441,11 @@ playerMetaRowEl.innerHTML = `
   toggleDiscoveryBtn.textContent = discoveryExpanded ? "Daha az göster" : "Daha fazlasını göster";
 
   discoveryListEl.querySelectorAll(".discover-card").forEach(card => {
-    card.addEventListener("click", () => {
-  const id = card.dataset.discoverId;
+   card.addEventListener("click", () => {
+  const index = Number(card.dataset.index);
+  const pin = visibleItems[index];
 
-  let pin = allPins.find(p => String(p.id) === id);
-
-  // fallback (çok önemli)
-  if (!pin) {
-    pin = visiblePins.find(p => String(p.id) === id);
-  }
-
-  if (!pin) {
-    console.log("PIN BULUNAMADI", id);
-    return;
-  }
+  if (!pin) return;
 
   focusDiscoveryPin(pin);
 });
