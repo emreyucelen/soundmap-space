@@ -2084,17 +2084,18 @@
 
       // GÜNCELLENMİŞ badge alanı
       playerHeroBadgesEl.innerHTML = `
-        ${pin.environment ? `<div class="player-hero-badge">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-        ${pin.city ? `<div class="player-hero-badge">📍 ${escapeHtml(pin.city)}</div>` : ""}
-        ${pin.vehicle_type ? `<div class="player-hero-badge">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
-      `;
+  ${pin.environment ? `<div class="player-hero-badge">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+  ${pin.city ? `<div class="player-hero-badge">📍 ${escapeHtml(pin.city)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="player-hero-badge">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+`;
 
-      playerMetaRowEl.innerHTML = `
-        ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
-        ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-        ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
-        ${pin.source_type ? `<div class="pill">${escapeHtml(pin.source_type)}</div>` : ""}
-      `;
+playerMetaRowEl.innerHTML = `
+  ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
+  ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+  ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
+  ${pin.source_type ? `<div class="pill">${escapeHtml(pin.source_type)}</div>` : ""}
+`;
 
       playerLinkRowEl.innerHTML = `
         ${linkButtons}
@@ -2400,12 +2401,12 @@
           <div class="discover-card" data-discover-id="${pin.id}">
             <div class="discover-title">${escapeHtml(pin.title || "Gizemli Durak")}</div>
             <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
-            <div class="discover-pills">
-              ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
-              ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-              ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
-              ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
-            </div>
+           <div class="discover-pills">
+  ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
+  ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+  ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
+</div>
           </div>
         `;
       }).join("");
