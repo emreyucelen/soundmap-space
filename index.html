@@ -409,22 +409,23 @@
     .leaflet-control-layers label { color: white !important; }
 
     /* ARAÇ PIN STİLLERİ */
-    .vehicle-pin {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #222;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 0 0 rgba(0,0,0,0.4);
-      animation: pulse 2.5s infinite;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      border: 2px solid rgba(255,255,255,0.3);
-    }
+   .vehicle-pin {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  animation: pulse 2.5s infinite;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.25);
+}
 
     .vehicle-pin:hover {
       transform: scale(1.15);
@@ -2380,7 +2381,50 @@ playerMetaRowEl.innerHTML = `
         });
       }
     }
+function focusSearchResults(query) {
+  const q = normalize(query);
+  if (!q) return;
 
+  const matched = visiblePins.filter(pin => {
+    const city = normalize(pin.city || "");
+    const country = normalize(pin.country || "");
+    const title = normalize(pin.title || "");
+    return city.includes(q) || country.includes(q) || title.includes(q);
+  }).filter(pin => isSafeCoordinate(pin.lat, pin.lng));
+
+  if (!matched.length) return;
+
+  // Tam şehir eşleşmesini öne al
+  const exactCity = matched.filter(pin => normalize(pin.city || "") === q);
+
+  if (exactCity.length === 1) {
+    smartOpenPin(exactCity[0]);
+    return;
+  }
+
+  const targetPins = exactCity.length ? exactCity : matched;
+
+  if (targetPins.length === 1) {
+    smartOpenPin(targetPins[0]);
+    return;
+  }
+
+  const bounds = L.latLngBounds(
+    targetPins.map(pin => [
+      Number(String(pin.lat).replace(",", ".")),
+      Number(String(pin.lng).replace(",", "."))
+    ])
+  );
+
+  map.fitBounds(bounds, {
+    padding: [50, 50],
+    maxZoom: 12
+  });
+
+  const cityName = exactCity[0]?.city || targetPins[0]?.city || query;
+  resultCountEl.textContent = `📍 ${cityName} için ${targetPins.length} kayıt gösteriliyor`;
+}
+    
     function smartRandomJourney() {
       const source = visiblePins.length ? visiblePins : allPins;
       const valid = source.filter(isValidPin);
@@ -2535,18 +2579,75 @@ playerMetaRowEl.innerHTML = `
         renderMarkers();
       }, 4200);
     }
+function focusSearchResults(query) {
+  const q = normalize(query);
+  if (!q || !map) return;
 
-    function applyFilters() {
-      visiblePins = filterPins();
+  const matched = visiblePins
+    .filter(pin => {
+      const city = normalize(pin.city || "");
+      const country = normalize(pin.country || "");
+      const title = normalize(pin.title || "");
+      return city.includes(q) || country.includes(q) || title.includes(q);
+    })
+    .filter(pin => isSafeCoordinate(pin.lat, pin.lng));
 
-      if (!visiblePins.length) {
-        featuredPinIds = [];
-        clearMarkers();
-        renderStatusLine();
-        renderDiscovery();
-        return;
-      }
+  if (!matched.length) return;
 
+  const exactCity = matched.filter(pin => normalize(pin.city || "") === q);
+  const targetPins = exactCity.length ? exactCity : matched;
+
+  if (targetPins.length === 1) {
+    const pin = targetPins[0];
+    triggerPinLife?.(pin.id);
+    if (typeof smartOpenPin === "function") {
+      smartOpenPin(pin);
+    } else if (typeof goToPin === "function") {
+      goToPin(pin, true);
+    } else {
+      map.flyTo([Number(pin.lat), Number(pin.lng)], 12, { duration: 0.8 });
+    }
+    return;
+  }
+
+  const bounds = L.latLngBounds(
+    targetPins.map(pin => [
+      Number(String(pin.lat).replace(",", ".")),
+      Number(String(pin.lng).replace(",", "."))
+    ])
+  );
+
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 12
+    });
+  }
+
+  const cityName = exactCity[0]?.city || targetPins[0]?.city || query;
+  resultCountEl.textContent = `📍 ${cityName} için ${targetPins.length} kayıt gösteriliyor`;
+}
+   function applyFilters() {
+  visiblePins = filterPins();
+
+  if (!visiblePins.length) {
+    featuredPinIds = [];
+    clearMarkers();
+    renderStatusLine();
+    renderDiscovery();
+    return;
+  }
+
+  pickFeaturedPins();
+  renderMarkers();
+  renderDiscovery();
+  startLivingMap();
+
+  const searchQuery = (searchInput.value || "").trim();
+  if (searchQuery) {
+    focusSearchResults(searchQuery);
+  }
+}
       pickFeaturedPins();
       renderMarkers();
       renderDiscovery();
