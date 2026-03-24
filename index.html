@@ -404,7 +404,7 @@
 
     .leaflet-control-layers label { color: white !important; }
 
-    /* YENİ ARAÇ PIN STİLLERİ */
+    /* ARAÇ PIN STİLLERİ */
     .vehicle-pin {
       position: relative;
       width: 40px;
@@ -1271,6 +1271,7 @@
               <option value="dag">Dağ</option>
               <option value="magara">Mağara</option>
               <option value="col">Çöl</option>
+              <option value="ritim">Ritim</option>
             </select>
           </div>
 
@@ -1366,6 +1367,7 @@
       dag: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/dag.jpg`,
       magara: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/magara.jpg`,
       col: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/col.jpg`,
+      ritim: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/ritim.jpg`,
       default: `${SUPABASE_URL}/storage/v1/object/public/${DEFAULT_IMAGE_BUCKET}/${DEFAULT_IMAGE_FOLDER}/default.jpg`
     };
 
@@ -1373,7 +1375,7 @@
       { key: "tum", label: "✨ Hepsi", matcher: () => true },
       { key: "sakin", label: "🌊 Sakin", matcher: pin => ["sakin", "huzurlu"].includes(normalize(pin.vibe)) || ["deniz", "sahil", "gol"].includes(canonicalEnvironment(pin.environment)) },
       { key: "derin", label: "🌲 Derin", matcher: pin => ["derin", "mistik"].includes(normalize(pin.vibe)) || ["orman", "muze", "tapinak"].includes(canonicalEnvironment(pin.environment)) },
-      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "sehir" },
+      { key: "sehir", label: "🏙️ Enerjik", matcher: pin => ["sehir", "liman", "pazar", "ritim"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.category) === "sehir" },
       { key: "manevi", label: "🕌 Ruhsal", matcher: pin => ["tapinak", "muze"].includes(canonicalEnvironment(pin.environment)) || normalize(pin.vibe) === "mistik" },
       {
         key: "yolculuk",
@@ -1400,7 +1402,7 @@
         source_type: "soundcloud",
         embed_url: "https://soundcloud.com/emreyucelen/yoros-kalesi-binaural-sound-recording",
         status: "approved",
-        vehicle_type: "ferry"  // Örnek araç tipi
+        vehicle_type: "ferry"
       }
     ];
 
@@ -1484,7 +1486,7 @@
       finland: [[59.5, 20.0], [70.2, 31.8]]
     };
 
-    // YENİ ARAÇ İKON FONKSİYONLARI
+    // ARAÇ İKON FONKSİYONLARI
     function getVehicleIcon(type) {
       const icons = {
         ferry: "🚢",
@@ -1498,6 +1500,22 @@
         walking: "🚶"
       };
       return icons[type] || "📍";
+    }
+
+    function getVehicleLabel(type) {
+      const labels = {
+        ferry: "Vapur",
+        dolmus: "Dolmuş",
+        bus: "Otobüs",
+        tram: "Tramvay",
+        metro: "Metro",
+        train: "Tren",
+        car: "Araba",
+        bicycle: "Bisiklet",
+        walking: "Yürüyüş",
+        boat: "Tekne"
+      };
+      return labels[type] || "";
     }
 
     function createVehicleMarker(lat, lng, vehicleType) {
@@ -1727,6 +1745,7 @@
       return [...set];
     }
 
+    // GÜNCELLENMİŞ canonicalEnvironment
     function canonicalEnvironment(environment) {
       const key = normalize(environment);
 
@@ -1734,62 +1753,101 @@
         deniz: "deniz",
         sea: "deniz",
         ocean: "deniz",
+
         gol: "gol",
+        göl: "gol",
         lake: "gol",
+
         nehir: "nehir",
         river: "nehir",
+
         sahil: "sahil",
         coast: "sahil",
         shore: "sahil",
+
         orman: "orman",
         forest: "orman",
+        agac: "orman",
+        ağaç: "orman",
+        tree: "orman",
+
         kirsal: "kirsal",
+        kırsal: "kirsal",
         rural: "kirsal",
+
         sehir: "sehir",
+        şehir: "sehir",
         city: "sehir",
         urban: "sehir",
+
         liman: "liman",
         port: "liman",
         harbor: "liman",
+
         pazar: "pazar",
         market: "pazar",
+
         muze: "muze",
+        müze: "muze",
         museum: "muze",
+
         tarih: "tarih",
+        tarihi: "tarih",
         history: "tarih",
         historic: "tarih",
+        historical: "tarih",
+
         tapinak: "tapinak",
+        tapınak: "tapinak",
         temple: "tapinak",
+
         dag: "dag",
+        dağ: "dag",
         mountain: "dag",
+
         magara: "magara",
+        mağara: "magara",
         cave: "magara",
+
         col: "col",
-        desert: "col"
+        çöl: "col",
+        desert: "col",
+
+        ritim: "ritim",
+        rhythm: "ritim",
+        percussion: "ritim",
+        beat: "ritim"
       };
 
       return aliases[key] || key;
     }
 
+    // GÜNCELLENMİŞ getEnvironmentStyle
     function getEnvironmentStyle(environment) {
       const key = canonicalEnvironment(environment);
 
       const map = {
         deniz:   { color: "#38bdf8", symbol: "🌊", label: "Deniz" },
-        gol:     { color: "#60a5fa", symbol: "💧", label: "Göl" },
+        gol:     { color: "#60a5fa", symbol: "🏞️", label: "Göl" },
         nehir:   { color: "#22d3ee", symbol: "💦", label: "Nehir" },
         sahil:   { color: "#5eead4", symbol: "🐚", label: "Sahil" },
-        orman:   { color: "#4ade80", symbol: "🌲", label: "Orman" },
+
+        orman:   { color: "#4ade80", symbol: "🌳", label: "Orman" },
         kirsal:  { color: "#84cc16", symbol: "🌾", label: "Kırsal" },
+
         sehir:   { color: "#3b82f6", symbol: "🏙️", label: "Şehir" },
         liman:   { color: "#64748b", symbol: "⚓", label: "Liman" },
         pazar:   { color: "#fb923c", symbol: "🧺", label: "Pazar" },
-        muze:    { color: "#a855f7", symbol: "🏛️", label: "Müze" },
-        tarih:   { color: "#ef4444", symbol: "🕰️", label: "Tarih" },
+
+        muze:    { color: "#a855f7", symbol: "🖼️", label: "Müze" },
+        tarih:   { color: "#ef4444", symbol: "🏛️", label: "Tarihi Yer" },
         tapinak: { color: "#f97316", symbol: "🕌", label: "Tapınak" },
+
         dag:     { color: "#94a3b8", symbol: "⛰️", label: "Dağ" },
         magara:  { color: "#78716c", symbol: "🪨", label: "Mağara" },
-        col:     { color: "#eab308", symbol: "🏜️", label: "Çöl" }
+        col:     { color: "#eab308", symbol: "🏜️", label: "Çöl" },
+
+        ritim:   { color: "#f97316", symbol: "🥁", label: "Ritim" }
       };
 
       return map[key] || { color: "#38bdf8", symbol: "🎧", label: "Kayıt" };
@@ -1811,13 +1869,16 @@
       return items;
     }
 
+    // GÜNCELLENMİŞ getCoreClass
     function getCoreClass(environment) {
       const key = canonicalEnvironment(environment);
+
       if (["deniz", "gol", "nehir", "sahil"].includes(key)) return "core-sea";
       if (["orman", "kirsal"].includes(key)) return "core-forest";
-      if (["sehir", "liman", "pazar"].includes(key)) return "core-city";
+      if (["sehir", "liman", "pazar", "ritim"].includes(key)) return "core-city";
       if (["muze", "tarih", "tapinak"].includes(key)) return "core-museum";
       if (["dag", "magara", "col"].includes(key)) return "core-mountain";
+
       return "core-default";
     }
 
@@ -2021,10 +2082,11 @@
         />
       `;
 
+      // GÜNCELLENMİŞ badge alanı
       playerHeroBadgesEl.innerHTML = `
         ${pin.environment ? `<div class="player-hero-badge">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
         ${pin.city ? `<div class="player-hero-badge">📍 ${escapeHtml(pin.city)}</div>` : ""}
-        ${pin.vehicle_type ? `<div class="player-hero-badge">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(pin.vehicle_type)}</div>` : ""}
+        ${pin.vehicle_type ? `<div class="player-hero-badge">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
       `;
 
       playerMetaRowEl.innerHTML = `
@@ -2342,7 +2404,7 @@
               ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
               ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
               ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
-              ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(pin.vehicle_type)}</div>` : ""}
+              ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
             </div>
           </div>
         `;
@@ -2380,7 +2442,6 @@
         const isActive = String(pin.id) === String(activePinId);
         const isFeatured = featuredPinIds.includes(String(pin.id));
         
-        // YENİ: vehicle_type varsa araç ikonu kullan, yoksa eski stil pin kullan
         let marker;
         if (pin.vehicle_type) {
           marker = createVehicleMarker(pin.lat, pin.lng, pin.vehicle_type);
@@ -2760,7 +2821,7 @@
       }
     }
 
-    // Form'a vehicle_type alanı ekle (isteğe bağlı)
+    // Form'a vehicle_type alanı ekle
     const vehicleTypeGroup = document.createElement("div");
     vehicleTypeGroup.className = "form-group";
     vehicleTypeGroup.innerHTML = `
