@@ -2399,62 +2399,54 @@ playerMetaRowEl.innerHTML = `
       goToPin(pick, true);
     }
 
-    function renderDiscovery() {
-      const moodMatcher = getMoodMatcher();
-      const base = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
-      const pickedAll = shuffleArray(base)
-        .filter(isValidPin)
-        .filter(pin => isSafeCoordinate(pin.lat, pin.lng))
-        .slice(0, 6);
+   function renderDiscovery() {
+  const moodMatcher = getMoodMatcher();
+  const source = visiblePins.length ? visiblePins : allPins.filter(pin => moodMatcher(pin));
+  const pickedAll = shuffleArray(source)
+    .filter(isValidPin)
+    .filter(pin => isSafeCoordinate(pin.lat, pin.lng))
+    .slice(0, 6);
 
-      const mood = MOODS.find(m => m.key === activeMood);
-      discoverySubEl.textContent = mood && mood.key !== "tum"
-        ? `${mood.label} ruh haline uygun seçkiler burada.`
-        : "Bugün için senin için seçtiğimiz ses yolculukları.";
+  const mood = MOODS.find(m => m.key === activeMood);
+  discoverySubEl.textContent = mood && mood.key !== "tum"
+    ? `${mood.label} ruh haline uygun seçkiler burada.`
+    : "Bugün için senin için seçtiğimiz ses yolculukları.";
 
-      if (!pickedAll.length) {
-        discoveryListEl.innerHTML = `<div class="empty">Şu an bu modda öneri bulunmuyor.</div>`;
-        toggleDiscoveryBtn.style.display = "none";
-        return;
-      }
+  if (!pickedAll.length) {
+    discoveryListEl.innerHTML = `<div class="empty-state">Henüz öneri bulunamadı.</div>`;
+    toggleDiscoveryBtn.style.display = "none";
+    return;
+  }
 
-      const visibleItems = discoveryExpanded ? pickedAll : pickedAll.slice(0, 2);
+  const visibleItems = discoveryExpanded ? pickedAll : pickedAll.slice(0, 2);
 
-      discoveryListEl.innerHTML = visibleItems.map(pin => {
-        const env = getEnvironmentStyle(pin.environment || "");
-        return `
-       <div class="discover-pills">
-  ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
-  ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
-  ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
-</div>
-          </div>
-        `;
-      }).join("");
+  discoveryListEl.innerHTML = visibleItems.map(pin => {
+    const env = getEnvironmentStyle(pin.environment || pin.category);
 
-      if (pickedAll.length > 2) {
-        toggleDiscoveryBtn.style.display = "block";
-        toggleDiscoveryBtn.textContent = discoveryExpanded ? "Daha az göster" : "Daha fazlasını göster";
-      } else {
-        toggleDiscoveryBtn.style.display = "none";
-      }
+    return `
+      <div class="discover-card" data-discover-id="${pin.id}">
+        <div class="discover-title">${escapeHtml(pin.title || "Gizemli Durak")}</div>
+        <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
+        <div class="discover-pills">
+          ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
+          ${pin.environment ? `<div class="pill pill-${canonicalEnvironment(pin.environment)}">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
+          ${pin.vehicle_type ? `<div class="pill pill-vehicle">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
+          ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
 
-      discoveryListEl.querySelectorAll("[data-discover-id]").forEach(el => {
-        el.addEventListener("click", () => {
-          const id = String(el.getAttribute("data-discover-id"));
-          const pin = allPins.find(p => String(p.id) === id);
+  toggleDiscoveryBtn.style.display = pickedAll.length > 2 ? "block" : "none";
+  toggleDiscoveryBtn.textContent = discoveryExpanded ? "Daha az göster" : "Daha fazlasını göster";
 
-          if (!pin || !isSafeCoordinate(pin.lat, pin.lng)) {
-            alert("Bu kayıt için geçerli konum bilgisi bulunamadı.");
-            return;
-          }
-
-          triggerPinLife(pin.id);
-          smartOpenPin(pin);
-        });
-      });
-    }
+  discoveryListEl.querySelectorAll(".discover-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const pin = allPins.find(p => String(p.id) === String(card.dataset.discoverId));
+      if (pin) focusDiscoveryPin(pin);
+    });
+  });
+}
 
     function renderMarkers() {
       clearMarkers();
