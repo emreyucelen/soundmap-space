@@ -1487,36 +1487,57 @@
     };
 
     // ARAÇ İKON FONKSİYONLARI
-    function getVehicleIcon(type) {
-      const icons = {
-        ferry: "🚢",
-        dolmus: "🚐",
-        bus: "🚌",
-        tram: "🚋",
-        metro: "🚇",
-        train: "🚆",
-        car: "🚗",
-        bicycle: "🚲",
-        walking: "🚶"
-      };
-      return icons[type] || "📍";
-    }
+   function getVehicleIcon(type) {
+  const raw = normalize(type);
 
-    function getVehicleLabel(type) {
-      const labels = {
-        ferry: "Vapur",
-        dolmus: "Dolmuş",
-        bus: "Otobüs",
-        tram: "Tramvay",
-        metro: "Metro",
-        train: "Tren",
-        car: "Araba",
-        bicycle: "Bisiklet",
-        walking: "Yürüyüş",
-        boat: "Tekne"
-      };
-      return labels[type] || "";
-    }
+  if (!raw) return "";
+
+  if (raw.includes("ferry") || raw.includes("vapur") || raw.includes("feribot")) return "🚢";
+
+  if (
+    raw.includes("dolmus") ||
+    raw.includes("dolmuş") ||
+    raw.includes("minibus") ||
+    raw.includes("minibüs")
+  ) return "🚐";
+
+  if (raw.includes("bus") || raw.includes("otobus") || raw.includes("otobüs")) return "🚌";
+
+  if (raw.includes("tram") || raw.includes("tramvay")) return "🚋";
+
+  if (raw.includes("metro")) return "🚇";
+
+  if (raw.includes("train") || raw.includes("tren")) return "🚆";
+
+  if (raw.includes("car") || raw.includes("araba")) return "🚗";
+
+  if (raw.includes("bicycle") || raw.includes("bisiklet")) return "🚲";
+
+  if (raw.includes("walking") || raw.includes("yuruyus") || raw.includes("yürüyüş") || raw.includes("walk")) return "🚶";
+
+  if (raw.includes("boat") || raw.includes("tekne")) return "⛵";
+
+  return "";
+}
+
+   function getVehicleLabel(type) {
+  const raw = normalize(type);
+
+  if (!raw) return "";
+
+  if (raw.includes("ferry") || raw.includes("vapur") || raw.includes("feribot")) return "Vapur";
+  if (raw.includes("dolmus") || raw.includes("dolmuş") || raw.includes("minibus") || raw.includes("minibüs")) return "Dolmuş";
+  if (raw.includes("bus") || raw.includes("otobus") || raw.includes("otobüs")) return "Otobüs";
+  if (raw.includes("tram") || raw.includes("tramvay")) return "Tramvay";
+  if (raw.includes("metro")) return "Metro";
+  if (raw.includes("train") || raw.includes("tren")) return "Tren";
+  if (raw.includes("car") || raw.includes("araba")) return "Araba";
+  if (raw.includes("bicycle") || raw.includes("bisiklet")) return "Bisiklet";
+  if (raw.includes("walking") || raw.includes("yuruyus") || raw.includes("yürüyüş") || raw.includes("walk")) return "Yürüyüş";
+  if (raw.includes("boat") || raw.includes("tekne")) return "Tekne";
+
+  return type || "";
+}
 
     function createVehicleMarker(lat, lng, vehicleType) {
       const icon = getVehicleIcon(vehicleType);
