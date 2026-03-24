@@ -2627,7 +2627,63 @@ function focusSearchResults(query) {
   const cityName = exactCity[0]?.city || targetPins[0]?.city || query;
   resultCountEl.textContent = `📍 ${cityName} için ${targetPins.length} kayıt gösteriliyor`;
 }
-  function applyFilters() {
+ function focusSearchResults(query) {
+  const q = normalize(query);
+  if (!q || !map) return;
+
+  const matched = visiblePins
+    .filter(pin => {
+      const city = normalize(pin.city || "");
+      const country = normalize(pin.country || "");
+      const title = normalize(pin.title || "");
+      return city.includes(q) || country.includes(q) || title.includes(q);
+    })
+    .filter(pin => isSafeCoordinate(pin.lat, pin.lng));
+
+  if (!matched.length) return;
+
+  const exactCity = matched.filter(pin => normalize(pin.city || "") === q);
+  const targetPins = exactCity.length ? exactCity : matched;
+
+  if (targetPins.length === 1) {
+    const pin = targetPins[0];
+
+    if (typeof triggerPinLife === "function") {
+      triggerPinLife(pin.id);
+    }
+
+    if (typeof smartOpenPin === "function") {
+      smartOpenPin(pin);
+    } else if (typeof goToPin === "function") {
+      goToPin(pin, true);
+    } else {
+      map.flyTo([Number(pin.lat), Number(pin.lng)], 12, {
+        animate: true,
+        duration: 0.8
+      });
+    }
+    return;
+  }
+
+  const bounds = L.latLngBounds(
+    targetPins.map(pin => [
+      Number(String(pin.lat).replace(",", ".")),
+      Number(String(pin.lng).replace(",", "."))
+    ])
+  );
+
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 12
+    });
+  }
+
+  const cityName = exactCity[0]?.city || targetPins[0]?.city || query;
+  resultCountEl.textContent = `📍 ${cityName} için ${targetPins.length} kayıt gösteriliyor`;
+}
+
+function applyFilters() {
   visiblePins = filterPins();
 
   if (!visiblePins.length) {
@@ -2642,6 +2698,12 @@ function focusSearchResults(query) {
   renderMarkers();
   renderDiscovery();
   startLivingMap();
+
+  const searchQuery = (searchInput.value || "").trim();
+  if (searchQuery) {
+    focusSearchResults(searchQuery);
+  }
+}
 
   const searchQuery = (searchInput.value || "").trim();
   if (searchQuery) {
