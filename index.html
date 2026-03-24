@@ -2627,7 +2627,7 @@ function focusSearchResults(query) {
   const cityName = exactCity[0]?.city || targetPins[0]?.city || query;
   resultCountEl.textContent = `📍 ${cityName} için ${targetPins.length} kayıt gösteriliyor`;
 }
-   function applyFilters() {
+  function applyFilters() {
   visiblePins = filterPins();
 
   if (!visiblePins.length) {
