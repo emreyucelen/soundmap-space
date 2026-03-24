@@ -2424,7 +2424,7 @@ playerMetaRowEl.innerHTML = `
     const env = getEnvironmentStyle(pin.environment || pin.category);
 
     return `
-      <div class="discover-card" data-discover-id="${pin.id}">
+      <div class="discover-card" data-discover-id="${String(pin.id)}">
         <div class="discover-title">${escapeHtml(pin.title || "Gizemli Durak")}</div>
         <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
         <div class="discover-pills">
@@ -2442,9 +2442,22 @@ playerMetaRowEl.innerHTML = `
 
   discoveryListEl.querySelectorAll(".discover-card").forEach(card => {
     card.addEventListener("click", () => {
-      const pin = allPins.find(p => String(p.id) === String(card.dataset.discoverId));
-      if (pin) focusDiscoveryPin(pin);
-    });
+  const id = card.dataset.discoverId;
+
+  let pin = allPins.find(p => String(p.id) === id);
+
+  // fallback (çok önemli)
+  if (!pin) {
+    pin = visiblePins.find(p => String(p.id) === id);
+  }
+
+  if (!pin) {
+    console.log("PIN BULUNAMADI", id);
+    return;
+  }
+
+  focusDiscoveryPin(pin);
+});
   });
 }
 
