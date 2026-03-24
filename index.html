@@ -2419,13 +2419,10 @@ playerMetaRowEl.innerHTML = `
       discoveryListEl.innerHTML = visibleItems.map(pin => {
         const env = getEnvironmentStyle(pin.environment || "");
         return `
-          <div class="discover-card" data-discover-id="${pin.id}">
-            <div class="discover-title">${escapeHtml(pin.title || "Gizemli Durak")}</div>
-            <div class="discover-meta">${escapeHtml(pin.city || "")}${pin.country ? ", " + escapeHtml(pin.country) : ""}</div>
-           <div class="discover-pills">
+       <div class="discover-pills">
   ${pin.category ? `<div class="pill">${escapeHtml(pin.category)}</div>` : ""}
   ${pin.environment ? `<div class="pill">${env.symbol} ${escapeHtml(env.label)}</div>` : ""}
-  ${pin.vehicle_type ? `<div class="pill">${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type))}</div>` : ""} || pin.vehicle_type)}</div>` : ""}
+  ${pin.vehicle_type ? `<div class="pill">${getVehicleIcon(pin.vehicle_type)} ${escapeHtml(getVehicleLabel(pin.vehicle_type) || pin.vehicle_type)}</div>` : ""}
   ${pin.vibe ? `<div class="pill">${escapeHtml(pin.vibe)}</div>` : ""}
 </div>
           </div>
